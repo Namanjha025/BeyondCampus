@@ -1,0 +1,47 @@
+// Database connection
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Our main user table
+model User {
+  id                  String    @id @default(cuid())
+  firstName           String
+  lastName            String
+  email               String    @unique
+  password            String
+  emailVerified       DateTime?
+  onboardingCompleted Boolean   @default(false)
+  nickname            String?
+  currentEducation    String?
+  targetCountries     String[]
+  studyTimeline       String?
+  preferredCourse     String?
+  budget              String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  sessions Session[]
+}
+
+// NextAuth required tables
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

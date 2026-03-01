@@ -2,12 +2,11 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useSession, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { motion } from "framer-motion"
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-// Removed Textarea import - using regular input instead
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Send, Plus, Menu, ChevronDown, Compass, Briefcase, TrendingUp, MessageSquare, Sparkles, ArrowRight, GraduationCap, LayoutDashboard, User, Settings, LogOut, Clock, ChevronRight, MoreVertical, Trash2, Edit, Users, Building2, Star, Home, Calendar, HelpCircle, UserCircle, X, Expand, Target, Lock } from "lucide-react"
+import { Plus, Menu, ChevronDown, Compass, Briefcase, TrendingUp, MessageSquare, Sparkles, ArrowRight, GraduationCap, LayoutDashboard, Edit, Users, Home, Calendar, HelpCircle, UserCircle, X, Expand, Target, Lock } from "lucide-react"
 import { cn } from '@/lib/utils'
+import AppSidebar from './AppSidebar'
+import type { NavItem } from './AppSidebar'
 
 interface Message {
   id: string
@@ -79,8 +80,6 @@ export default function ChatInterface() {
   const [currentChatId, setCurrentChatId] = useState("1")
   const [inputMessage, setInputMessage] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [sidebarWidth, setSidebarWidth] = useState(320)
-  const [isResizing, setIsResizing] = useState(false)
   const [displayedText, setDisplayedText] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<"all" | "tech" | "business" | "research">("all")
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0)
@@ -89,8 +88,6 @@ export default function ChatInterface() {
   const [userProfile, setUserProfile] = useState<any>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const sidebarRef = useRef<HTMLDivElement>(null)
-  const carouselRef = useRef<HTMLDivElement>(null)
 
   const currentChat = chats.find((chat) => chat.id === currentChatId)
 
@@ -125,14 +122,6 @@ export default function ChatInterface() {
 
 
 
-  // Load saved sidebar width from localStorage
-  useEffect(() => {
-    const savedWidth = localStorage.getItem("sidebarWidth")
-    if (savedWidth) {
-      setSidebarWidth(Number(savedWidth))
-    }
-  }, [])
-
   // Fetch user profile data
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -151,44 +140,6 @@ export default function ChatInterface() {
       fetchUserProfile()
     }
   }, [session])
-
-  // Handle resize functionality
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsResizing(true)
-  }
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizing) return
-      
-      const newWidth = e.clientX
-      if (newWidth >= 200 && newWidth <= 400) {
-        setSidebarWidth(newWidth)
-      }
-    }
-
-    const handleMouseUp = () => {
-      if (isResizing) {
-        setIsResizing(false)
-        localStorage.setItem("sidebarWidth", sidebarWidth.toString())
-      }
-    }
-
-    if (isResizing) {
-      document.addEventListener("mousemove", handleMouseMove)
-      document.addEventListener("mouseup", handleMouseUp)
-      document.body.style.cursor = "col-resize"
-      document.body.style.userSelect = "none"
-    }
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-      document.body.style.cursor = ""
-      document.body.style.userSelect = ""
-    }
-  }, [isResizing, sidebarWidth])
 
   // Typing animation effect
   useEffect(() => {
@@ -289,115 +240,46 @@ export default function ChatInterface() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div
-        ref={sidebarRef}
-        className={cn(
-          "flex flex-col border-r bg-secondary/50 transition-all duration-300 relative",
-          !sidebarOpen && "w-0 overflow-hidden"
-        )}
-        style={sidebarOpen ? { width: `${sidebarWidth}px` } : {}}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-border/30">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
-              <GraduationCap className="h-4 w-4 text-primary" />
-            </div>
-            <h2 className="font-bold text-lg">BeyondCampus</h2>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={createNewChat}
-            className="h-8 w-8 hover:bg-secondary/70 transition-colors opacity-70 hover:opacity-100"
-            aria-label="Create new chat"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="flex-1 overflow-hidden flex flex-col">
-          {/* Navigation Menu */}
-          <nav className="p-4 space-y-2 border-b border-border/30">
-            <Button
-              variant="secondary"
-              className="w-full justify-start text-left h-10 px-4 rounded-md"
-            >
-              <Home className="h-4 w-4 mr-3 text-primary" />
-              <span className="text-[15px] font-medium">Home</span>
-            </Button>
+      {sidebarOpen && (
+        <AppSidebar
+          navItems={[
+            { label: "Home", icon: Home, href: "/" },
+            { label: "Explore People", icon: Compass, href: "/explore" },
+            { label: "Universities", icon: GraduationCap, href: "/universities" },
+            { label: "My Workspace", icon: LayoutDashboard, href: "/workspace" },
+            { label: "Roadmap", icon: Target, href: "/roadmap" },
+            { label: "Applications", icon: GraduationCap, href: "/applications" },
+            { label: "Documents", icon: Lock, href: "/documents" },
+          ]}
+          activeItem="Home"
+          headerAction={
             <Button
               variant="ghost"
-              className="w-full justify-start text-left hover:bg-accent/50 rounded-md h-10 px-4 transition-all duration-200 group"
-              onClick={() => router.push("/explore")}
+              size="icon"
+              onClick={createNewChat}
+              className="h-8 w-8 hover:bg-secondary/70 transition-colors opacity-70 hover:opacity-100"
+              aria-label="Create new chat"
             >
-              <Compass className="h-4 w-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[15px] font-medium">Explore People</span>
+              <Plus className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-left hover:bg-accent/50 rounded-md h-10 px-4 transition-all duration-200 group"
-              onClick={() => router.push("/universities")}
-            >
-              <GraduationCap className="h-4 w-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[15px] font-medium">Universities</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-left hover:bg-accent/50 rounded-md h-10 px-4 transition-all duration-200 group"
-              onClick={() => router.push("/workspace")}
-            >
-              <LayoutDashboard className="h-4 w-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[15px] font-medium">My Workspace</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-left hover:bg-accent/50 rounded-md h-10 px-4 transition-all duration-200 group"
-              onClick={() => router.push("/roadmap")}
-            >
-              <Target className="h-4 w-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[15px] font-medium">Roadmap</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-left hover:bg-accent/50 rounded-md h-10 px-4 transition-all duration-200 group"
-              onClick={() => router.push("/applications")}
-            >
-              <GraduationCap className="h-4 w-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[15px] font-medium">Applications</span>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-left hover:bg-accent/50 rounded-md h-10 px-4 transition-all duration-200 group"
-              onClick={() => router.push("/documents")}
-            >
-              <Lock className="h-4 w-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-              <span className="text-[15px] font-medium">Documents</span>
-            </Button>
-          </nav>
-
-          {/* Flexible spacer */}
-          <div className="flex-1" />
-
-          {/* Recent Chats Section */}
-          <div className="border-t border-border/30 mt-4">
-            <div className="px-4 py-3 flex items-center justify-between">
-              <h3 className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest">Recent Chats</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={createNewChat}
-                className="h-6 w-6 hover:bg-secondary/70 opacity-60 hover:opacity-100"
-                aria-label="Start new chat"
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-            <div className="max-h-64 overflow-y-auto px-4 pb-3">
-              <div className="space-y-1">
-                {chats.map((chat) => {
-                  const timeAgo = new Date(chat.createdAt).toLocaleDateString() === new Date().toLocaleDateString()
-                    ? "Today"
-                    : new Date(chat.createdAt).toLocaleDateString();
-                  return (
+          }
+          bottomContent={
+            <div className="border-t border-border/30 mt-4">
+              <div className="px-4 py-3 flex items-center justify-between">
+                <h3 className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest">Recent Chats</h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={createNewChat}
+                  className="h-6 w-6 hover:bg-secondary/70 opacity-60 hover:opacity-100"
+                  aria-label="Start new chat"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </div>
+              <div className="max-h-64 overflow-y-auto px-4 pb-3">
+                <div className="space-y-1">
+                  {chats.map((chat) => (
                     <Button
                       key={chat.id}
                       variant={currentChatId === chat.id ? "secondary" : "ghost"}
@@ -406,78 +288,13 @@ export default function ChatInterface() {
                     >
                       <span className="text-[15px] truncate">{chat.title}</span>
                     </Button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* User Account Section */}
-          <div className="border-t border-border/50">
-            <div className="p-4">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">JD</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[15px] font-medium truncate">{session?.user?.name || "User"}</p>
-                  <p className="text-xs text-muted-foreground/70">Student</p>
+                  ))}
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 hover:bg-secondary/70 opacity-60 hover:opacity-100"
-                      aria-label="Account options"
-                    >
-                      <MoreVertical className="h-3.5 w-3.5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => router.push("/profile")}>
-                      <User className="h-4 w-4 mr-2" />
-                      View Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => console.log("Settings")}>
-                      <Settings className="h-4 w-4 mr-2" />
-                      Settings
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/auth/signin' })} className="text-destructive">
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Resize Handle */}
-        {sidebarOpen && (
-          <div
-            className={cn(
-              "absolute top-0 -right-1 w-3 h-full cursor-col-resize group",
-              isResizing && "bg-primary/10"
-            )}
-            onMouseDown={handleMouseDown}
-            style={{ 
-              touchAction: "none",
-              WebkitUserSelect: "none",
-              userSelect: "none"
-            }}
-          >
-            <div className={cn(
-              "absolute left-1 top-0 w-1 h-full bg-border group-hover:bg-primary/30 transition-colors",
-              isResizing && "bg-primary/50"
-            )} />
-          </div>
-        )}
-      </div>
+          }
+        />
+      )}
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
@@ -512,10 +329,7 @@ export default function ChatInterface() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                console.log('Profile button clicked')
-                setShowProfile(true)
-              }}
+              onClick={() => setShowProfile(true)}
               className="flex items-center gap-2 relative z-10"
             >
               <UserCircle className="h-4 w-4" />
@@ -795,7 +609,7 @@ export default function ChatInterface() {
                             {showHeader && (
                               <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sm font-semibold text-foreground">
-                                  {message.role === "user" ? "namanjha_25" : "BeyondCampus AI"}
+                                  {message.role === "user" ? (session?.user?.name || "User") : "BeyondCampus AI"}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
                                   {message.timestamp.toLocaleTimeString([], {

@@ -5,19 +5,17 @@ export const runtime = 'nodejs'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
-    console.log('Looking for twin with slug:', slug)
+    const { slug } = await params
     
     let twin = await database.findTwinBySlug(slug)
     
-    // Fallback: case-insensitive match if needed
     if (!twin) {
       const all = await database.getAllTwins()
       const match = all.find(t => (t.public_url || '').toLowerCase() === slug.toLowerCase())
-      if (match) twin = match as typeof twin
+      if (match) twin = match
     }
     
     if (!twin) {

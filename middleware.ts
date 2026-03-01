@@ -18,17 +18,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/signin', request.url))
   }
 
-  // Temporarily disable onboarding checks in middleware
-  // Let components handle the routing based on fresh data
-  
-  // If authenticated and onboarded
-  // if (token && token.onboardingCompleted) {
-  //   // Prevent going back to onboarding
-  //   if (isOnboardingPath) {
-  //     return NextResponse.redirect(new URL('/dashboard', request.url))
-  //   }
-  // }
-
   return NextResponse.next()
 }
 

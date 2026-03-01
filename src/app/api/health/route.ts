@@ -28,7 +28,9 @@ interface HealthStatus {
 async function checkSupabase(): Promise<{ status: 'up' | 'down', latency_ms?: number, error?: string }> {
   const startTime = Date.now()
   try {
-    // Simple query to test DB connectivity
+    if (!supabaseService) {
+      throw new Error('Supabase service not configured')
+    }
     const { error } = await supabaseService.from('twins').select('count').limit(1)
     
     if (error) {
@@ -39,11 +41,12 @@ async function checkSupabase(): Promise<{ status: 'up' | 'down', latency_ms?: nu
       status: 'up',
       latency_ms: Date.now() - startTime
     }
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return {
       status: 'down',
       latency_ms: Date.now() - startTime,
-      error: error.message
+      error: message
     }
   }
 }
@@ -70,11 +73,12 @@ async function checkAssistantService(url: string, name: string): Promise<{ statu
       status: 'up',
       latency_ms: Date.now() - startTime
     }
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return {
       status: 'down', 
       latency_ms: Date.now() - startTime,
-      error: error.message
+      error: message
     }
   }
 }

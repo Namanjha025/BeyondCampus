@@ -231,7 +231,7 @@ export default function PublishedTwin() {
               </p>
             </div>
           </div>
-          <Link href="/networking">
+          <Link href="/explore">
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back

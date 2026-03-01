@@ -147,8 +147,8 @@ export default function SignUp() {
                   boxSizing: 'border-box'
                 }}
                 placeholder=""
-                onFocus={(e) => e.target.style.borderColor = 'hsl(27 96% 61%)'}
-                onBlur={(e) => e.target.style.borderColor = 'hsl(0 0% 18%)'}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'hsl(27 96% 61%)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'hsl(0 0% 18%)'}
               />
             </div>
             <div>
@@ -183,8 +183,8 @@ export default function SignUp() {
                   boxSizing: 'border-box'
                 }}
                 placeholder=""
-                onFocus={(e) => e.target.style.borderColor = 'hsl(27 96% 61%)'}
-                onBlur={(e) => e.target.style.borderColor = 'hsl(0 0% 18%)'}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'hsl(27 96% 61%)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'hsl(0 0% 18%)'}
               />
             </div>
           </div>
@@ -222,8 +222,8 @@ export default function SignUp() {
                 boxSizing: 'border-box'
               }}
               placeholder=""
-              onFocus={(e) => e.target.style.borderColor = 'hsl(27 96% 61%)'}
-              onBlur={(e) => e.target.style.borderColor = 'hsl(0 0% 18%)'}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'hsl(27 96% 61%)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = 'hsl(0 0% 18%)'}
             />
           </div>
 
@@ -262,8 +262,8 @@ export default function SignUp() {
                 }}
                 placeholder=""
                 minLength={6}
-                onFocus={(e) => e.target.style.borderColor = 'hsl(27 96% 61%)'}
-                onBlur={(e) => e.target.style.borderColor = 'hsl(0 0% 18%)'}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'hsl(27 96% 61%)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'hsl(0 0% 18%)'}
               />
               <button
                 type="button"
@@ -319,10 +319,10 @@ export default function SignUp() {
               marginTop: '20px'
             }}
             onMouseEnter={(e) => {
-              if (!isLoading) e.target.style.backgroundColor = 'hsl(27 96% 55%)'
+              if (!isLoading) e.currentTarget.style.backgroundColor = 'hsl(27 96% 55%)'
             }}
             onMouseLeave={(e) => {
-              if (!isLoading) e.target.style.backgroundColor = 'hsl(27 96% 61%)'
+              if (!isLoading) e.currentTarget.style.backgroundColor = 'hsl(27 96% 61%)'
             }}
           >
             {isLoading ? 'Creating account...' : 'Create account'}
@@ -344,8 +344,8 @@ export default function SignUp() {
                 textDecoration: 'none',
                 fontWeight: '500'
               }}
-              onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-              onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
             >
               Log in
             </Link>

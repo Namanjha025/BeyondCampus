@@ -22,6 +22,7 @@ import {
   Home,
   BookOpen,
   Users,
+  User as UserIcon,
   Flag
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -61,7 +62,7 @@ const roadmapPhases: RoadmapPhase[] = [
     id: 'profile_prep',
     title: 'Profile Building',
     description: 'Complete your profile and prepare for standardized tests',
-    icon: <User className="h-5 w-5" />,
+    icon: <UserIcon className="h-5 w-5" />,
     color: '#3b82f6',
     startMonth: 0,
     duration: 3,

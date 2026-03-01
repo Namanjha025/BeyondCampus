@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -202,12 +203,13 @@ const ServiceSquare = ({ services }: ServiceSquareProps) => {
 
 export default function PersonChatInterface({ personId }: PersonChatInterfaceProps) {
   const router = useRouter()
+  const { data: session } = useSession()
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState("")
   const [displayedText, setDisplayedText] = useState("")
   const [servicesSidebarOpen, setServicesSidebarOpen] = useState(true)
   const [knowledgeBaseSidebarOpen, setKnowledgeBaseSidebarOpen] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const textareaRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   // Person data (in real app, this would come from API/database)
@@ -782,7 +784,7 @@ export default function PersonChatInterface({ personId }: PersonChatInterfacePro
                         )}>
                           <span className="font-semibold tracking-tight">
                             {message.role === "user" 
-                              ? "namanjha_25" 
+                              ? (session?.user?.name || "User") 
                               : person.name}
                           </span>
                         </div>

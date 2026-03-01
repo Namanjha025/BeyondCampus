@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { database } from '@/lib/database'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../../auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { cuidToUuid } from '@/lib/uuid-utils'
 
 export async function POST(request: NextRequest) {

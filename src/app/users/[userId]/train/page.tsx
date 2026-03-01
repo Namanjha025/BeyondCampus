@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams, useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { cuidToUuid } from '@/lib/uuid-utils'
@@ -33,7 +33,8 @@ import {
   MessageCircle,
   GripVertical,
   ExternalLink,
-  Maximize2
+  Maximize2,
+  User
 } from "lucide-react"
 import { cn } from '@/lib/utils'
 import AddMemoryDropdown from '@/components/AddMemoryDropdown'
@@ -62,7 +63,15 @@ interface Chapter {
   description: string
 }
 
-export default function TrainAITwin() {
+export default function TrainAITwinPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-background"><div className="text-muted-foreground">Loading...</div></div>}>
+      <TrainAITwin />
+    </Suspense>
+  )
+}
+
+function TrainAITwin() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams()
@@ -682,7 +691,7 @@ export default function TrainAITwin() {
 
   const handlePauseTraining = () => {
     // Save progress and navigate to dashboard
-    router.push("/networking/my-twin")
+    router.push("/explore/my-twin")
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -844,7 +853,7 @@ export default function TrainAITwin() {
               >
                 <Avatar className="h-7 w-7">
                   <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                    JD
+                    {session?.user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <ChevronDown className="h-3 w-3 ml-1" />
@@ -853,8 +862,8 @@ export default function TrainAITwin() {
               {showUserMenu && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg shadow-lg z-50">
                   <div className="p-3 border-b border-[hsl(0_0%_18%)]">
-                    <p className="text-sm font-medium text-white">John Doe</p>
-                    <p className="text-xs text-muted-foreground">john@example.com</p>
+                    <p className="text-sm font-medium text-white">{session?.user?.name || "User"}</p>
+                    <p className="text-xs text-muted-foreground">{session?.user?.email || ""}</p>
                   </div>
                   <div className="py-2">
                     <button
@@ -991,7 +1000,7 @@ export default function TrainAITwin() {
                 className="h-8 text-xs border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_8%)] hover:border-primary/30"
                 onClick={() => {
                   setSidebarOpen(true)
-                  router.push("/networking/insights")
+                  router.push("/explore/insights")
                 }}
               >
                 <BarChart3 className="h-3 w-3 mr-1.5" />
@@ -1227,7 +1236,7 @@ export default function TrainAITwin() {
                   size="sm"
                   variant="ghost"
                   className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
-                  onClick={() => router.push("/networking/chapters")}
+                  onClick={() => router.push("/explore/chapters")}
                 >
                   <BookOpen className="h-3 w-3" />
                 </Button>
@@ -1323,7 +1332,7 @@ export default function TrainAITwin() {
                   size="sm"
                   variant="ghost"
                   className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
-                  onClick={() => router.push("/networking/my-twin")}
+                  onClick={() => router.push("/explore/my-twin")}
                 >
                   <Settings className="h-3 w-3" />
                 </Button>
@@ -1348,7 +1357,7 @@ export default function TrainAITwin() {
                 size="sm" 
                 variant="outline"
                 className="w-full h-8 text-xs border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                onClick={() => router.push("/networking/my-twin")}
+                onClick={() => router.push("/explore/my-twin")}
               >
                 <Settings className="h-3 w-3 mr-1.5" />
                 View All Instructions
@@ -1384,7 +1393,7 @@ export default function TrainAITwin() {
                   You've answered enough essential questions to create a functional twin.
                 </p>
                 <Button
-                  onClick={() => router.push("/networking/playground")}
+                  onClick={() => router.push("/explore/playground")}
                   className="w-full bg-primary hover:bg-primary/90 text-black font-medium"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { database } from '@/lib/database'
 import { isValidUUID, normalizeId } from '@/lib/validation'
 import { langGraphClient } from '@/lib/langgraph-client'

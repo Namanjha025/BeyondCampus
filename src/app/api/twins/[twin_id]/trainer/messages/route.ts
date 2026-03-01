@@ -5,7 +5,7 @@ import { validateTrainerRequest, normalizeId, isValidUUID } from '@/lib/validati
 import { checkTrainerRateLimit, getClientIP } from '@/lib/rate-limiter'
 import { randomUUID } from 'crypto'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { cuidToUuid } from '@/lib/uuid-utils'
 
 export async function POST(

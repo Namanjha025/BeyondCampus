@@ -135,21 +135,18 @@ class LangGraphClient {
     // Try to get existing thread first
     if (preferredThreadId) {
       try {
-        console.log(`[${corrId}] Trying to get existing thread: ${preferredThreadId}`)
         const existingThread = await this.makeRequest<LangGraphThread>(
           `${this.config.trainerUrl}/threads/${preferredThreadId}`,
           { method: 'GET' },
           corrId
         )
-        console.log(`[${corrId}] Found existing thread: ${existingThread.thread_id}`)
         return existingThread
-      } catch (error) {
-        console.log(`[${corrId}] Thread ${preferredThreadId} not found, creating new one`)
+      } catch {
+        // Thread not found, create new one
       }
     }
-    
+
     // Create new thread
-    console.log(`[${corrId}] Creating new thread...`)
     const newThread = await this.makeRequest<LangGraphThread>(
       `${this.config.trainerUrl}/threads`,
       {
@@ -164,7 +161,6 @@ class LangGraphClient {
       },
       corrId
     )
-    console.log(`[${corrId}] Created new thread: ${newThread.thread_id}`)
     return newThread
   }
 
@@ -195,11 +191,6 @@ class LangGraphClient {
   async streamTrainerChat(request: StreamingRequest, correlationId?: string): Promise<Response> {
     const corrId = correlationId || randomUUID()
     
-    console.log(`[${corrId}] Starting trainer stream for thread ${request.threadId}`)
-    console.log(`[${corrId}] Assistant ID: ${request.assistantId}`)
-    console.log(`[${corrId}] Messages:`, request.messages.map(m => `${m.type}: ${m.content.slice(0, 50)}...`))
-    console.log(`[${corrId}] Config:`, request.config)
-    
     const streamRequest = {
       assistant_id: request.assistantId,
       input: {
@@ -209,8 +200,6 @@ class LangGraphClient {
       stream_mode: ['messages', 'values'] as const
     }
 
-    console.log(`[${corrId}] Making streaming request to: ${this.config.trainerUrl}/threads/${request.threadId}/runs/stream`)
-    
     const response = await this.makeStreamingRequest(
       `${this.config.trainerUrl}/threads/${request.threadId}/runs/stream`,
       {
@@ -220,15 +209,12 @@ class LangGraphClient {
       corrId
     )
     
-    console.log(`[${corrId}] Streaming request completed, status: ${response.status}`)
     return response
   }
 
   // Non-streaming chat communication (for regular chat interface)
   async streamChatResponse(request: StreamingRequest, correlationId?: string): Promise<Response> {
     const corrId = correlationId || randomUUID()
-    
-    console.log(`[${corrId}] Starting chat stream for thread ${request.threadId}`)
     
     const streamRequest = {
       assistant_id: request.assistantId,

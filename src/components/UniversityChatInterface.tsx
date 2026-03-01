@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,7 @@ interface UniversityChatInterfaceProps {
 
 export default function UniversityChatInterface({ universityId }: UniversityChatInterfaceProps) {
   const router = useRouter()
+  const { data: session } = useSession()
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState("")
   const [displayedText, setDisplayedText] = useState("")
@@ -316,7 +318,7 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
                             message.role === "user" && "justify-end"
                           )}>
                             <span className="font-semibold tracking-tight">
-                              {message.role === "user" ? "namanjha_25" : university.counselorName}
+                              {message.role === "user" ? (session?.user?.name || "User") : university.counselorName}
                             </span>
                           </div>
                         )}

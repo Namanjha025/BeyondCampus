@@ -119,7 +119,7 @@ We implemented user research sessions, started doing regular retrospectives, and
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push("/networking/my-twin")}
+                onClick={() => router.push("/explore/my-twin")}
                 className="hover:bg-secondary/70"
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -139,7 +139,7 @@ We implemented user research sessions, started doing regular retrospectives, and
             </div>
 
             <Button
-              onClick={() => router.push("/networking/train")}
+              onClick={() => router.push("/explore/train")}
               className="bg-primary hover:bg-primary/90 text-black"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -210,7 +210,7 @@ We implemented user research sessions, started doing regular retrospectives, and
                 
                 {/* Add New Chapter */}
                 <button
-                  onClick={() => router.push("/networking/train")}
+                  onClick={() => router.push("/explore/train")}
                   className="w-full p-4 border border-dashed border-[hsl(0_0%_18%)] hover:border-primary/50 rounded-lg text-sm text-muted-foreground hover:text-white transition-all flex items-center justify-center gap-2"
                 >
                   <Plus className="h-4 w-4" />
@@ -250,7 +250,7 @@ We implemented user research sessions, started doing regular retrospectives, and
                       size="sm"
                       variant="outline"
                       className="border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                      onClick={() => router.push(`/networking/train?chapter=${selectedChapterData.id}`)}
+                      onClick={() => router.push(`/explore/train?chapter=${selectedChapterData.id}`)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit

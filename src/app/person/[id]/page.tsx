@@ -1,4 +1,4 @@
-import PersonChatInterface from '@/components/PersonChatInterfaceNew'
+import PersonChatInterface from '@/components/PersonChatInterface'
 
 interface PersonChatProps {
   params: Promise<{ id: string }>

@@ -1,22 +1,22 @@
 import { getSupabaseService } from './server/supabase-admin'
 import type { Database } from './supabase'
 
-const supabaseService = getSupabaseService()
-
 type Twin = Database['public']['Tables']['twins']['Row']
 type TwinInsert = Database['public']['Tables']['twins']['Insert']
 type TwinUpdate = Database['public']['Tables']['twins']['Update']
 
+function getClient() {
+  const client = getSupabaseService()
+  if (!client) throw new Error('Database service not configured — check SUPABASE env vars')
+  return client
+}
+
 export const database = {
-  // Twin operations
   async createTwin(twinData: TwinInsert, customId?: string): Promise<Twin> {
-    if (!supabaseService) {
-      throw new Error('Database service not configured')
-    }
-    
+    const supabase = getClient()
     const insertData = customId ? { id: customId, ...twinData } : twinData
     
-    const { data, error } = await supabaseService
+    const { data, error } = await supabase
       .from('twins')
       .insert(insertData)
       .select()
@@ -27,12 +27,11 @@ export const database = {
       throw new Error(`Failed to create twin: ${error.message}`)
     }
     
-    console.log('Twin created in Supabase:', data)
     return data
   },
 
   async findTwin(twinId: string, userId?: string): Promise<Twin | null> {
-    let query = supabaseService
+    let query = getClient()
       .from('twins')
       .select()
       .eq('id', twinId)
@@ -44,16 +43,14 @@ export const database = {
     const { data, error } = await query.single()
     
     if (error) {
-      console.log('Twin not found:', twinId, error.message)
       return null
     }
-    
-    console.log('Found twin:', data)
+
     return data
   },
 
   async findTwinBySlug(slug: string): Promise<Twin | null> {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('twins')
       .select()
       .eq('public_url', slug)
@@ -61,7 +58,6 @@ export const database = {
       .single()
     
     if (error) {
-      console.log('Twin not found for slug:', slug, error.message)
       return null
     }
     
@@ -69,7 +65,7 @@ export const database = {
   },
 
   async updateTwin(twinId: string, updates: TwinUpdate): Promise<Twin | null> {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('twins')
       .update(updates)
       .eq('id', twinId)
@@ -81,12 +77,11 @@ export const database = {
       return null
     }
     
-    console.log('Twin updated:', data)
     return data
   },
 
   async getAllTwins(): Promise<Twin[]> {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('twins')
       .select()
       .order('created_at', { ascending: false })
@@ -100,7 +95,7 @@ export const database = {
   },
 
   async getUserTwins(userId: string): Promise<Twin[]> {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('twins')
       .select()
       .eq('user_id', userId)
@@ -116,7 +111,7 @@ export const database = {
 
   // User operations
   async createUser(userData: Database['public']['Tables']['users']['Insert']) {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('users')
       .insert(userData)
       .select()
@@ -131,7 +126,7 @@ export const database = {
   },
 
   async getUser(userId: string) {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('users')
       .select()
       .eq('id', userId)
@@ -146,7 +141,7 @@ export const database = {
   },
 
   async updateUser(userId: string, updates: Database['public']['Tables']['users']['Update']) {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('users')
       .update(updates)
       .eq('id', userId)
@@ -163,7 +158,7 @@ export const database = {
 
   // Session tracking
   async createSession(sessionData: Database['public']['Tables']['twin_sessions']['Insert']) {
-    const { data, error } = await supabaseService
+    const { data, error } = await getClient()
       .from('twin_sessions')
       .insert(sessionData)
       .select()

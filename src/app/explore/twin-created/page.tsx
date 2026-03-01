@@ -21,12 +21,12 @@ export default function TwinCreated() {
   const handleStartTraining = () => {
     setIsLoading(true)
     // Navigate to training interface
-    router.push("/networking/train")
+    router.push("/explore/train")
   }
 
   const handleSkip = () => {
     // Navigate to twin dashboard or profile
-    router.push("/networking/my-twin")
+    router.push("/explore/my-twin")
   }
 
   return (

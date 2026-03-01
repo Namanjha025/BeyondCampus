@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -19,7 +18,6 @@ import { cn } from '@/lib/utils'
 
 export default function CreateAITwin() {
   const router = useRouter()
-  const { data: session, status } = useSession()
   const [formData, setFormData] = useState({
     twinName: "",
     tagline: "",
@@ -27,8 +25,8 @@ export default function CreateAITwin() {
     customPersonality: "",
     tone: "conversational",
     customTone: "",
-    links: [],
-    voiceNote: null
+    links: [] as { title: string; url: string }[],
+    voiceNote: null as string | File | null
   })
   const [newLinkTitle, setNewLinkTitle] = useState("")
   const [newLinkUrl, setNewLinkUrl] = useState("")
@@ -40,34 +38,27 @@ export default function CreateAITwin() {
       alert('Please fill in twin name and tagline')
       return
     }
-
-    if (status === 'loading') {
-      alert('Please wait for authentication to load')
-      return
-    }
-
-    if (!session) {
-      alert('Please sign in to create a twin')
-      router.push('/auth/signin')
-      return
-    }
     
     setIsLoading(true)
     
     try {
+      // Generate a mock user ID for demo (in production, get from auth)
+      const userId = `user_${Date.now()}`
+      const userName = `User_${Date.now().toString().slice(-4)}`
+      
       console.log("Creating twin:", formData)
       
       const response = await fetch('/api/twins/create', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           twinName: formData.twinName,
           tagline: formData.tagline,
           personality: formData.personality === 'other' ? formData.customPersonality : formData.personality,
           tone: formData.tone === 'other' ? formData.customTone : formData.tone,
-          links: formData.links
+          links: formData.links,
+          userId,
+          userName
         })
       })
       
@@ -111,7 +102,7 @@ export default function CreateAITwin() {
     }
   }
 
-  const removeLink = (index) => {
+  const removeLink = (index: number) => {
     setFormData({
       ...formData,
       links: formData.links.filter((_, i) => i !== index)
@@ -408,14 +399,12 @@ export default function CreateAITwin() {
             {/* Start Training Button */}
             <Button
               onClick={handleStartTraining}
-              disabled={!formData.twinName || !formData.tagline || isLoading}
-              className="flex-1 h-12 bg-primary hover:bg-primary/90 text-black font-medium disabled:opacity-50"
+              disabled={!formData.twinName || !formData.tagline}
+              className="flex-1 h-12 bg-primary hover:bg-primary/90 text-black font-medium"
             >
               <Sparkles className="h-4 w-4 mr-2" />
               <div className="text-left">
-                <div className="text-sm font-medium">
-                  {isLoading ? 'Creating...' : 'Start Training'}
-                </div>
+                <div className="text-sm font-medium">Start Training</div>
                 <div className="text-xs opacity-70">Keep private</div>
               </div>
             </Button>

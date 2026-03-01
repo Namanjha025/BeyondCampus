@@ -148,8 +148,8 @@ export default function SignIn() {
                 boxSizing: 'border-box'
               }}
               placeholder=""
-              onFocus={(e) => e.target.style.borderColor = 'hsl(27 96% 61%)'}
-              onBlur={(e) => e.target.style.borderColor = 'hsl(0 0% 18%)'}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'hsl(27 96% 61%)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = 'hsl(0 0% 18%)'}
             />
           </div>
 
@@ -187,8 +187,8 @@ export default function SignIn() {
                   boxSizing: 'border-box'
                 }}
                 placeholder=""
-                onFocus={(e) => e.target.style.borderColor = 'hsl(27 96% 61%)'}
-                onBlur={(e) => e.target.style.borderColor = 'hsl(0 0% 18%)'}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'hsl(27 96% 61%)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'hsl(0 0% 18%)'}
               />
               <button
                 type="button"
@@ -244,10 +244,10 @@ export default function SignIn() {
               marginTop: '8px'
             }}
             onMouseEnter={(e) => {
-              if (!isLoading) e.target.style.backgroundColor = 'hsl(27 96% 55%)'
+              if (!isLoading) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'hsl(27 96% 55%)'
             }}
             onMouseLeave={(e) => {
-              if (!isLoading) e.target.style.backgroundColor = 'hsl(27 96% 61%)'
+              if (!isLoading) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'hsl(27 96% 61%)'
             }}
           >
             {isLoading ? 'Signing in...' : 'Continue'}
@@ -269,8 +269,8 @@ export default function SignIn() {
                 textDecoration: 'none',
                 fontWeight: '500'
               }}
-              onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-              onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
             >
               Sign up
             </Link>

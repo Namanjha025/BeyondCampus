@@ -23,7 +23,7 @@ export default function PlaygroundPage() {
       description: "Tell your twin about your experiences, achievements, and career journey",
       icon: BookOpen,
       color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-      action: () => router.push("/networking/train"),
+      action: () => router.push("/explore/train"),
       recommended: true
     },
     {
@@ -32,7 +32,7 @@ export default function PlaygroundPage() {
       description: "Let me ask you questions to learn about you naturally",
       icon: Mic,
       color: "bg-green-500/10 text-green-400 border-green-500/20",
-      action: () => router.push("/networking/interview")
+      action: () => router.push("/explore/interview")
     },
     {
       id: "documents",
@@ -55,7 +55,7 @@ export default function PlaygroundPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push("/networking")}
+                onClick={() => router.push("/explore")}
                 className="hover:bg-secondary/70"
               >
                 <ArrowLeft className="h-5 w-5" />
@@ -76,7 +76,7 @@ export default function PlaygroundPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/networking/preview")}
+                onClick={() => router.push("/explore/preview")}
                 className="border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
               >
                 <Eye className="h-4 w-4 mr-2" />
@@ -85,7 +85,7 @@ export default function PlaygroundPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/networking/my-twin")}
+                onClick={() => router.push("/explore/my-twin")}
                 className="border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
               >
                 <Settings className="h-4 w-4 mr-2" />

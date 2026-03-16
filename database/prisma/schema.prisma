@@ -99,6 +99,11 @@ enum ChecklistItemType {
   OTHER
 }
 
+enum UserRole {
+  ADMIN
+  STUDENT
+}
+
 enum ChecklistItemStatus {
   PENDING
   UPLOADED
@@ -114,6 +119,7 @@ model User {
   password            String
   firstName           String
   lastName            String
+  role                UserRole      @default(STUDENT)
   onboardingCompleted Boolean       @default(false)
 
   // Onboarding intent

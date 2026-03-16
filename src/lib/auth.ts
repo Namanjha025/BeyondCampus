@@ -31,6 +31,7 @@ export const authOptions = {
             email: user.email,
             name: `${user.firstName} ${user.lastName}`,
             onboardingCompleted: user.onboardingCompleted,
+            role: user.role,
           }
         }
         return null
@@ -45,6 +46,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id
         token.onboardingCompleted = user.onboardingCompleted
+        token.role = user.role
       }
 
       if (trigger === 'update' && token.id) {
@@ -63,6 +65,7 @@ export const authOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.onboardingCompleted = token.onboardingCompleted as boolean
+        session.user.role = token.role as string
       }
       return session
     }

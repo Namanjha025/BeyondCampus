@@ -18,6 +18,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/signin', request.url))
   }
 
+  // Admin protection
+  if (pathname.startsWith('/admin')) {
+    if (!token || (token as any).role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+  }
+
   return NextResponse.next()
 }
 

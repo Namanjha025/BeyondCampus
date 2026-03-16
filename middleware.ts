@@ -19,8 +19,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // Admin protection
-  if (pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     if (!token || (token as any).role !== 'ADMIN') {
+      // Redirect UI requests, return error for API requests
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      }
       return NextResponse.redirect(new URL('/', request.url))
     }
   }

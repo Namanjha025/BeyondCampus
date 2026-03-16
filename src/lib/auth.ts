@@ -31,7 +31,7 @@ export const authOptions = {
             email: user.email,
             name: `${user.firstName} ${user.lastName}`,
             onboardingCompleted: user.onboardingCompleted,
-            role: user.role,
+            role: (user as any).role,
           }
         }
         return null

@@ -61,7 +61,7 @@ export default function AdminDashboard() {
               <LayoutDashboard className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Console</h1>
+              <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
               <p className="text-gray-500 text-sm">System intelligence & management</p>
             </div>
           </div>

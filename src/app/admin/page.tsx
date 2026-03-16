@@ -49,18 +49,6 @@ export default function AdminDashboard() {
       description: 'Add, edit, or remove university profiles', 
       href: '/admin/universities',
       icon: PlusCircle 
-    },
-    { 
-      title: 'Bulk Ingestion', 
-      description: 'Upload scraper JSON files for bulk data', 
-      href: '/admin/ingest',
-      icon: Upload 
-    },
-    { 
-      title: 'Review Applications', 
-      description: 'Review student applications and status', 
-      href: '/admin/applications',
-      icon: ClipboardList 
     }
   ]
 

@@ -219,7 +219,7 @@ model Document {
 
 model University {
   id             String         @id @default(uuid())
-  name           String
+  name           String         @unique
   city           String
   state          String
   type           UniversityType
@@ -227,6 +227,14 @@ model University {
   acceptanceRate Float?
   enrollmentSize Int?
   website        String?
+  logo           String?
+  logoColor      String?
+  description    String?
+  specialties    String[]      @default([])
+  qsRanking      String?
+  counselorName  String?
+  counselorTitle String?
+  category       String?       // tech, ivy, public, etc.
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 

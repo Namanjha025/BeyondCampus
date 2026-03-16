@@ -32,96 +32,38 @@ export default function UniversitiesPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
-  const universities: University[] = [
-    {
-      id: "1",
-      name: "MIT",
-      location: "Cambridge, MA",
-      specialty: "Engineering & Technology",
-      studentCount: "50k students",
-      logo: "MIT",
-      logoColor: "bg-red-600",
-      category: "tech",
-      description: "Pioneering innovation in technology and engineering since 1861..."
-    },
-    {
-      id: "2",
-      name: "Stanford University",
-      location: "Stanford, CA",
-      specialty: "Computer Science & Innovation",
-      studentCount: "17k students",
-      logo: "S",
-      logoColor: "bg-red-700",
-      category: "tech",
-      description: "Where Silicon Valley dreams take shape and innovation thrives..."
-    },
-    {
-      id: "3",
-      name: "Harvard University",
-      location: "Cambridge, MA",
-      specialty: "Liberal Arts & Business",
-      studentCount: "23k students",
-      logo: "H",
-      logoColor: "bg-red-800",
-      category: "ivy",
-      description: "Cultivating leaders and scholars in America's oldest university..."
-    },
-    {
-      id: "4",
-      name: "UC Berkeley",
-      location: "Berkeley, CA",
-      specialty: "Research & Public Education",
-      studentCount: "45k students",
-      logo: "B",
-      logoColor: "bg-blue-700",
-      category: "public",
-      description: "Leading public research university driving global progress..."
-    },
-    {
-      id: "5",
-      name: "Carnegie Mellon",
-      location: "Pittsburgh, PA",
-      specialty: "Computer Science & Robotics",
-      studentCount: "15k students",
-      logo: "CMU",
-      logoColor: "bg-gray-700",
-      category: "tech",
-      description: "Where computer science meets creativity and robots come to life..."
-    },
-    {
-      id: "6",
-      name: "Yale University",
-      location: "New Haven, CT",
-      specialty: "Law & Liberal Arts",
-      studentCount: "13k students",
-      logo: "Y",
-      logoColor: "bg-blue-900",
-      category: "ivy",
-      description: "Gothic architecture houses centuries of academic excellence..."
-    },
-    {
-      id: "7",
-      name: "Princeton University",
-      location: "Princeton, NJ",
-      specialty: "Mathematics & Sciences",
-      studentCount: "8k students",
-      logo: "P",
-      logoColor: "bg-orange-600",
-      category: "ivy",
-      description: "Intimate learning environment fostering intellectual curiosity..."
-    },
-    {
-      id: "8",
-      name: "Columbia University",
-      location: "New York, NY",
-      specialty: "Urban Studies & Journalism",
-      studentCount: "33k students",
-      logo: "C",
-      logoColor: "bg-blue-600",
-      category: "ivy",
-      description: "Manhattan campus where journalism and world affairs converge..."
+  const [universities, setUniversities] = useState<University[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        const response = await fetch('/api/universities')
+        if (response.ok) {
+          const data = await response.json()
+          // Map DB fields to UI interface if needed
+          const mappedData = data.map((u: any) => ({
+            id: u.id,
+            name: u.name,
+            location: `${u.city}, ${u.state}`,
+            specialty: u.specialties?.[0] || 'General',
+            studentCount: `${u.enrollmentSize?.toLocaleString()} students`,
+            logo: u.logo,
+            logoColor: u.logoColor,
+            category: u.category || 'tech',
+            description: u.description
+          }))
+          setUniversities(mappedData)
+        }
+      } catch (error) {
+        console.error('Error fetching universities:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
-  ]
+
+    fetchUniversities()
+  }, [])
 
   const categories = [
     { id: "for-you", title: "For You", universities: universities.slice(0, 8) },
@@ -223,8 +165,14 @@ export default function UniversitiesPage() {
             </div>
           </div>
           <div className="p-8">
-            {/* For You Section */}
-            <section className="mb-12">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <>
+                {/* For You Section */}
+                <section className="mb-12">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-white">For You</h2>
@@ -268,6 +216,8 @@ export default function UniversitiesPage() {
                 </div>
               </section>
             ))}
+              </>
+            )}
           </div>
         </div>
       </div>

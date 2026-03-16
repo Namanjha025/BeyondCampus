@@ -46,45 +46,46 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
-  // University data (in real app, this would come from API/database)
-  const universityData: { [key: string]: University } = {
-    "1": {
-      id: "1",
-      name: "MIT",
-      location: "Cambridge, MA",
-      logo: "MIT",
-      logoColor: "bg-red-600",
-      description: "Massachusetts Institute of Technology",
-      specialties: ["Engineering", "Computer Science", "Physics", "Mathematics"],
-      ranking: "#2 National Universities",
-      studentCount: "11,934 students",
-      admissionRate: "4.1%",
-      counselorName: "MIT Admissions",
-      counselorTitle: "Admissions Office",
-      qsRanking: "#1 QS World Rankings"
-    },
-    "2": {
-      id: "2",
-      name: "Stanford University",
-      location: "Stanford, CA",
-      logo: "S",
-      logoColor: "bg-red-700",
-      description: "Stanford University",
-      specialties: ["Computer Science", "Engineering", "Business", "Medicine"],
-      ranking: "#6 National Universities",
-      studentCount: "17,249 students",
-      admissionRate: "3.9%",
-      counselorName: "Stanford Admissions",
-      counselorTitle: "Admissions Office",
-      qsRanking: "#5 QS World Rankings"
-    },
-    // Add more universities as needed
-  }
+  const [university, setUniversity] = useState<University | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const university = universityData[universityId] || universityData["1"]
+  useEffect(() => {
+    const fetchUniversity = async () => {
+      try {
+        const response = await fetch(`/api/universities/${universityId}`)
+        if (response.ok) {
+          const u = await response.json()
+          setUniversity({
+            id: u.id,
+            name: u.name,
+            location: `${u.city}, ${u.state}`,
+            logo: u.logo || '',
+            logoColor: u.logoColor || 'bg-gray-600',
+            description: u.description || '',
+            specialties: u.specialties || [],
+            ranking: u.ranking ? `#${u.ranking} National Universities` : 'N/A',
+            studentCount: `${u.enrollmentSize || 0} students`,
+            admissionRate: u.acceptanceRate ? `${u.acceptanceRate}%` : 'N/A',
+            counselorName: u.counselorName || 'Admissions Counselor',
+            counselorTitle: u.counselorTitle || 'Admissions Office',
+            qsRanking: u.qsRanking || 'N/A'
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching university:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (universityId) {
+      fetchUniversity()
+    }
+  }, [universityId])
 
   // Welcome message typing effect
   useEffect(() => {
+    if (!university) return
     const welcomeText = `Welcome to ${university.name}`
     
     if (messages.length === 0) {
@@ -102,7 +103,7 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
 
       return () => clearInterval(typingInterval)
     }
-  }, [university.name, messages.length])
+  }, [university?.name, messages.length])
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -130,10 +131,11 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
     setMessages(prev => [...prev, newMessage])
     setInputMessage("")
 
+    if (!university) return
     // Simulate counselor response
     setTimeout(() => {
       const responses = [
-        `Great question! At ${university.name}, we're looking for students who are passionate about ${university.specialties[0].toLowerCase()} and innovation. What specific program interests you most?`,
+        `Great question! At ${university.name}, we're looking for students who are passionate about ${university.specialties[0]?.toLowerCase() || 'innovation'} and innovation. What specific program interests you most?`,
         `I'd be happy to help you with your ${university.name} application! Our ${university.specialties.join(", ").toLowerCase()} programs are among the best in the world. What's your academic background?`,
         `That's a fantastic area of interest! ${university.name} has incredible opportunities in that field. Have you considered our research programs and internship opportunities?`,
         `Excellent! With our ${university.admissionRate} admission rate, we're quite selective, but we look at each application holistically. Tell me more about your achievements and goals.`
@@ -148,6 +150,14 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
 
       setMessages(prev => [...prev, aiResponse])
     }, 1500)
+  }
+
+  if (isLoading || !university) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (

@@ -124,14 +124,28 @@ export default function UniversitiesListing() {
             </thead>
             <tbody className="divide-y divide-gray-800">
               {isLoading ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                      Loading universities...
-                    </div>
-                  </td>
-                </tr>
+                Array(5).fill(0).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-800 rounded-lg" />
+                        <div className="space-y-2">
+                          <div className="h-4 w-32 bg-gray-800 rounded" />
+                          <div className="h-3 w-16 bg-gray-800 rounded" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-800 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-800 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-32 bg-gray-800 rounded" /></td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <div className="h-8 w-8 bg-gray-800 rounded" />
+                        <div className="h-8 w-8 bg-gray-800 rounded" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
               ) : filteredUniversities.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">

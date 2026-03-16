@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
-  GraduationCap, 
-  Users, 
-  LayoutDashboard, 
-  Database, 
-  Upload, 
+import {
+  GraduationCap,
+  Users,
+  LayoutDashboard,
+  Database,
+  Upload,
   ArrowRight,
   Clock,
   PlusCircle,
@@ -44,11 +44,11 @@ export default function AdminDashboard() {
   ]
 
   const quickActions = [
-    { 
-      title: 'Manage Universities', 
-      description: 'Add, edit, or remove university profiles', 
+    {
+      title: 'Manage Universities',
+      description: 'Add, edit, or remove university profiles',
       href: '/admin/universities',
-      icon: PlusCircle 
+      icon: PlusCircle
     }
   ]
 
@@ -104,8 +104,8 @@ export default function AdminDashboard() {
             </h2>
             <div className="space-y-4">
               {quickActions.map((action) => (
-                <Link 
-                  key={action.title} 
+                <Link
+                  key={action.title}
                   href={action.href}
                   className="group flex items-center justify-between bg-[#0f0f0f] border border-gray-800 p-5 rounded-2xl hover:bg-[#151515] hover:border-gray-700 transition-all"
                 >
@@ -132,11 +132,11 @@ export default function AdminDashboard() {
                 View all <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
-            
+
             <div className="bg-[#0f0f0f] border border-gray-800 rounded-2xl overflow-hidden">
               <div className="divide-y divide-gray-800">
                 {isLoading ? (
-                   <div className="p-6 text-center text-gray-500">Loading activity...</div>
+                  <div className="p-6 text-center text-gray-500">Loading activity...</div>
                 ) : stats?.recentUniversities?.length === 0 ? (
                   <div className="p-8 text-center text-gray-500">No universities added yet.</div>
                 ) : (
@@ -164,18 +164,18 @@ export default function AdminDashboard() {
 
         {/* Recent Applications Placeholder */}
         <div className="bg-[#0f0f0f] border border-gray-800 rounded-2xl p-8 text-center">
-            <div className="max-w-md mx-auto">
-                <ClipboardList className="h-12 w-12 text-gray-800 mx-auto mb-4" />
-                <h3 className="text-white font-bold mb-2">Student Activity Stream</h3>
-                <p className="text-gray-500 text-sm mb-6">
-                    As students begin shortlisting and applying through the portal, real-time activity metrics will populate this workspace.
-                </p>
-                <div className="flex justify-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary/50" />
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary/30" />
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary/10" />
-                </div>
+          <div className="max-w-md mx-auto">
+            <ClipboardList className="h-12 w-12 text-gray-800 mx-auto mb-4" />
+            <h3 className="text-white font-bold mb-2">Student Activity Stream</h3>
+            <p className="text-gray-500 text-sm mb-6">
+              As students begin shortlisting and applying through the portal, real-time activity metrics will populate this workspace.
+            </p>
+            <div className="flex justify-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-primary/50" />
+              <div className="h-1.5 w-1.5 rounded-full bg-primary/30" />
+              <div className="h-1.5 w-1.5 rounded-full bg-primary/10" />
             </div>
+          </div>
         </div>
       </div>
     </div>

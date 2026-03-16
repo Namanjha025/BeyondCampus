@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { UniversityService } from '@/services/universityService'
 
 export async function GET(
   _request: NextRequest,
@@ -9,13 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    
-    const university = await prisma.university.findUnique({
-      where: { id },
-      include: {
-        programs: true
-      }
-    })
+    const university = await UniversityService.getUniversityById(id)
     
     if (!university) {
       return NextResponse.json({ message: 'University not found' }, { status: 404 })

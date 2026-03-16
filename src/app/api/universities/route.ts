@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { UniversityService } from '@/services/universityService'
 
 export async function GET() {
   try {
-    const universities = await prisma.university.findMany({
-      orderBy: {
-        ranking: 'asc'
-      }
-    })
-    
+    const universities = await UniversityService.getAllUniversities()
     return NextResponse.json(universities)
   } catch (error) {
     console.error('Error fetching universities:', error)

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatOpenAI } from '@langchain/openai';
 import { z } from 'zod';
 
 // ─── Extraction Schemas ───────────────────────────────────────────
@@ -69,9 +69,13 @@ export async function POST(
       .map((doc) => `--- Category: ${doc.category} ---\n\n${doc.content}`)
       .join('\n\n');
 
-    // 3. Initialize Gemini model
-    const model = new ChatGoogleGenerativeAI({
-      model: 'gemini-2.0-flash', // Using best available flash model
+    // 3. Initialize OpenAI model
+    const model = new ChatOpenAI({
+      modelName: process.env.OPENAI_MODEL_NAME || 'gpt-4o',
+      openAIApiKey: process.env.OPENAI_API_KEY,
+      configuration: {
+        baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+      },
       temperature: 0.1,
     });
 

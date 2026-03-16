@@ -1,6 +1,6 @@
 
 import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatOpenAI } from '@langchain/openai';
 import { BaseMessage, HumanMessage, AIMessage, SystemMessage } from '@langchain/core/messages';
 import { toolbox } from './universityTools';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
@@ -18,10 +18,13 @@ const MayaState = Annotation.Root({
   }),
 });
 
-// Initialize the model - Using gemini-2.0-flash as requested
-const model = new ChatGoogleGenerativeAI({
-  model: process.env.GOOGLE_MODEL_NAME || 'gemini-3.1-flash-lite-preview',
-  apiKey: process.env.GOOGLE_API_KEY,
+// Initialize the model - Using OpenAI as requested
+const model = new ChatOpenAI({
+  modelName: process.env.OPENAI_MODEL_NAME || 'gpt-4o',
+  openAIApiKey: process.env.OPENAI_API_KEY,
+  configuration: {
+    baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+  },
   streaming: true,
   temperature: 0.2, // Lower temperature for more consistent counselor behavior
 }).bindTools(toolbox);

@@ -10,6 +10,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Send, ArrowLeft, GraduationCap, MapPin, Users, Star } from "lucide-react"
 import { cn } from '@/lib/utils'
 import { UniversityDetailSkeleton } from "./UniversityDetailSkeleton"
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 
 interface Message {
@@ -381,8 +383,31 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
                               : "bg-secondary border border-border"
                           )}
                         >
-                          <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                          {message.role === "user" ? (
+                            <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                          ) : (
+                            <div className="text-[15px] leading-relaxed prose prose-invert max-w-none">
+                              <ReactMarkdown 
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                  p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                                  ul: ({node, ...props}) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                                  ol: ({node, ...props}) => <ol className="list-decimal pl-4 mb-2" {...props} />,
+                                  li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                                  h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2" {...props} />,
+                                  h2: ({node, ...props}) => <h2 className="text-base font-bold mb-2" {...props} />,
+                                  h3: ({node, ...props}) => <h3 className="text-sm font-bold mb-1" {...props} />,
+                                  strong: ({node, ...props}) => <strong className="font-bold text-primary" {...props} />,
+                                  a: ({node, ...props}) => <a className="text-primary hover:underline" {...props} />,
+                                  code: ({node, ...props}) => <code className="bg-muted px-1 rounded text-sm" {...props} />,
+                                }}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
+                            </div>
+                          )}
                         </div>
+
                         <span className="text-[11px] text-muted-foreground opacity-60">
                           {message.timestamp.toLocaleTimeString([], {
                             hour: "2-digit",

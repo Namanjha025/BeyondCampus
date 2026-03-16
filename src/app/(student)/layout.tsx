@@ -17,6 +17,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext';
+import { cn } from '@/lib/utils';
 
 function StudentLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -57,16 +58,26 @@ function StudentLayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const isUniversityChat = pathname.startsWith('/university/');
+
   return (
-    <div className="flex h-screen bg-background overflow-hidden text-foreground">
-      <AppSidebar
-        navItems={navItems}
-        activeItem={activeItem}
-        headerAction={headerAction}
+  <div className={cn(
+  "flex h-screen bg-background overflow-hidden text-foreground",
+  isUniversityChat && "bg-[#050505]" // Dark background for university chat
+  )}>
+  {!isUniversityChat && (
+    <AppSidebar
+      navItems={navItems}
+    activeItem={activeItem}
+      headerAction={headerAction}
         middleContent={middleContent}
-        bottomContent={bottomContent}
-      />
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+          bottomContent={bottomContent}
+        />
+      )}
+      <main className={cn(
+        "flex-1 flex flex-col min-w-0 overflow-hidden relative",
+        isUniversityChat && "w-full" // Full width when no sidebar
+      )}>
         {children}
       </main>
     </div>

@@ -29,8 +29,26 @@ const model = new ChatOpenAI({
   temperature: 0.2, // Lower temperature for more consistent counselor behavior
 }).bindTools(toolbox);
 
+import prisma from '@/lib/prisma';
+
 // Node: The Agent (Maya)
 async function callModel(state: typeof MayaState.State) {
+  let universityName = 'this university';
+  
+  if (state.universityId) {
+    try {
+      const university = await prisma.university.findUnique({
+        where: { id: state.universityId },
+        select: { name: true }
+      });
+      if (university) {
+        universityName = university.name;
+      }
+    } catch (error) {
+      console.error('Error fetching university name for agent:', error);
+    }
+  }
+
   const systemPrompt = `You are Maya, an elite AI career and education counselor for BeyondCampus.
 Your goal is to help students find their perfect university match.
 
@@ -39,7 +57,7 @@ Your goal is to help students find their perfect university match.
 2. **Mandate Tool Usage**: You must ONLY answer based on data retrieved from tools. If you don't have the data, use the appropriate tool to find it. Do not hallucinate.
 3. **Source Citations**: End every response or specific section with a citation like "📄 Source: Admissions Guide" or "📄 Source: Program Catalog" based on where the tool data came from.
 4. **Formatting**: Use markdown tables when listing multiple programs, deadlines, or requirements. 
-5. **Context**: ${state.universityId ? `The student is currently interested in University ID: ${state.universityId}.` : 'The student is exploring general options.'}
+5. **Context**: ${state.universityId ? `The student is currently interested in ${universityName} (ID: ${state.universityId}).` : 'The student is exploring general options.'}
    ${state.context ? `Additional Context: ${state.context}` : ''}
 
 If a student asks something outside your knowledge base, guide them to explore the platform or contact the university admissions office directly.`;

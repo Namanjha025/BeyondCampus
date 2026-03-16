@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { ChevronRight, Home, Compass, GraduationCap } from "lucide-react"
 import { cn } from '@/lib/utils'
 import MayaCommandBar from "./MayaCommandBar"
+import { UniversitySkeleton } from "./UniversitySkeleton"
+
 
 interface University {
   id: string
@@ -157,10 +159,30 @@ export default function UniversitiesPage() {
           </div>
           <div className="p-8">
             {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="space-y-20">
+                <section>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-48 h-8 bg-gray-800/50 rounded-lg animate-pulse" />
+                  </div>
+                  <div className="flex gap-4 overflow-x-hidden -mx-8 px-8">
+                    {[1, 2, 3].map((i) => (
+                      <UniversitySkeleton key={i} />
+                    ))}
+                  </div>
+                </section>
+                <section>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-64 h-8 bg-gray-800/50 rounded-lg animate-pulse" />
+                  </div>
+                  <div className="flex gap-4 overflow-x-hidden -mx-8 px-8">
+                    {[1, 2, 3].map((i) => (
+                      <UniversitySkeleton key={i} />
+                    ))}
+                  </div>
+                </section>
               </div>
             ) : (
+
               <>
                 {/* For You Section */}
                 <section className="mb-20">

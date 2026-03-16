@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Send, ArrowLeft, GraduationCap, MapPin, Users, Star } from "lucide-react"
 import { cn } from '@/lib/utils'
+import { UniversityDetailSkeleton } from "./UniversityDetailSkeleton"
+
 
 interface Message {
   id: string
@@ -153,12 +155,9 @@ export default function UniversityChatInterface({ universityId }: UniversityChat
   }
 
   if (isLoading || !university) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
+    return <UniversityDetailSkeleton />
   }
+
 
   return (
     <div className="flex h-screen bg-background">

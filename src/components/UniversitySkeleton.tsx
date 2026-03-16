@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 export function UniversitySkeleton() {
   return (
@@ -22,5 +22,5 @@ export function UniversitySkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

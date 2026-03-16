@@ -1,127 +1,126 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, ArrowUp, Mic, MicOff, Command } from 'lucide-react'
-import { cn } from '@/lib/utils'
-
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ArrowUp, Mic, MicOff, Command } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MayaCommandBarProps {
-  context?: 'universities' | 'profile' | 'applications' | 'general'
-  onAction?: (action: any) => void
-  placeholder?: string
-  className?: string
+  context?: 'universities' | 'profile' | 'applications' | 'general';
+  onAction?: (action: any) => void;
+  placeholder?: string;
+  className?: string;
 }
 
-
-export default function MayaCommandBar({ 
-  context = 'general', 
+export default function MayaCommandBar({
+  context = 'general',
   onAction,
-  placeholder = "Ask Maya anything or type a command...",
-  className
+  placeholder = 'Ask Maya anything or type a command...',
+  className,
 }: MayaCommandBarProps) {
-
-  const [query, setQuery] = useState('')
-  const [isListening, setIsListening] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
-  const [suggestions, setSuggestions] = useState<string[]>([])
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [query, setQuery] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Context-specific suggestions
   const contextSuggestions = {
     universities: [
-      "Show me universities in Germany under 20k",
-      "Compare MIT vs Stanford for Computer Science",
-      "What are the admission requirements for Harvard?",
-      "Find universities with strong AI programs"
+      'Show me universities in Germany under 20k',
+      'Compare MIT vs Stanford for Computer Science',
+      'What are the admission requirements for Harvard?',
+      'Find universities with strong AI programs',
     ],
     profile: [
-      "What documents do I need to upload?",
-      "How can I improve my profile?",
-      "Calculate my GPA in 4.0 scale"
+      'What documents do I need to upload?',
+      'How can I improve my profile?',
+      'Calculate my GPA in 4.0 scale',
     ],
     applications: [
-      "Show my upcoming deadlines",
+      'Show my upcoming deadlines',
       "What's the status of my MIT application?",
-      "Generate SOP for Stanford"
+      'Generate SOP for Stanford',
     ],
     general: [
-      "Take me to universities page",
-      "Show my profile",
-      "What should I do next?"
-    ]
-  }
+      'Take me to universities page',
+      'Show my profile',
+      'What should I do next?',
+    ],
+  };
 
   // Keyboard shortcut (Cmd/Ctrl + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        inputRef.current?.focus()
+        e.preventDefault();
+        inputRef.current?.focus();
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Update suggestions based on query
   useEffect(() => {
     if (query.length > 0) {
-      const filtered = contextSuggestions[context].filter(s => 
+      const filtered = contextSuggestions[context].filter((s) =>
         s.toLowerCase().includes(query.toLowerCase())
-      )
-      setSuggestions(filtered)
+      );
+      setSuggestions(filtered);
     } else {
-      setSuggestions([])
+      setSuggestions([]);
     }
-  }, [query, context])
+  }, [query, context]);
 
   const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault()
-    if (!query.trim()) return
+    e?.preventDefault();
+    if (!query.trim()) return;
 
     // Handle command vs question
     if (query.startsWith('/')) {
       // It's a command
-      handleCommand(query)
+      handleCommand(query);
     } else {
       // It's a question for Maya
-      handleQuestion(query)
+      handleQuestion(query);
     }
 
-    setQuery('')
-    setSuggestions([])
-  }
+    setQuery('');
+    setSuggestions([]);
+  };
 
   const handleCommand = (command: string) => {
-    const cmd = command.slice(1).toLowerCase()
-    
-    const commands: Record<string, () => void> = {
-      'universities': () => onAction?.({ type: 'navigate', page: '/universities' }),
-      'profile': () => onAction?.({ type: 'navigate', page: '/profile' }),
-      'applications': () => onAction?.({ type: 'navigate', page: '/applications' }),
-      'help': () => onAction?.({ type: 'show_help' }),
-    }
+    const cmd = command.slice(1).toLowerCase();
 
-    const action = commands[cmd]
+    const commands: Record<string, () => void> = {
+      universities: () =>
+        onAction?.({ type: 'navigate', page: '/universities' }),
+      profile: () => onAction?.({ type: 'navigate', page: '/profile' }),
+      applications: () =>
+        onAction?.({ type: 'navigate', page: '/applications' }),
+      help: () => onAction?.({ type: 'show_help' }),
+    };
+
+    const action = commands[cmd];
     if (action) {
-      action()
+      action();
     } else {
-      onAction?.({ type: 'unknown_command', command: cmd })
+      onAction?.({ type: 'unknown_command', command: cmd });
     }
-  }
+  };
 
   const handleQuestion = async (question: string) => {
     onAction?.({ type: 'question', content: question, context });
-    
+
     try {
       const response = await fetch('/api/maya/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [{ role: 'user', content: question }],
-          context: context
+          context: context,
         }),
       });
 
@@ -130,40 +129,35 @@ export default function MayaCommandBar({
         const decoder = new TextDecoder();
         let done = false;
 
-        let fullContent = "";
+        let fullContent = '';
 
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
           const chunkValue = decoder.decode(value, { stream: !done });
-          
+
           if (chunkValue) {
             fullContent += chunkValue;
-            onAction?.({ 
-              type: 'maya_message', 
+            onAction?.({
+              type: 'maya_message',
               content: fullContent,
               chunk: chunkValue,
-              isComplete: done
+              isComplete: done,
             });
           }
         }
       }
     } catch (error) {
-      console.error("Maya Command Bar Error:", error);
+      console.error('Maya Command Bar Error:', error);
     }
-  }
-
-
+  };
 
   return (
-    <div className={cn("relative w-full max-w-4xl mx-auto", className)}>
-
+    <div className={cn('relative w-full max-w-4xl mx-auto', className)}>
       <motion.div
         initial={false}
         animate={{
-          boxShadow: isFocused 
-            ? '0 0 0 2px rgba(255, 255, 255, 0.1)' 
-            : 'none'
+          boxShadow: isFocused ? '0 0 0 2px rgba(255, 255, 255, 0.1)' : 'none',
         }}
         className="relative bg-[#202123] rounded-full border border-gray-600/50 overflow-hidden"
       >
@@ -189,7 +183,7 @@ export default function MayaCommandBar({
                 disabled={!query.trim()}
                 className={`p-2.5 rounded-full transition-all ${
                   query.trim()
-                    ? 'bg-white text-black hover:bg-gray-100' 
+                    ? 'bg-white text-black hover:bg-gray-100'
                     : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 }`}
               >
@@ -212,8 +206,8 @@ export default function MayaCommandBar({
                 <button
                   key={idx}
                   onClick={() => {
-                    setQuery(suggestion)
-                    handleSubmit()
+                    setQuery(suggestion);
+                    handleSubmit();
                   }}
                   className="w-full px-6 py-4 text-left text-gray-300 hover:bg-[#3f3f3f] transition-colors text-base"
                 >
@@ -224,7 +218,6 @@ export default function MayaCommandBar({
           )}
         </AnimatePresence>
       </motion.div>
-
     </div>
-  )
+  );
 }

@@ -1,33 +1,33 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from '@/components/ui/button'
-import { 
-  Sparkles, 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import {
+  Sparkles,
   MessageSquare,
   Brain,
   CheckCircle,
   ArrowRight,
   BookOpen,
-  Plus
-} from "lucide-react"
-import { cn } from '@/lib/utils'
+  Plus,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function TwinCreated() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleStartTraining = () => {
-    setIsLoading(true)
+    setIsLoading(true);
     // Navigate to training interface
-    router.push("/explore/train")
-  }
+    router.push('/explore/train');
+  };
 
   const handleSkip = () => {
     // Navigate to twin dashboard or profile
-    router.push("/explore/my-twin")
-  }
+    router.push('/explore/my-twin');
+  };
 
   return (
     <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-6">
@@ -42,7 +42,7 @@ export default function TwinCreated() {
               <CheckCircle className="h-10 w-10 text-green-500" />
             </div>
           </div>
-          
+
           <h1 className="text-3xl font-bold text-white mb-2">
             🎉 Your AI Twin is ready!
           </h1>
@@ -57,11 +57,14 @@ export default function TwinCreated() {
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <Brain className="h-5 w-5 text-primary" />
             </div>
-            <h2 className="text-xl font-semibold text-white">Train Your AI Twin</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Train Your AI Twin
+            </h2>
           </div>
-          
+
           <p className="text-muted-foreground mb-4 leading-relaxed">
-            Your AI Twin will interview you to deeply understand your story - like a biographer learning about their subject.
+            Your AI Twin will interview you to deeply understand your story -
+            like a biographer learning about their subject.
           </p>
 
           {/* Key Points */}
@@ -97,7 +100,7 @@ export default function TwinCreated() {
             className="flex-1 bg-primary hover:bg-primary/90 text-black font-medium h-12"
           >
             {isLoading ? (
-              "Loading..."
+              'Loading...'
             ) : (
               <>
                 <Sparkles className="h-5 w-5 mr-2" />
@@ -106,7 +109,7 @@ export default function TwinCreated() {
               </>
             )}
           </Button>
-          
+
           <Button
             onClick={handleSkip}
             variant="outline"
@@ -121,5 +124,5 @@ export default function TwinCreated() {
         </p>
       </div>
     </div>
-  )
+  );
 }

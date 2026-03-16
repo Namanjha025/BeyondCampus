@@ -1,10 +1,10 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion'
-import { 
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { motion } from 'framer-motion';
+import {
   ArrowLeft,
   LayoutDashboard,
   CheckCircle2,
@@ -27,30 +27,30 @@ import {
   MoreHorizontal,
   ChevronRight,
   BookOpen,
-  Send
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
+  Send,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function WorkspacePage() {
-  const router = useRouter()
-  const { data: session, status } = useSession()
-  const [loading, setLoading] = useState(true)
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (status === 'loading') return;
     if (!session) {
-      router.push('/auth/signin')
+      router.push('/auth/signin');
     } else {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [session, status, router])
+  }, [session, status, router]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading workspace...</div>
       </div>
-    )
+    );
   }
 
   // Mock data for universities and documents
@@ -62,7 +62,7 @@ export default function WorkspacePage() {
       location: 'California, USA',
       deadline: new Date('2024-12-15'),
       status: 'submitted',
-      ranking: 3
+      ranking: 3,
     },
     {
       id: '2',
@@ -71,7 +71,7 @@ export default function WorkspacePage() {
       location: 'Massachusetts, USA',
       deadline: new Date('2024-12-01'),
       status: 'submitted',
-      ranking: 1
+      ranking: 1,
     },
     {
       id: '3',
@@ -80,9 +80,9 @@ export default function WorkspacePage() {
       location: 'California, USA',
       deadline: new Date('2025-01-15'),
       status: 'in_progress',
-      ranking: 4
-    }
-  ]
+      ranking: 4,
+    },
+  ];
 
   const shortlistedUniversities = [
     {
@@ -91,7 +91,7 @@ export default function WorkspacePage() {
       program: 'MS Machine Learning',
       location: 'Pennsylvania, USA',
       deadline: new Date('2024-12-15'),
-      ranking: 5
+      ranking: 5,
     },
     {
       id: '5',
@@ -99,9 +99,9 @@ export default function WorkspacePage() {
       program: 'MS Computer Science',
       location: 'Georgia, USA',
       deadline: new Date('2025-01-10'),
-      ranking: 8
-    }
-  ]
+      ranking: 8,
+    },
+  ];
 
   const documents = [
     {
@@ -109,35 +109,38 @@ export default function WorkspacePage() {
       name: 'Statement of Purpose - Stanford',
       type: 'sop',
       status: 'completed',
-      lastModified: new Date('2024-11-20')
+      lastModified: new Date('2024-11-20'),
     },
     {
       id: '2',
       name: 'Resume_MS_Applications',
       type: 'resume',
       status: 'completed',
-      lastModified: new Date('2024-11-18')
+      lastModified: new Date('2024-11-18'),
     },
     {
       id: '3',
       name: 'Transcript_Official',
       type: 'transcript',
       status: 'completed',
-      lastModified: new Date('2024-11-10')
+      lastModified: new Date('2024-11-10'),
     },
     {
       id: '4',
       name: 'LOR_Prof_Smith',
       type: 'lor',
       status: 'pending',
-      lastModified: new Date('2024-11-22')
-    }
-  ]
+      lastModified: new Date('2024-11-22'),
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-white">
       {/* Header */}
-      <div className="border-b border-gray-800 backdrop-blur-sm sticky top-0 z-10" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+      <div
+        className="border-b border-gray-800 backdrop-blur-sm sticky top-0 z-10"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -168,37 +171,51 @@ export default function WorkspacePage() {
               <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
                 <Send className="h-6 w-6 text-blue-500" />
               </div>
-              <span className="text-3xl font-bold text-white">{appliedUniversities.length}</span>
+              <span className="text-3xl font-bold text-white">
+                {appliedUniversities.length}
+              </span>
             </div>
             <p className="text-sm text-gray-400">Total Applications</p>
           </div>
-          
+
           <div className="bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl p-6 border border-gray-800">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
                 <CheckCircle2 className="h-6 w-6 text-green-500" />
               </div>
-              <span className="text-3xl font-bold text-white">{appliedUniversities.filter(u => u.status === 'submitted').length}</span>
+              <span className="text-3xl font-bold text-white">
+                {
+                  appliedUniversities.filter((u) => u.status === 'submitted')
+                    .length
+                }
+              </span>
             </div>
             <p className="text-sm text-gray-400">Submitted</p>
           </div>
-          
+
           <div className="bg-gradient-to-br from-yellow-500/10 to-transparent rounded-2xl p-6 border border-gray-800">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center">
                 <Clock className="h-6 w-6 text-yellow-500" />
               </div>
-              <span className="text-3xl font-bold text-white">{appliedUniversities.filter(u => u.status === 'in_progress').length}</span>
+              <span className="text-3xl font-bold text-white">
+                {
+                  appliedUniversities.filter((u) => u.status === 'in_progress')
+                    .length
+                }
+              </span>
             </div>
             <p className="text-sm text-gray-400">In Progress</p>
           </div>
-          
+
           <div className="bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl p-6 border border-gray-800">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
                 <Heart className="h-6 w-6 text-purple-500" />
               </div>
-              <span className="text-3xl font-bold text-white">{shortlistedUniversities.length}</span>
+              <span className="text-3xl font-bold text-white">
+                {shortlistedUniversities.length}
+              </span>
             </div>
             <p className="text-sm text-gray-400">Shortlisted</p>
           </div>
@@ -214,10 +231,12 @@ export default function WorkspacePage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-white">Applications</h3>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
+                <h3 className="text-lg font-semibold text-white">
+                  Applications
+                </h3>
+                <Button
+                  size="sm"
+                  variant="ghost"
                   className="text-orange-500 hover:text-orange-400"
                   onClick={() => router.push('/applications')}
                 >
@@ -225,7 +244,7 @@ export default function WorkspacePage() {
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
-              
+
               <div className="space-y-4">
                 {appliedUniversities.map((uni) => (
                   <div
@@ -236,15 +255,21 @@ export default function WorkspacePage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h4 className="font-medium text-white">{uni.name}</h4>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            uni.status === 'submitted' 
-                              ? 'bg-green-500/20 text-green-500' 
-                              : 'bg-yellow-500/20 text-yellow-500'
-                          }`}>
-                            {uni.status === 'submitted' ? 'Submitted' : 'In Progress'}
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${
+                              uni.status === 'submitted'
+                                ? 'bg-green-500/20 text-green-500'
+                                : 'bg-yellow-500/20 text-yellow-500'
+                            }`}
+                          >
+                            {uni.status === 'submitted'
+                              ? 'Submitted'
+                              : 'In Progress'}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-400 mb-2">{uni.program}</p>
+                        <p className="text-sm text-gray-400 mb-2">
+                          {uni.program}
+                        </p>
                         <div className="flex items-center gap-4 text-xs text-gray-500">
                           <span className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
@@ -252,7 +277,10 @@ export default function WorkspacePage() {
                           </span>
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            {uni.deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {uni.deadline.toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
                           </span>
                         </div>
                       </div>
@@ -272,18 +300,22 @@ export default function WorkspacePage() {
               transition={{ delay: 0.1 }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-white">Shortlisted</h3>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
+                <h3 className="text-lg font-semibold text-white">
+                  Shortlisted
+                </h3>
+                <Button
+                  size="sm"
+                  variant="ghost"
                   className="text-purple-500 hover:text-purple-400"
-                  onClick={() => router.push('/applications?filter=shortlisted')}
+                  onClick={() =>
+                    router.push('/applications?filter=shortlisted')
+                  }
                 >
                   View All
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {shortlistedUniversities.map((uni) => (
                   <div
@@ -297,7 +329,11 @@ export default function WorkspacePage() {
                     <p className="text-sm text-gray-400 mb-3">{uni.program}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">
-                        Deadline: {uni.deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        Deadline:{' '}
+                        {uni.deadline.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
                       </span>
                       <Button size="sm" className="h-7 text-xs">
                         Apply
@@ -319,9 +355,9 @@ export default function WorkspacePage() {
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-white">Documents</h3>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
+                <Button
+                  size="sm"
+                  variant="ghost"
                   className="text-orange-500 hover:text-orange-400"
                   onClick={() => router.push('/documents')}
                 >
@@ -329,31 +365,43 @@ export default function WorkspacePage() {
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
-              
+
               <div className="bg-gray-900/50 rounded-xl p-4 space-y-3">
                 {documents.map((doc) => {
                   const getDocType = () => {
                     switch (doc.type) {
-                      case 'sop': return { color: 'text-blue-500', label: 'SOP' }
-                      case 'resume': return { color: 'text-green-500', label: 'Resume' }
-                      case 'transcript': return { color: 'text-purple-500', label: 'Transcript' }
-                      case 'lor': return { color: 'text-orange-500', label: 'LOR' }
-                      default: return { color: 'text-gray-500', label: 'Doc' }
+                      case 'sop':
+                        return { color: 'text-blue-500', label: 'SOP' };
+                      case 'resume':
+                        return { color: 'text-green-500', label: 'Resume' };
+                      case 'transcript':
+                        return {
+                          color: 'text-purple-500',
+                          label: 'Transcript',
+                        };
+                      case 'lor':
+                        return { color: 'text-orange-500', label: 'LOR' };
+                      default:
+                        return { color: 'text-gray-500', label: 'Doc' };
                     }
-                  }
-                  const docType = getDocType()
-                  
+                  };
+                  const docType = getDocType();
+
                   return (
                     <div
                       key={doc.id}
                       className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-xs font-medium ${docType.color}`}>
+                        <div
+                          className={`w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-xs font-medium ${docType.color}`}
+                        >
                           {docType.label}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-white">{doc.name}</p>
+                          <p className="text-sm font-medium text-white">
+                            {doc.name}
+                          </p>
                           <p className="text-xs text-gray-500">
                             {doc.lastModified.toLocaleDateString()}
                           </p>
@@ -367,7 +415,7 @@ export default function WorkspacePage() {
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </motion.div>
@@ -378,9 +426,11 @@ export default function WorkspacePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <h3 className="text-lg font-semibold text-white mb-6">Quick Actions</h3>
+              <h3 className="text-lg font-semibold text-white mb-6">
+                Quick Actions
+              </h3>
               <div className="space-y-3">
-                <Button 
+                <Button
                   className="w-full justify-start gap-3 h-12 bg-gray-900/50 hover:bg-gray-900 border-gray-800"
                   variant="outline"
                   onClick={() => router.push('/workspace/tasks')}
@@ -391,8 +441,8 @@ export default function WorkspacePage() {
                   <span className="flex-1 text-left">View All Tasks</span>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Button>
-                
-                <Button 
+
+                <Button
                   className="w-full justify-start gap-3 h-12 bg-gray-900/50 hover:bg-gray-900 border-gray-800"
                   variant="outline"
                   onClick={() => router.push('/roadmap')}
@@ -403,8 +453,8 @@ export default function WorkspacePage() {
                   <span className="flex-1 text-left">View Roadmap</span>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Button>
-                
-                <Button 
+
+                <Button
                   className="w-full justify-start gap-3 h-12 bg-gray-900/50 hover:bg-gray-900 border-gray-800"
                   variant="outline"
                 >
@@ -418,8 +468,7 @@ export default function WorkspacePage() {
             </motion.div>
           </div>
         </div>
-
       </div>
     </div>
-  )
+  );
 }

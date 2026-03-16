@@ -1,4 +1,4 @@
-import UniversityForm from '@/components/admin/UniversityForm'
+import UniversityForm from '@/components/admin/UniversityForm';
 
 export default function CreateUniversityPage() {
   return (
@@ -7,5 +7,5 @@ export default function CreateUniversityPage() {
         <UniversityForm />
       </div>
     </div>
-  )
+  );
 }

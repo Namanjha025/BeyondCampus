@@ -5,6 +5,10 @@ export function useLangGraphHealth() {
     isLoading: false,
     checkHealth: (_force?: boolean) => {},
     isHealthy: false,
-    status: 'unhealthy' as 'healthy' | 'degraded' | 'unhealthy' | 'disconnected',
-  }
+    status: 'unhealthy' as
+      | 'healthy'
+      | 'degraded'
+      | 'unhealthy'
+      | 'disconnected',
+  };
 }

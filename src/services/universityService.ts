@@ -1,6 +1,6 @@
-import { PrismaClient, University, Program } from '@prisma/client'
+import { PrismaClient, University, Program } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export class UniversityService {
   /**
@@ -9,14 +9,14 @@ export class UniversityService {
   static async getAllUniversities() {
     return await prisma.university.findMany({
       orderBy: {
-        ranking: 'asc'
+        ranking: 'asc',
       },
       include: {
         _count: {
-          select: { programs: true }
-        }
-      }
-    })
+          select: { programs: true },
+        },
+      },
+    });
   }
 
   /**
@@ -26,9 +26,9 @@ export class UniversityService {
     return await prisma.university.findUnique({
       where: { id },
       include: {
-        programs: true
-      }
-    })
+        programs: true,
+      },
+    });
   }
 
   /**
@@ -38,13 +38,13 @@ export class UniversityService {
     if (data.id) {
       return await prisma.university.update({
         where: { id: data.id },
-        data: data as any
-      })
+        data: data as any,
+      });
     }
-    
+
     return await prisma.university.create({
-      data: data as any
-    })
+      data: data as any,
+    });
   }
 
   /**
@@ -52,7 +52,7 @@ export class UniversityService {
    */
   static async deleteUniversity(id: string) {
     return await prisma.university.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
 }

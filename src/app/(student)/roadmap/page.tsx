@@ -1,10 +1,10 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion'
-import { 
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { motion } from 'framer-motion';
+import {
   ArrowLeft,
   CheckCircle2,
   Circle,
@@ -23,38 +23,38 @@ import {
   BookOpen,
   Users,
   User as UserIcon,
-  Flag
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
+  Flag,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface RoadmapPhase {
-  id: string
-  title: string
-  description: string
-  icon: React.ReactNode
-  color: string
-  startMonth: number // months from now
-  duration: number // in months
-  milestones: Milestone[]
-  status: 'not_started' | 'in_progress' | 'completed'
-  progress: number
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  startMonth: number; // months from now
+  duration: number; // in months
+  milestones: Milestone[];
+  status: 'not_started' | 'in_progress' | 'completed';
+  progress: number;
 }
 
 interface Milestone {
-  id: string
-  title: string
-  description?: string
-  tasks: Task[]
-  deadline?: Date
-  status: 'not_started' | 'in_progress' | 'completed'
-  critical?: boolean
+  id: string;
+  title: string;
+  description?: string;
+  tasks: Task[];
+  deadline?: Date;
+  status: 'not_started' | 'in_progress' | 'completed';
+  critical?: boolean;
 }
 
 interface Task {
-  id: string
-  title: string
-  completed: boolean
-  priority?: 'high' | 'medium' | 'low'
+  id: string;
+  title: string;
+  completed: boolean;
+  priority?: 'high' | 'medium' | 'low';
 }
 
 const roadmapPhases: RoadmapPhase[] = [
@@ -76,8 +76,8 @@ const roadmapPhases: RoadmapPhase[] = [
         tasks: [
           { id: 't1', title: 'Personal information', completed: true },
           { id: 't2', title: 'Educational background', completed: true },
-          { id: 't3', title: 'Career goals', completed: false }
-        ]
+          { id: 't3', title: 'Career goals', completed: false },
+        ],
       },
       {
         id: 'm2',
@@ -86,23 +86,43 @@ const roadmapPhases: RoadmapPhase[] = [
         deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
         critical: true,
         tasks: [
-          { id: 't4', title: 'Register for GRE/GMAT', completed: true, priority: 'high' },
-          { id: 't5', title: 'Complete test prep course', completed: false, priority: 'high' },
+          {
+            id: 't4',
+            title: 'Register for GRE/GMAT',
+            completed: true,
+            priority: 'high',
+          },
+          {
+            id: 't5',
+            title: 'Complete test prep course',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't6', title: 'Take practice tests', completed: false },
-          { id: 't7', title: 'Book test date', completed: false, priority: 'high' }
-        ]
+          {
+            id: 't7',
+            title: 'Book test date',
+            completed: false,
+            priority: 'high',
+          },
+        ],
       },
       {
         id: 'm3',
         title: 'English Proficiency Test',
         status: 'not_started',
         tasks: [
-          { id: 't8', title: 'Register for IELTS/TOEFL', completed: false, priority: 'high' },
+          {
+            id: 't8',
+            title: 'Register for IELTS/TOEFL',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't9', title: 'Complete preparation', completed: false },
-          { id: 't10', title: 'Take the test', completed: false }
-        ]
-      }
-    ]
+          { id: 't10', title: 'Take the test', completed: false },
+        ],
+      },
+    ],
   },
   {
     id: 'research',
@@ -123,8 +143,8 @@ const roadmapPhases: RoadmapPhase[] = [
           { id: 't11', title: 'Identify target countries', completed: false },
           { id: 't12', title: 'Research top universities', completed: false },
           { id: 't13', title: 'Check eligibility criteria', completed: false },
-          { id: 't14', title: 'Compare programs', completed: false }
-        ]
+          { id: 't14', title: 'Compare programs', completed: false },
+        ],
       },
       {
         id: 'm5',
@@ -133,11 +153,20 @@ const roadmapPhases: RoadmapPhase[] = [
         critical: true,
         tasks: [
           { id: 't15', title: 'List 8-10 universities', completed: false },
-          { id: 't16', title: 'Categorize: Dream, Target, Safe', completed: false },
-          { id: 't17', title: 'Note application deadlines', completed: false, priority: 'high' }
-        ]
-      }
-    ]
+          {
+            id: 't16',
+            title: 'Categorize: Dream, Target, Safe',
+            completed: false,
+          },
+          {
+            id: 't17',
+            title: 'Note application deadlines',
+            completed: false,
+            priority: 'high',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'documents',
@@ -155,10 +184,15 @@ const roadmapPhases: RoadmapPhase[] = [
         title: 'Academic Documents',
         status: 'not_started',
         tasks: [
-          { id: 't18', title: 'Collect transcripts', completed: false, priority: 'high' },
+          {
+            id: 't18',
+            title: 'Collect transcripts',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't19', title: 'Get degree certificates', completed: false },
-          { id: 't20', title: 'Calculate GPA', completed: false }
-        ]
+          { id: 't20', title: 'Calculate GPA', completed: false },
+        ],
       },
       {
         id: 'm7',
@@ -166,11 +200,16 @@ const roadmapPhases: RoadmapPhase[] = [
         status: 'not_started',
         critical: true,
         tasks: [
-          { id: 't21', title: 'Draft Statement of Purpose', completed: false, priority: 'high' },
+          {
+            id: 't21',
+            title: 'Draft Statement of Purpose',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't22', title: 'Write Personal Statement', completed: false },
           { id: 't23', title: 'Get essays reviewed', completed: false },
-          { id: 't24', title: 'Finalize essays', completed: false }
-        ]
+          { id: 't24', title: 'Finalize essays', completed: false },
+        ],
       },
       {
         id: 'm8',
@@ -179,12 +218,17 @@ const roadmapPhases: RoadmapPhase[] = [
         deadline: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000),
         tasks: [
           { id: 't25', title: 'Identify recommenders', completed: false },
-          { id: 't26', title: 'Request LORs', completed: false, priority: 'high' },
+          {
+            id: 't26',
+            title: 'Request LORs',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't27', title: 'Provide necessary info', completed: false },
-          { id: 't28', title: 'Follow up', completed: false }
-        ]
-      }
-    ]
+          { id: 't28', title: 'Follow up', completed: false },
+        ],
+      },
+    ],
   },
   {
     id: 'applications',
@@ -206,9 +250,19 @@ const roadmapPhases: RoadmapPhase[] = [
           { id: 't29', title: 'Create university accounts', completed: false },
           { id: 't30', title: 'Fill application forms', completed: false },
           { id: 't31', title: 'Upload documents', completed: false },
-          { id: 't32', title: 'Pay application fees', completed: false, priority: 'high' },
-          { id: 't33', title: 'Submit applications', completed: false, priority: 'high' }
-        ]
+          {
+            id: 't32',
+            title: 'Pay application fees',
+            completed: false,
+            priority: 'high',
+          },
+          {
+            id: 't33',
+            title: 'Submit applications',
+            completed: false,
+            priority: 'high',
+          },
+        ],
       },
       {
         id: 'm10',
@@ -217,10 +271,10 @@ const roadmapPhases: RoadmapPhase[] = [
         tasks: [
           { id: 't34', title: 'Send additional documents', completed: false },
           { id: 't35', title: 'Track application status', completed: false },
-          { id: 't36', title: 'Prepare for interviews', completed: false }
-        ]
-      }
-    ]
+          { id: 't36', title: 'Prepare for interviews', completed: false },
+        ],
+      },
+    ],
   },
   {
     id: 'admits',
@@ -240,8 +294,8 @@ const roadmapPhases: RoadmapPhase[] = [
         tasks: [
           { id: 't37', title: 'Compare admission offers', completed: false },
           { id: 't38', title: 'Evaluate scholarships', completed: false },
-          { id: 't39', title: 'Research locations', completed: false }
-        ]
+          { id: 't39', title: 'Research locations', completed: false },
+        ],
       },
       {
         id: 'm12',
@@ -250,12 +304,22 @@ const roadmapPhases: RoadmapPhase[] = [
         critical: true,
         deadline: new Date(Date.now() + 240 * 24 * 60 * 60 * 1000),
         tasks: [
-          { id: 't40', title: 'Accept offer', completed: false, priority: 'high' },
-          { id: 't41', title: 'Pay deposit', completed: false, priority: 'high' },
-          { id: 't42', title: 'Decline other offers', completed: false }
-        ]
-      }
-    ]
+          {
+            id: 't40',
+            title: 'Accept offer',
+            completed: false,
+            priority: 'high',
+          },
+          {
+            id: 't41',
+            title: 'Pay deposit',
+            completed: false,
+            priority: 'high',
+          },
+          { id: 't42', title: 'Decline other offers', completed: false },
+        ],
+      },
+    ],
   },
   {
     id: 'visa_finance',
@@ -275,10 +339,15 @@ const roadmapPhases: RoadmapPhase[] = [
         critical: true,
         tasks: [
           { id: 't43', title: 'Calculate total expenses', completed: false },
-          { id: 't44', title: 'Arrange education loan', completed: false, priority: 'high' },
+          {
+            id: 't44',
+            title: 'Arrange education loan',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't45', title: 'Prepare financial documents', completed: false },
-          { id: 't46', title: 'Show proof of funds', completed: false }
-        ]
+          { id: 't46', title: 'Show proof of funds', completed: false },
+        ],
       },
       {
         id: 'm14',
@@ -286,13 +355,28 @@ const roadmapPhases: RoadmapPhase[] = [
         status: 'not_started',
         critical: true,
         tasks: [
-          { id: 't47', title: 'Get I-20/CAS', completed: false, priority: 'high' },
+          {
+            id: 't47',
+            title: 'Get I-20/CAS',
+            completed: false,
+            priority: 'high',
+          },
           { id: 't48', title: 'Fill visa application', completed: false },
-          { id: 't49', title: 'Book visa appointment', completed: false, priority: 'high' },
-          { id: 't50', title: 'Attend visa interview', completed: false, priority: 'high' }
-        ]
-      }
-    ]
+          {
+            id: 't49',
+            title: 'Book visa appointment',
+            completed: false,
+            priority: 'high',
+          },
+          {
+            id: 't50',
+            title: 'Attend visa interview',
+            completed: false,
+            priority: 'high',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'pre_departure',
@@ -310,10 +394,20 @@ const roadmapPhases: RoadmapPhase[] = [
         title: 'Travel Arrangements',
         status: 'not_started',
         tasks: [
-          { id: 't51', title: 'Book flight tickets', completed: false, priority: 'high' },
-          { id: 't52', title: 'Arrange accommodation', completed: false, priority: 'high' },
-          { id: 't53', title: 'Get travel insurance', completed: false }
-        ]
+          {
+            id: 't51',
+            title: 'Book flight tickets',
+            completed: false,
+            priority: 'high',
+          },
+          {
+            id: 't52',
+            title: 'Arrange accommodation',
+            completed: false,
+            priority: 'high',
+          },
+          { id: 't53', title: 'Get travel insurance', completed: false },
+        ],
       },
       {
         id: 'm16',
@@ -322,49 +416,60 @@ const roadmapPhases: RoadmapPhase[] = [
         tasks: [
           { id: 't54', title: 'Health checkup', completed: false },
           { id: 't55', title: 'Pack essentials', completed: false },
-          { id: 't56', title: 'Attend pre-departure orientation', completed: false }
-        ]
-      }
-    ]
-  }
-]
+          {
+            id: 't56',
+            title: 'Attend pre-departure orientation',
+            completed: false,
+          },
+        ],
+      },
+    ],
+  },
+];
 
 export default function RoadmapPage() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [expandedPhases, setExpandedPhases] = useState<string[]>(['profile_prep'])
-  const [selectedMilestone, setSelectedMilestone] = useState<string | null>(null)
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [expandedPhases, setExpandedPhases] = useState<string[]>([
+    'profile_prep',
+  ]);
+  const [selectedMilestone, setSelectedMilestone] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
-    setLoading(false)
-  }, [])
+    setLoading(false);
+  }, []);
 
   const togglePhase = (phaseId: string) => {
-    setExpandedPhases(prev => 
-      prev.includes(phaseId) 
-        ? prev.filter(id => id !== phaseId)
+    setExpandedPhases((prev) =>
+      prev.includes(phaseId)
+        ? prev.filter((id) => id !== phaseId)
         : [...prev, phaseId]
-    )
-  }
+    );
+  };
 
   const getPhasePosition = (startMonth: number) => {
     // Calculate position on timeline (0-100%)
-    const totalMonths = 12
-    return (startMonth / totalMonths) * 100
-  }
+    const totalMonths = 12;
+    return (startMonth / totalMonths) * 100;
+  };
 
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading roadmap...</div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex-1 overflow-y-auto text-white">
       {/* Header */}
-      <div className="border-b border-border/30 backdrop-blur-sm sticky top-0 z-10" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+      <div
+        className="border-b border-border/30 backdrop-blur-sm sticky top-0 z-10"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
@@ -381,19 +486,27 @@ export default function RoadmapPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Timeline Overview - Clean Design */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
           {/* Header */}
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Your Journey Timeline</h2>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Your Journey Timeline
+            </h2>
             <div className="flex items-center gap-6">
               <p className="text-gray-400">12-month roadmap to study abroad</p>
               <div className="flex items-center gap-2">
                 <div className="text-sm font-medium text-orange-500">
-                  {Math.round(roadmapPhases.reduce((acc, phase) => acc + (phase.progress || 0), 0) / roadmapPhases.length)}% Complete
+                  {Math.round(
+                    roadmapPhases.reduce(
+                      (acc, phase) => acc + (phase.progress || 0),
+                      0
+                    ) / roadmapPhases.length
+                  )}
+                  % Complete
                 </div>
               </div>
             </div>
@@ -404,23 +517,26 @@ export default function RoadmapPage() {
             {/* Timeline Track */}
             <div className="relative h-3 bg-gray-900 rounded-full overflow-visible shadow-inner">
               {/* Animated Progress Fill */}
-              <div className="absolute h-full rounded-full overflow-hidden" style={{ width: '25%' }}>
+              <div
+                className="absolute h-full rounded-full overflow-hidden"
+                style={{ width: '25%' }}
+              >
                 <div className="h-full bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-500 rounded-full relative">
                   {/* Shimmer Effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
                 </div>
               </div>
-              
+
               {/* Progress Glow */}
-              <div 
+              <div
                 className="absolute h-full rounded-full bg-orange-500/30 blur-md transition-all duration-700"
                 style={{ width: '25%' }}
               />
-              
+
               {/* Phase Dots */}
               {roadmapPhases.map((phase, index) => {
-                const position = getPhasePosition(phase.startMonth)
-                
+                const position = getPhasePosition(phase.startMonth);
+
                 return (
                   <div
                     key={phase.id}
@@ -429,16 +545,20 @@ export default function RoadmapPage() {
                     onClick={() => togglePhase(phase.id)}
                   >
                     {/* Outer Ring */}
-                    <div className={`absolute -inset-2 rounded-full transition-all ${
-                      phase.status === 'in_progress' ? 'bg-orange-500/20' : ''
-                    }`} />
-                    
+                    <div
+                      className={`absolute -inset-2 rounded-full transition-all ${
+                        phase.status === 'in_progress' ? 'bg-orange-500/20' : ''
+                      }`}
+                    />
+
                     {/* Dot */}
-                    <div 
+                    <div
                       className={`relative w-5 h-5 rounded-full border-2 transition-all shadow-lg ${
-                        phase.status === 'completed' ? 'bg-green-500 border-green-500 scale-110' :
-                        phase.status === 'in_progress' ? 'bg-orange-500 border-orange-500 scale-125' :
-                        'bg-gray-800 border-gray-700 hover:scale-110'
+                        phase.status === 'completed'
+                          ? 'bg-green-500 border-green-500 scale-110'
+                          : phase.status === 'in_progress'
+                            ? 'bg-orange-500 border-orange-500 scale-125'
+                            : 'bg-gray-800 border-gray-700 hover:scale-110'
                       }`}
                     >
                       {phase.status === 'in_progress' && (
@@ -451,22 +571,24 @@ export default function RoadmapPage() {
                         <CheckCircle2 className="h-3 w-3 text-white absolute inset-0 m-auto" />
                       )}
                     </div>
-                    
+
                     {/* Tooltip */}
                     <div className="absolute -top-16 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                       <div className="bg-gray-800 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap">
                         <div className="font-medium">{phase.title}</div>
-                        <div className="text-gray-400">Month {phase.startMonth + 1}</div>
+                        <div className="text-gray-400">
+                          Month {phase.startMonth + 1}
+                        </div>
                       </div>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1">
                         <div className="border-4 border-transparent border-t-gray-800" />
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
-            
+
             {/* Month Labels */}
             <div className="flex justify-between mt-6 text-xs text-gray-500">
               <span className="font-medium">Now</span>
@@ -484,25 +606,37 @@ export default function RoadmapPage() {
                 key={phase.id}
                 onClick={() => togglePhase(phase.id)}
                 className={`text-left p-4 rounded-xl border transition-all ${
-                  expandedPhases.includes(phase.id) 
-                    ? 'border-orange-500 bg-orange-500/10' 
+                  expandedPhases.includes(phase.id)
+                    ? 'border-orange-500 bg-orange-500/10'
                     : 'border-gray-800 hover:border-gray-700'
                 }`}
-                style={{ backgroundColor: expandedPhases.includes(phase.id) ? undefined : '#0a0a0a' }}
+                style={{
+                  backgroundColor: expandedPhases.includes(phase.id)
+                    ? undefined
+                    : '#0a0a0a',
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ 
-                      backgroundColor: phase.status === 'completed' ? `${phase.color}20` : 
-                                       phase.status === 'in_progress' ? `${phase.color}15` : 
-                                       '#141414'
+                    style={{
+                      backgroundColor:
+                        phase.status === 'completed'
+                          ? `${phase.color}20`
+                          : phase.status === 'in_progress'
+                            ? `${phase.color}15`
+                            : '#141414',
                     }}
                   >
-                    <div style={{ 
-                      color: phase.status === 'not_started' ? '#6b7280' : phase.color,
-                      fontSize: '16px' 
-                    }}>
+                    <div
+                      style={{
+                        color:
+                          phase.status === 'not_started'
+                            ? '#6b7280'
+                            : phase.color,
+                        fontSize: '16px',
+                      }}
+                    >
                       {phase.icon}
                     </div>
                   </div>
@@ -510,14 +644,15 @@ export default function RoadmapPage() {
                     <CheckCircle2 className="h-4 w-4 text-green-500" />
                   )}
                 </div>
-                
+
                 <h3 className="font-medium text-sm text-white mb-1">
                   {phase.title}
                 </h3>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">
-                    Month {phase.startMonth + 1}-{phase.startMonth + phase.duration}
+                    Month {phase.startMonth + 1}-
+                    {phase.startMonth + phase.duration}
                   </span>
                   {phase.status === 'in_progress' && (
                     <span className="text-xs font-medium text-orange-500">
@@ -539,19 +674,19 @@ export default function RoadmapPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="rounded-xl border border-gray-800 overflow-hidden"
-              style={{ 
+              style={{
                 backgroundColor: '#0a0a0a',
-                marginBottom: index < roadmapPhases.length - 1 ? '48px' : '0'
+                marginBottom: index < roadmapPhases.length - 1 ? '48px' : '0',
               }}
             >
               {/* Phase Header */}
-              <div 
+              <div
                 className="p-6 cursor-pointer"
                 onClick={() => togglePhase(phase.id)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div 
+                    <div
                       className="w-12 h-12 rounded-lg flex items-center justify-center"
                       style={{ backgroundColor: `${phase.color}20` }}
                     >
@@ -560,16 +695,23 @@ export default function RoadmapPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                         {phase.title}
-                        {phase.status === 'completed' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
-                        {phase.status === 'in_progress' && <Clock className="h-5 w-5 text-yellow-500" />}
+                        {phase.status === 'completed' && (
+                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        )}
+                        {phase.status === 'in_progress' && (
+                          <Clock className="h-5 w-5 text-yellow-500" />
+                        )}
                       </h3>
-                      <p className="text-sm text-gray-400">{phase.description}</p>
+                      <p className="text-sm text-gray-400">
+                        {phase.description}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-sm text-gray-400">
-                        Month {phase.startMonth + 1} - {phase.startMonth + phase.duration}
+                        Month {phase.startMonth + 1} -{' '}
+                        {phase.startMonth + phase.duration}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
                         {phase.milestones.length} milestones
@@ -582,7 +724,7 @@ export default function RoadmapPage() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Progress Bar */}
                 {phase.status !== 'not_started' && (
                   <div className="mt-4">
@@ -591,11 +733,11 @@ export default function RoadmapPage() {
                       <span className="text-white">{phase.progress}%</span>
                     </div>
                     <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ 
+                        style={{
                           backgroundColor: phase.color,
-                          width: `${phase.progress}%`
+                          width: `${phase.progress}%`,
                         }}
                       />
                     </div>
@@ -608,7 +750,7 @@ export default function RoadmapPage() {
                 <div className="border-t border-gray-800 p-6 pb-10">
                   <div className="space-y-4">
                     {phase.milestones.map((milestone) => (
-                      <div 
+                      <div
                         key={milestone.id}
                         className="p-4 rounded-lg border border-gray-800"
                         style={{ backgroundColor: '#141414' }}
@@ -632,12 +774,17 @@ export default function RoadmapPage() {
                                 )}
                               </h4>
                               {milestone.description && (
-                                <p className="text-sm text-gray-400 mt-1">{milestone.description}</p>
+                                <p className="text-sm text-gray-400 mt-1">
+                                  {milestone.description}
+                                </p>
                               )}
                               {milestone.deadline && (
                                 <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
                                   <AlertCircle className="h-3 w-3" />
-                                  Due: {new Date(milestone.deadline).toLocaleDateString()}
+                                  Due:{' '}
+                                  {new Date(
+                                    milestone.deadline
+                                  ).toLocaleDateString()}
                                 </div>
                               )}
                             </div>
@@ -645,9 +792,13 @@ export default function RoadmapPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setSelectedMilestone(
-                              selectedMilestone === milestone.id ? null : milestone.id
-                            )}
+                            onClick={() =>
+                              setSelectedMilestone(
+                                selectedMilestone === milestone.id
+                                  ? null
+                                  : milestone.id
+                              )
+                            }
                           >
                             {selectedMilestone === milestone.id ? (
                               <ChevronDown className="h-4 w-4" />
@@ -671,14 +822,21 @@ export default function RoadmapPage() {
                                   onChange={() => {}}
                                   className="rounded border-gray-600 bg-gray-800 text-orange-500 focus:ring-orange-500"
                                 />
-                                <span className={`text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>
+                                <span
+                                  className={`text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}
+                                >
                                   {task.title}
                                 </span>
                                 {task.priority && (
-                                  <Flag className={`h-3 w-3 ${
-                                    task.priority === 'high' ? 'text-red-500' :
-                                    task.priority === 'medium' ? 'text-yellow-500' : 'text-green-500'
-                                  }`} />
+                                  <Flag
+                                    className={`h-3 w-3 ${
+                                      task.priority === 'high'
+                                        ? 'text-red-500'
+                                        : task.priority === 'medium'
+                                          ? 'text-yellow-500'
+                                          : 'text-green-500'
+                                    }`}
+                                  />
                                 )}
                               </label>
                             ))}
@@ -694,17 +852,24 @@ export default function RoadmapPage() {
         </div>
 
         {/* AI Insights */}
-        <div className="mt-16 mb-8 p-6 rounded-xl border border-orange-500/20" style={{ backgroundColor: '#0a0a0a' }}>
+        <div
+          className="mt-16 mb-8 p-6 rounded-xl border border-orange-500/20"
+          style={{ backgroundColor: '#0a0a0a' }}
+        >
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
               <Milestone className="h-5 w-5 text-orange-500" />
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-2">Maya's Roadmap Insights</h3>
+              <h3 className="font-semibold text-white mb-2">
+                Maya's Roadmap Insights
+              </h3>
               <p className="text-sm text-gray-400">
-                Based on your profile and timeline, you're currently in the <span className="text-orange-500">Profile Building</span> phase. 
-                Focus on completing your standardized tests in the next 2 months to stay on track. 
-                The critical path includes GRE/GMAT preparation and university shortlisting by Month 4.
+                Based on your profile and timeline, you're currently in the{' '}
+                <span className="text-orange-500">Profile Building</span> phase.
+                Focus on completing your standardized tests in the next 2 months
+                to stay on track. The critical path includes GRE/GMAT
+                preparation and university shortlisting by Month 4.
               </p>
               <Button className="mt-3 text-sm" size="sm">
                 Get Personalized Advice
@@ -714,5 +879,5 @@ export default function RoadmapPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,22 +1,22 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import MayaAvatar from '@/components/MayaAvatar'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import MayaAvatar from '@/components/MayaAvatar';
 
 export default function OnboardingWelcome() {
-  const router = useRouter()
-  const [currentScreen, setCurrentScreen] = useState(0)
+  const router = useRouter();
+  const [currentScreen, setCurrentScreen] = useState(0);
 
   useEffect(() => {
     // Prevent scrolling during animation
-    document.body.style.overflow = 'hidden'
-    
+    document.body.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = 'auto'
-    }
-  }, [])
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
 
   const screens = [
     {
@@ -29,7 +29,7 @@ export default function OnboardingWelcome() {
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5 }}
         >
-          <motion.h1 
+          <motion.h1
             className="text-6xl font-bold mb-6"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -38,7 +38,7 @@ export default function OnboardingWelcome() {
           >
             Welcome to BeyondCampus
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-2xl text-gray-300"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -47,7 +47,7 @@ export default function OnboardingWelcome() {
             Your journey to studying abroad begins here
           </motion.p>
         </motion.div>
-      )
+      ),
     },
     {
       id: 1,
@@ -67,7 +67,7 @@ export default function OnboardingWelcome() {
           >
             <MayaAvatar size="xl" animated />
           </motion.div>
-          <motion.h2 
+          <motion.h2
             className="text-5xl font-bold mb-6"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -75,38 +75,42 @@ export default function OnboardingWelcome() {
           >
             Meet Maya
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-xl text-gray-300 max-w-2xl mx-auto"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
           >
-            Your personal AI counselor who will guide you through your journey, from dreams to reality
+            Your personal AI counselor who will guide you through your journey,
+            from dreams to reality
           </motion.p>
         </motion.div>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   const handleNext = () => {
     if (currentScreen < screens.length - 1) {
-      setCurrentScreen(currentScreen + 1)
+      setCurrentScreen(currentScreen + 1);
     } else {
       // Transition to chat
-      router.push('/onboarding/chat')
+      router.push('/onboarding/chat');
     }
-  }
+  };
 
   const handleSkip = () => {
-    router.push('/onboarding/chat')
-  }
+    router.push('/onboarding/chat');
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative" 
-         style={{ 
-           backgroundColor: '#0a0a0a',
-           backgroundImage: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%)'
-         }}>
+    <div
+      className="min-h-screen flex items-center justify-center relative"
+      style={{
+        backgroundColor: '#0a0a0a',
+        backgroundImage:
+          'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%)',
+      }}
+    >
       {/* Skip button */}
       <motion.button
         onClick={handleSkip}
@@ -121,13 +125,11 @@ export default function OnboardingWelcome() {
       {/* Main content */}
       <div className="w-full max-w-4xl px-8">
         <AnimatePresence mode="wait">
-          <div key={currentScreen}>
-            {screens[currentScreen].content}
-          </div>
+          <div key={currentScreen}>{screens[currentScreen].content}</div>
         </AnimatePresence>
 
         {/* Navigation */}
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center mt-16"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -139,9 +141,7 @@ export default function OnboardingWelcome() {
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentScreen 
-                    ? 'bg-orange-500 w-8' 
-                    : 'bg-gray-600'
+                  index === currentScreen ? 'bg-orange-500 w-8' : 'bg-gray-600'
                 }`}
               />
             ))}
@@ -154,7 +154,7 @@ export default function OnboardingWelcome() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {currentScreen === screens.length - 1 ? "Let's Begin" : "Next"}
+            {currentScreen === screens.length - 1 ? "Let's Begin" : 'Next'}
           </motion.button>
         </motion.div>
       </div>
@@ -170,7 +170,7 @@ export default function OnboardingWelcome() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: 'linear',
           }}
           style={{ top: '20%', left: '10%' }}
         />
@@ -183,11 +183,11 @@ export default function OnboardingWelcome() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: 'linear',
           }}
           style={{ bottom: '20%', right: '10%' }}
         />
       </div>
     </div>
-  )
+  );
 }

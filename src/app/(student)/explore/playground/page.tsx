@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import { useRouter } from "next/navigation"
-import { Button } from '@/components/ui/button'
-import { 
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import {
   ArrowLeft,
   Brain,
   BookOpen,
@@ -10,40 +10,41 @@ import {
   FileText,
   Eye,
   Settings,
-  ChevronRight
-} from "lucide-react"
+  ChevronRight,
+} from 'lucide-react';
 
 export default function PlaygroundPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const trainingOptions = [
     {
-      id: "stories",
-      title: "Share Your Stories",
-      description: "Tell your twin about your experiences, achievements, and career journey",
+      id: 'stories',
+      title: 'Share Your Stories',
+      description:
+        'Tell your twin about your experiences, achievements, and career journey',
       icon: BookOpen,
-      color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-      action: () => router.push("/explore/train"),
-      recommended: true
+      color: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      action: () => router.push('/explore/train'),
+      recommended: true,
     },
     {
-      id: "interview",
-      title: "AI-Guided Interview", 
-      description: "Let me ask you questions to learn about you naturally",
+      id: 'interview',
+      title: 'AI-Guided Interview',
+      description: 'Let me ask you questions to learn about you naturally',
       icon: Mic,
-      color: "bg-green-500/10 text-green-400 border-green-500/20",
-      action: () => router.push("/explore/interview")
+      color: 'bg-green-500/10 text-green-400 border-green-500/20',
+      action: () => router.push('/explore/interview'),
     },
     {
-      id: "documents",
-      title: "Upload Documents",
-      description: "Share your resume, portfolio, or other documents",
+      id: 'documents',
+      title: 'Upload Documents',
+      description: 'Share your resume, portfolio, or other documents',
       icon: FileText,
-      color: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      color: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
       action: () => {},
-      comingSoon: true
-    }
-  ]
+      comingSoon: true,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#0d1117]">
@@ -55,19 +56,23 @@ export default function PlaygroundPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push("/explore")}
+                onClick={() => router.push('/explore')}
                 className="hover:bg-secondary/70"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              
+
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Brain className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-semibold text-white">AI Twin Playground</h1>
-                  <p className="text-sm text-muted-foreground">Train your digital representative</p>
+                  <h1 className="text-xl font-semibold text-white">
+                    AI Twin Playground
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Train your digital representative
+                  </p>
                 </div>
               </div>
             </div>
@@ -76,7 +81,7 @@ export default function PlaygroundPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/explore/preview")}
+                onClick={() => router.push('/explore/preview')}
                 className="border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
               >
                 <Eye className="h-4 w-4 mr-2" />
@@ -85,7 +90,7 @@ export default function PlaygroundPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/explore/my-twin")}
+                onClick={() => router.push('/explore/my-twin')}
                 className="border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
               >
                 <Settings className="h-4 w-4 mr-2" />
@@ -100,9 +105,12 @@ export default function PlaygroundPage() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Welcome Section */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">Welcome to the Playground</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Welcome to the Playground
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore some of the ways you can train your twin. The more you share, the better your AI Twin will represent you.
+            Explore some of the ways you can train your twin. The more you
+            share, the better your AI Twin will represent you.
           </p>
         </div>
 
@@ -123,21 +131,31 @@ export default function PlaygroundPage() {
                   </span>
                 </div>
               )}
-              
-              <div className={`inline-flex p-3 rounded-lg mb-4 ${option.color}`}>
+
+              <div
+                className={`inline-flex p-3 rounded-lg mb-4 ${option.color}`}
+              >
                 <option.icon className="h-6 w-6" />
               </div>
-              
-              <h3 className="text-lg font-semibold text-white mb-3">{option.title}</h3>
-              <p className="text-muted-foreground mb-6 text-sm">{option.description}</p>
-              
+
+              <h3 className="text-lg font-semibold text-white mb-3">
+                {option.title}
+              </h3>
+              <p className="text-muted-foreground mb-6 text-sm">
+                {option.description}
+              </p>
+
               {!option.comingSoon ? (
                 <Button className="w-full bg-primary hover:bg-primary/90 text-black">
                   Get Started
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
               ) : (
-                <Button variant="outline" disabled className="w-full border-[hsl(0_0%_18%)]">
+                <Button
+                  variant="outline"
+                  disabled
+                  className="w-full border-[hsl(0_0%_18%)]"
+                >
                   Coming Soon
                 </Button>
               )}
@@ -148,10 +166,11 @@ export default function PlaygroundPage() {
         {/* Help Text */}
         <div className="text-center mt-12">
           <p className="text-sm text-muted-foreground">
-            Need help getting started? Try the "Share Your Stories" method - it's perfect for beginners.
+            Need help getting started? Try the "Share Your Stories" method -
+            it's perfect for beginners.
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

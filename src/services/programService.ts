@@ -1,6 +1,6 @@
-import { PrismaClient, Program } from '@prisma/client'
+import { PrismaClient, Program } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export class ProgramService {
   /**
@@ -9,8 +9,8 @@ export class ProgramService {
   static async getProgramsByUniversity(universityId: string) {
     return await prisma.program.findMany({
       where: { universityId },
-      orderBy: { name: 'asc' }
-    })
+      orderBy: { name: 'asc' },
+    });
   }
 
   /**
@@ -19,10 +19,10 @@ export class ProgramService {
   static async createProgram(universityId: string, data: Partial<Program>) {
     return await prisma.program.create({
       data: {
-        ...data as any,
-        universityId
-      }
-    })
+        ...(data as any),
+        universityId,
+      },
+    });
   }
 
   /**
@@ -31,8 +31,8 @@ export class ProgramService {
   static async updateProgram(id: string, data: Partial<Program>) {
     return await prisma.program.update({
       where: { id },
-      data: data as any
-    })
+      data: data as any,
+    });
   }
 
   /**
@@ -40,8 +40,8 @@ export class ProgramService {
    */
   static async deleteProgram(id: string) {
     return await prisma.program.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
 
   /**
@@ -49,7 +49,7 @@ export class ProgramService {
    */
   static async getProgramById(id: string) {
     return await prisma.program.findUnique({
-      where: { id }
-    })
+      where: { id },
+    });
   }
 }

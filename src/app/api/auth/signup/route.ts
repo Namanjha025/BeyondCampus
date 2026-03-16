@@ -1,26 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const { firstName, lastName, email, password } = await request.json()
+    const { firstName, lastName, email, password } = await request.json();
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
-    })
+      where: { email },
+    });
 
     if (existingUser) {
-      return NextResponse.json({ 
-        message: 'User already exists' 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          message: 'User already exists',
+        },
+        { status: 400 }
+      );
     }
 
     // Hash password
-    const hashedPassword = bcrypt.hashSync(password, 12)
+    const hashedPassword = bcrypt.hashSync(password, 12);
 
     // Create user
     const user = await prisma.user.create({
@@ -28,23 +31,29 @@ export async function POST(request: NextRequest) {
         firstName,
         lastName,
         email,
-        password: hashedPassword
-      }
-    })
+        password: hashedPassword,
+      },
+    });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'User created successfully',
       user: {
         id: user.id,
         email: user.email,
-        name: `${user.firstName} ${user.lastName}`
-      }
-    })
+        name: `${user.firstName} ${user.lastName}`,
+      },
+    });
   } catch (error) {
-    console.error('Signup error:', error)
-    return NextResponse.json({ 
-      message: 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
-    }, { status: 500 })
+    console.error('Signup error:', error);
+    return NextResponse.json(
+      {
+        message: 'Internal server error',
+        error:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 500 }
+    );
   }
 }

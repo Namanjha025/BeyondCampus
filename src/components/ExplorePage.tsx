@@ -1,10 +1,10 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Search,
   GraduationCap,
@@ -13,95 +13,111 @@ import {
   Zap,
   Home,
   Compass,
-  Plus
-} from "lucide-react"
-import { cn } from '@/lib/utils'
-import type { LucideIcon } from "lucide-react"
+  Plus,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { LucideIcon } from 'lucide-react';
 
 interface Person {
-  id: string
-  name: string
-  role: string
-  company: string
-  location: string
-  avatar?: string
-  category: "mentor" | "student" | "counselor" | "alumni"
-  bio: string
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  location: string;
+  avatar?: string;
+  category: 'mentor' | 'student' | 'counselor' | 'alumni';
+  bio: string;
 }
 
 export default function ExplorePage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedFilter, setSelectedFilter] = useState("All")
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('All');
 
   // Sample people data
   const people: Person[] = [
     {
-      id: "1",
-      name: "Sarah Chen",
-      role: "Product Manager",
-      company: "Google",
-      location: "Mountain View, CA",
-      category: "mentor",
-      bio: "Former Stanford CS student, now leading product teams at Google. Love helping students navigate tech careers!"
+      id: '1',
+      name: 'Sarah Chen',
+      role: 'Product Manager',
+      company: 'Google',
+      location: 'Mountain View, CA',
+      category: 'mentor',
+      bio: 'Former Stanford CS student, now leading product teams at Google. Love helping students navigate tech careers!',
     },
     {
-      id: "2",
-      name: "Marcus Johnson",
-      role: "Senior Software Engineer",
-      company: "Meta",
-      location: "Seattle, WA",
-      category: "mentor",
-      bio: "Full-stack engineer passionate about mentoring. Specialized in system design and career transitions."
+      id: '2',
+      name: 'Marcus Johnson',
+      role: 'Senior Software Engineer',
+      company: 'Meta',
+      location: 'Seattle, WA',
+      category: 'mentor',
+      bio: 'Full-stack engineer passionate about mentoring. Specialized in system design and career transitions.',
     },
     {
-      id: "3",
-      name: "Emily Rodriguez",
-      role: "Graduate Student",
-      company: "MIT",
-      location: "Cambridge, MA",
-      category: "student",
-      bio: "PhD candidate in AI/ML. Happy to share insights about graduate school and research opportunities."
+      id: '3',
+      name: 'Emily Rodriguez',
+      role: 'Graduate Student',
+      company: 'MIT',
+      location: 'Cambridge, MA',
+      category: 'student',
+      bio: 'PhD candidate in AI/ML. Happy to share insights about graduate school and research opportunities.',
     },
     {
-      id: "4",
-      name: "Dr. Michael Park",
-      role: "Admissions Director",
-      company: "Stanford University",
-      location: "Stanford, CA",
-      category: "counselor",
-      bio: "15+ years in admissions. Expert in holistic application review and essay guidance."
+      id: '4',
+      name: 'Dr. Michael Park',
+      role: 'Admissions Director',
+      company: 'Stanford University',
+      location: 'Stanford, CA',
+      category: 'counselor',
+      bio: '15+ years in admissions. Expert in holistic application review and essay guidance.',
     },
     {
-      id: "5",
-      name: "Alex Kumar",
-      role: "Data Scientist",
-      company: "Netflix",
-      location: "Los Angeles, CA",
-      category: "alumni",
-      bio: "UC Berkeley alum working in entertainment tech. Passionate about data science and analytics careers."
+      id: '5',
+      name: 'Alex Kumar',
+      role: 'Data Scientist',
+      company: 'Netflix',
+      location: 'Los Angeles, CA',
+      category: 'alumni',
+      bio: 'UC Berkeley alum working in entertainment tech. Passionate about data science and analytics careers.',
     },
     {
-      id: "6",
-      name: "Jessica Wu",
-      role: "Investment Banking Analyst",
-      company: "Goldman Sachs",
-      location: "New York, NY",
-      category: "mentor",
-      bio: "Wharton MBA helping students break into finance. Specialized in investment banking and consulting prep."
-    }
-  ]
+      id: '6',
+      name: 'Jessica Wu',
+      role: 'Investment Banking Analyst',
+      company: 'Goldman Sachs',
+      location: 'New York, NY',
+      category: 'mentor',
+      bio: 'Wharton MBA helping students break into finance. Specialized in investment banking and consulting prep.',
+    },
+  ];
 
   const categories = [
-    { id: "mentors", title: "Mentors & Industry Experts", people: people.filter(p => p.category === "mentor") },
-    { id: "students", title: "Current Students", people: people.filter(p => p.category === "student") },
-    { id: "counselors", title: "Admissions Counselors", people: people.filter(p => p.category === "counselor") },
-    { id: "alumni", title: "Alumni Network", people: people.filter(p => p.category === "alumni") },
-  ]
+    {
+      id: 'mentors',
+      title: 'Mentors & Industry Experts',
+      people: people.filter((p) => p.category === 'mentor'),
+    },
+    {
+      id: 'students',
+      title: 'Current Students',
+      people: people.filter((p) => p.category === 'student'),
+    },
+    {
+      id: 'counselors',
+      title: 'Admissions Counselors',
+      people: people.filter((p) => p.category === 'counselor'),
+    },
+    {
+      id: 'alumni',
+      title: 'Alumni Network',
+      people: people.filter((p) => p.category === 'alumni'),
+    },
+  ];
 
   const handlePersonClick = (person: Person) => {
-    router.push(`/person/${person.id}`)
-  }
+    router.push(`/person/${person.id}`);
+  };
 
   const PersonCard = ({ person }: { person: Person }) => (
     <div
@@ -112,7 +128,10 @@ export default function ExplorePage() {
       <div className="w-[140px] h-[160px] shrink-0 p-4 bg-orange-500/5 relative flex items-center justify-center">
         <Avatar className="h-20 w-20 ring-4 ring-orange-500/10 transition-all group-hover:ring-orange-500/20">
           <AvatarFallback className="bg-orange-500/10 text-orange-500 text-2xl font-bold">
-            {person.name.split(" ").map(n => n[0]).join("")}
+            {person.name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')}
           </AvatarFallback>
         </Avatar>
       </div>
@@ -121,7 +140,8 @@ export default function ExplorePage() {
           {person.name}
         </h3>
         <p className="text-gray-400 text-[14px] mb-2 font-medium">
-          {person.role} <span className="text-gray-600">@</span> {person.company}
+          {person.role} <span className="text-gray-600">@</span>{' '}
+          {person.company}
         </p>
         <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
           <MapPin className="h-3.5 w-3.5" />
@@ -132,11 +152,10 @@ export default function ExplorePage() {
         </p>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden">
-
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -148,7 +167,8 @@ export default function ExplorePage() {
                   Explore AI Twins
                 </h1>
                 <p className="text-lg text-gray-400 font-medium">
-                  Connect with AI twins of mentors, students, and industry experts
+                  Connect with AI twins of mentors, students, and industry
+                  experts
                 </p>
               </div>
 
@@ -166,20 +186,22 @@ export default function ExplorePage() {
 
             {/* Filter Pills */}
             <div className="flex items-center gap-3">
-              {['All', 'Mentors', 'Students', 'Counselors', 'Alumni'].map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setSelectedFilter(filter)}
-                  className={cn(
-                    "px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300",
-                    selectedFilter === filter
-                      ? "bg-orange-500 text-white shadow-lg shadow-orange-500/20"
-                      : "bg-[#151515] text-gray-400 hover:bg-gray-800 hover:text-white border border-gray-800"
-                  )}
-                >
-                  {filter}
-                </button>
-              ))}
+              {['All', 'Mentors', 'Students', 'Counselors', 'Alumni'].map(
+                (filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setSelectedFilter(filter)}
+                    className={cn(
+                      'px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300',
+                      selectedFilter === filter
+                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
+                        : 'bg-[#151515] text-gray-400 hover:bg-gray-800 hover:text-white border border-gray-800'
+                    )}
+                  >
+                    {filter}
+                  </button>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -192,12 +214,16 @@ export default function ExplorePage() {
                   <Zap className="h-6 w-6 text-orange-500 animate-pulse" />
                   Featured AI Twins
                 </h2>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-white"
+                >
                   View all <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
               <div className="relative overflow-x-hidden">
-                <div 
+                <div
                   className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide -mx-8 px-8"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
@@ -211,13 +237,19 @@ export default function ExplorePage() {
             {categories.map((category) => (
               <section key={category.id} className="mb-20">
                 <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-white">{category.title}</h2>
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                  <h2 className="text-2xl font-bold text-white">
+                    {category.title}
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-white"
+                  >
                     View all <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
                 <div className="relative overflow-x-hidden">
-                  <div 
+                  <div
                     className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide -mx-8 px-8"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
@@ -232,5 +264,5 @@ export default function ExplorePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

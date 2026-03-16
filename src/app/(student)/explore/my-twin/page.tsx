@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
   ArrowLeft,
   Brain,
   MessageSquare,
@@ -30,144 +30,146 @@ import {
   CheckCircle2,
   Lightbulb,
   Check,
-  X
-} from "lucide-react"
-import { cn } from '@/lib/utils'
+  X,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Stat {
-  label: string
-  value: string | number
-  change?: string
-  icon: any
+  label: string;
+  value: string | number;
+  change?: string;
+  icon: any;
 }
 
 interface Chapter {
-  id: string
-  title: string
-  status: "completed" | "in-progress" | "locked"
-  wordCount?: number
-  lastUpdated?: string
+  id: string;
+  title: string;
+  status: 'completed' | 'in-progress' | 'locked';
+  wordCount?: number;
+  lastUpdated?: string;
 }
 
 interface Conversation {
-  id: string
-  userName: string
-  lastMessage: string
-  timestamp: string
-  messages: number
+  id: string;
+  userName: string;
+  lastMessage: string;
+  timestamp: string;
+  messages: number;
 }
 
 export default function MyTwinDashboard() {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState("overview")
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [instructions, setInstructions] = useState<string[]>([
-    "Always mention my 5+ years of mentoring experience when discussing career guidance",
-    "Keep responses under 2 paragraphs for better readability",
-    "Emphasize my startup background when discussing entrepreneurship",
-    "Never give financial advice, redirect to financial professionals"
-  ])
-  const [editingInstruction, setEditingInstruction] = useState<number | null>(null)
-  const [editValue, setEditValue] = useState("")
+    'Always mention my 5+ years of mentoring experience when discussing career guidance',
+    'Keep responses under 2 paragraphs for better readability',
+    'Emphasize my startup background when discussing entrepreneurship',
+    'Never give financial advice, redirect to financial professionals',
+  ]);
+  const [editingInstruction, setEditingInstruction] = useState<number | null>(
+    null
+  );
+  const [editValue, setEditValue] = useState('');
 
   // Mock data - would come from API
   const twinData = {
-    name: "Sarah Chen",
-    tagline: "Turning coffee into code since 2019",
-    personality: "Friendly",
-    tone: "Conversational",
-    createdAt: "2024-01-15",
-    lastTrained: "2024-01-20",
+    name: 'Sarah Chen',
+    tagline: 'Turning coffee into code since 2019',
+    personality: 'Friendly',
+    tone: 'Conversational',
+    createdAt: '2024-01-15',
+    lastTrained: '2024-01-20',
     profileCompletion: 75,
     totalConversations: 23,
     totalMessages: 156,
-    avgResponseTime: "2.3s",
-    satisfactionScore: 4.8
-  }
+    avgResponseTime: '2.3s',
+    satisfactionScore: 4.8,
+  };
 
   const stats: Stat[] = [
     {
-      label: "Total Conversations",
+      label: 'Total Conversations',
       value: twinData.totalConversations,
-      change: "+12%",
-      icon: MessageSquare
+      change: '+12%',
+      icon: MessageSquare,
     },
     {
-      label: "Active Users",
+      label: 'Active Users',
       value: 18,
-      change: "+5%",
-      icon: Users
+      change: '+5%',
+      icon: Users,
     },
     {
-      label: "Avg Response Time",
+      label: 'Avg Response Time',
       value: twinData.avgResponseTime,
-      icon: Clock
+      icon: Clock,
     },
     {
-      label: "Satisfaction Score",
+      label: 'Satisfaction Score',
       value: `${twinData.satisfactionScore}/5`,
-      change: "+0.3",
-      icon: TrendingUp
-    }
-  ]
+      change: '+0.3',
+      icon: TrendingUp,
+    },
+  ];
 
   const chapters: Chapter[] = [
     {
-      id: "intro",
-      title: "Introduction",
-      status: "completed",
+      id: 'intro',
+      title: 'Introduction',
+      status: 'completed',
       wordCount: 523,
-      lastUpdated: "2 days ago"
+      lastUpdated: '2 days ago',
     },
     {
-      id: "journey",
-      title: "The Journey",
-      status: "completed",
+      id: 'journey',
+      title: 'The Journey',
+      status: 'completed',
       wordCount: 789,
-      lastUpdated: "2 days ago"
+      lastUpdated: '2 days ago',
     },
     {
-      id: "achievements",
-      title: "Achievements",
-      status: "in-progress",
+      id: 'achievements',
+      title: 'Achievements',
+      status: 'in-progress',
       wordCount: 245,
-      lastUpdated: "1 day ago"
+      lastUpdated: '1 day ago',
     },
     {
-      id: "challenges",
-      title: "Challenges",
-      status: "locked"
+      id: 'challenges',
+      title: 'Challenges',
+      status: 'locked',
     },
     {
-      id: "wisdom",
-      title: "Wisdom",
-      status: "locked"
-    }
-  ]
+      id: 'wisdom',
+      title: 'Wisdom',
+      status: 'locked',
+    },
+  ];
 
   const recentConversations: Conversation[] = [
     {
-      id: "1",
-      userName: "Alex Kumar",
-      lastMessage: "Thanks for the career advice!",
-      timestamp: "2 hours ago",
-      messages: 12
+      id: '1',
+      userName: 'Alex Kumar',
+      lastMessage: 'Thanks for the career advice!',
+      timestamp: '2 hours ago',
+      messages: 12,
     },
     {
-      id: "2",
-      userName: "Jessica Park",
-      lastMessage: "Can we schedule a follow-up?",
-      timestamp: "5 hours ago",
-      messages: 8
+      id: '2',
+      userName: 'Jessica Park',
+      lastMessage: 'Can we schedule a follow-up?',
+      timestamp: '5 hours ago',
+      messages: 8,
     },
     {
-      id: "3",
-      userName: "Michael Chen",
-      lastMessage: "Great insights on ML careers",
-      timestamp: "1 day ago",
-      messages: 15
-    }
-  ]
+      id: '3',
+      userName: 'Michael Chen',
+      lastMessage: 'Great insights on ML careers',
+      timestamp: '1 day ago',
+      messages: 15,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#0d1117]">
@@ -179,19 +181,23 @@ export default function MyTwinDashboard() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push("/explore")}
+                onClick={() => router.push('/explore')}
                 className="hover:bg-secondary/70"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              
+
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Brain className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-semibold text-white">My AI Twin</h1>
-                  <p className="text-sm text-muted-foreground">Manage your digital representative</p>
+                  <h1 className="text-xl font-semibold text-white">
+                    My AI Twin
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Manage your digital representative
+                  </p>
                 </div>
               </div>
             </div>
@@ -200,7 +206,7 @@ export default function MyTwinDashboard() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/explore/train")}
+                onClick={() => router.push('/explore/train')}
                 className="border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
               >
                 <PenTool className="h-4 w-4 mr-2" />
@@ -209,7 +215,7 @@ export default function MyTwinDashboard() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/explore/edit")}
+                onClick={() => router.push('/explore/edit')}
                 className="border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
               >
                 <Edit className="h-4 w-4 mr-2" />
@@ -230,16 +236,24 @@ export default function MyTwinDashboard() {
                   SC
                 </AvatarFallback>
               </Avatar>
-              
+
               <div>
-                <h2 className="text-2xl font-bold text-white mb-1">{twinData.name}</h2>
+                <h2 className="text-2xl font-bold text-white mb-1">
+                  {twinData.name}
+                </h2>
                 <p className="text-muted-foreground mb-3">{twinData.tagline}</p>
-                
+
                 <div className="flex items-center gap-4 text-sm">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  <Badge
+                    variant="secondary"
+                    className="bg-primary/10 text-primary border-primary/20"
+                  >
                     {twinData.personality}
                   </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  <Badge
+                    variant="secondary"
+                    className="bg-primary/10 text-primary border-primary/20"
+                  >
                     {twinData.tone}
                   </Badge>
                   <span className="text-muted-foreground">
@@ -251,14 +265,22 @@ export default function MyTwinDashboard() {
 
             <div className="text-right">
               <div className="mb-2">
-                <span className="text-sm text-muted-foreground">Profile Completion</span>
+                <span className="text-sm text-muted-foreground">
+                  Profile Completion
+                </span>
                 <div className="flex items-center gap-2 mt-1">
-                  <Progress value={twinData.profileCompletion} className="w-32 h-2" />
-                  <span className="text-sm font-medium text-white">{twinData.profileCompletion}%</span>
+                  <Progress
+                    value={twinData.profileCompletion}
+                    className="w-32 h-2"
+                  />
+                  <span className="text-sm font-medium text-white">
+                    {twinData.profileCompletion}%
+                  </span>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Last trained {new Date(twinData.lastTrained).toLocaleDateString()}
+                Last trained{' '}
+                {new Date(twinData.lastTrained).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -276,10 +298,14 @@ export default function MyTwinDashboard() {
                   <stat.icon className="h-4 w-4 text-primary" />
                 </div>
                 {stat.change && (
-                  <span className={cn(
-                    "text-xs font-medium",
-                    stat.change.startsWith("+") ? "text-green-500" : "text-red-500"
-                  )}>
+                  <span
+                    className={cn(
+                      'text-xs font-medium',
+                      stat.change.startsWith('+')
+                        ? 'text-green-500'
+                        : 'text-red-500'
+                    )}
+                  >
                     {stat.change}
                   </span>
                 )}
@@ -291,12 +317,19 @@ export default function MyTwinDashboard() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="training">Training Progress</TabsTrigger>
             <TabsTrigger value="instructions">Instructions</TabsTrigger>
-            <TabsTrigger value="insights" onClick={() => router.push("/explore/insights")}>
+            <TabsTrigger
+              value="insights"
+              onClick={() => router.push('/explore/insights')}
+            >
               Insights
             </TabsTrigger>
             <TabsTrigger value="conversations">Conversations</TabsTrigger>
@@ -318,22 +351,35 @@ export default function MyTwinDashboard() {
                     <div
                       key={conv.id}
                       className="flex items-center justify-between p-3 rounded-lg hover:bg-[hsl(0_0%_10%)] cursor-pointer transition-colors"
-                      onClick={() => router.push(`/explore/conversation/${conv.id}`)}
+                      onClick={() =>
+                        router.push(`/explore/conversation/${conv.id}`)
+                      }
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback className="text-xs">
-                            {conv.userName.split(" ").map(n => n[0]).join("")}
+                            {conv.userName
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium text-white">{conv.userName}</p>
-                          <p className="text-xs text-muted-foreground">{conv.lastMessage}</p>
+                          <p className="text-sm font-medium text-white">
+                            {conv.userName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {conv.lastMessage}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-muted-foreground">{conv.timestamp}</p>
-                        <p className="text-xs text-muted-foreground">{conv.messages} messages</p>
+                        <p className="text-xs text-muted-foreground">
+                          {conv.timestamp}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {conv.messages} messages
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -342,7 +388,7 @@ export default function MyTwinDashboard() {
                   variant="ghost"
                   size="sm"
                   className="w-full mt-3"
-                  onClick={() => setActiveTab("conversations")}
+                  onClick={() => setActiveTab('conversations')}
                 >
                   View all conversations
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -359,7 +405,7 @@ export default function MyTwinDashboard() {
                   <Button
                     variant="outline"
                     className="w-full justify-start border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                    onClick={() => router.push("/explore/chapters")}
+                    onClick={() => router.push('/explore/chapters')}
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
                     View All Chapters
@@ -367,7 +413,7 @@ export default function MyTwinDashboard() {
                   <Button
                     variant="outline"
                     className="w-full justify-start border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                    onClick={() => router.push("/explore/train")}
+                    onClick={() => router.push('/explore/train')}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add New Chapter
@@ -375,7 +421,7 @@ export default function MyTwinDashboard() {
                   <Button
                     variant="outline"
                     className="w-full justify-start border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                    onClick={() => router.push("/explore/preview")}
+                    onClick={() => router.push('/explore/preview')}
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     Preview Twin
@@ -383,7 +429,7 @@ export default function MyTwinDashboard() {
                   <Button
                     variant="outline"
                     className="w-full justify-start border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                    onClick={() => setActiveTab("analytics")}
+                    onClick={() => setActiveTab('analytics')}
                   >
                     <BarChart3 className="h-4 w-4 mr-2" />
                     View Analytics
@@ -391,7 +437,7 @@ export default function MyTwinDashboard() {
                   <Button
                     variant="outline"
                     className="w-full justify-start border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                    onClick={() => setActiveTab("settings")}
+                    onClick={() => setActiveTab('settings')}
                   >
                     <Settings className="h-4 w-4 mr-2" />
                     Twin Settings
@@ -414,7 +460,7 @@ export default function MyTwinDashboard() {
                     size="sm"
                     variant="outline"
                     className="border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                    onClick={() => router.push("/explore/chapters")}
+                    onClick={() => router.push('/explore/chapters')}
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     View All
@@ -422,7 +468,7 @@ export default function MyTwinDashboard() {
                   <Button
                     size="sm"
                     className="bg-primary hover:bg-primary/90 text-black"
-                    onClick={() => router.push("/explore/train")}
+                    onClick={() => router.push('/explore/train')}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Chapter
@@ -435,44 +481,54 @@ export default function MyTwinDashboard() {
                   <div
                     key={chapter.id}
                     className={cn(
-                      "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                      chapter.status === "completed" && "bg-green-500/5 border-green-500/20 hover:bg-green-500/10",
-                      chapter.status === "in-progress" && "bg-primary/5 border-primary/20 hover:bg-primary/10",
-                      chapter.status === "locked" && "bg-[hsl(0_0%_6%)] border-[hsl(0_0%_18%)] opacity-60"
+                      'flex items-center justify-between p-4 rounded-lg border transition-colors',
+                      chapter.status === 'completed' &&
+                        'bg-green-500/5 border-green-500/20 hover:bg-green-500/10',
+                      chapter.status === 'in-progress' &&
+                        'bg-primary/5 border-primary/20 hover:bg-primary/10',
+                      chapter.status === 'locked' &&
+                        'bg-[hsl(0_0%_6%)] border-[hsl(0_0%_18%)] opacity-60'
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "p-2 rounded-lg",
-                        chapter.status === "completed" && "bg-green-500/10",
-                        chapter.status === "in-progress" && "bg-primary/10",
-                        chapter.status === "locked" && "bg-[hsl(0_0%_18%)]"
-                      )}>
-                        {chapter.status === "completed" ? (
+                      <div
+                        className={cn(
+                          'p-2 rounded-lg',
+                          chapter.status === 'completed' && 'bg-green-500/10',
+                          chapter.status === 'in-progress' && 'bg-primary/10',
+                          chapter.status === 'locked' && 'bg-[hsl(0_0%_18%)]'
+                        )}
+                      >
+                        {chapter.status === 'completed' ? (
                           <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        ) : chapter.status === "in-progress" ? (
+                        ) : chapter.status === 'in-progress' ? (
                           <PenTool className="h-4 w-4 text-primary" />
                         ) : (
                           <BookOpen className="h-4 w-4 text-muted-foreground" />
                         )}
                       </div>
                       <div>
-                        <h4 className="font-medium text-white">{chapter.title}</h4>
+                        <h4 className="font-medium text-white">
+                          {chapter.title}
+                        </h4>
                         {chapter.wordCount && (
                           <p className="text-sm text-muted-foreground">
                             {chapter.wordCount} words
-                            {chapter.lastUpdated && ` • Updated ${chapter.lastUpdated}`}
+                            {chapter.lastUpdated &&
+                              ` • Updated ${chapter.lastUpdated}`}
                           </p>
                         )}
                       </div>
                     </div>
-                    {chapter.status !== "locked" && (
+                    {chapter.status !== 'locked' && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => router.push(`/explore/train?chapter=${chapter.id}`)}
+                        onClick={() =>
+                          router.push(`/explore/train?chapter=${chapter.id}`)
+                        }
                       >
-                        {chapter.status === "completed" ? "Edit" : "Continue"}
+                        {chapter.status === 'completed' ? 'Edit' : 'Continue'}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     )}
@@ -483,10 +539,12 @@ export default function MyTwinDashboard() {
               <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
                 <p className="text-sm text-white mb-2">
                   <Sparkles className="h-4 w-4 inline mr-1" />
-                  Pro tip: The more detailed your chapters, the better your AI Twin can represent you!
+                  Pro tip: The more detailed your chapters, the better your AI
+                  Twin can represent you!
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Complete all chapters to unlock advanced personalization features.
+                  Complete all chapters to unlock advanced personalization
+                  features.
                 </p>
               </div>
             </div>
@@ -502,13 +560,14 @@ export default function MyTwinDashboard() {
                     Twin Instructions
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Manage guidelines that control how your AI Twin responds to visitors
+                    Manage guidelines that control how your AI Twin responds to
+                    visitors
                   </p>
                 </div>
                 <Button
                   size="sm"
                   className="bg-primary hover:bg-primary/90 text-black"
-                  onClick={() => router.push("/explore/train")}
+                  onClick={() => router.push('/explore/train')}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Instruction
@@ -518,12 +577,15 @@ export default function MyTwinDashboard() {
               {instructions.length === 0 ? (
                 <div className="text-center py-12">
                   <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-                  <h4 className="text-lg font-medium text-white mb-2">No Instructions Yet</h4>
+                  <h4 className="text-lg font-medium text-white mb-2">
+                    No Instructions Yet
+                  </h4>
                   <p className="text-muted-foreground mb-6">
-                    Add instructions to guide how your AI Twin responds to visitors
+                    Add instructions to guide how your AI Twin responds to
+                    visitors
                   </p>
                   <Button
-                    onClick={() => router.push("/explore/train")}
+                    onClick={() => router.push('/explore/train')}
                     className="bg-primary hover:bg-primary/90 text-black"
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -550,11 +612,11 @@ export default function MyTwinDashboard() {
                               size="sm"
                               onClick={() => {
                                 if (editValue.trim()) {
-                                  const newInstructions = [...instructions]
-                                  newInstructions[index] = editValue.trim()
-                                  setInstructions(newInstructions)
-                                  setEditingInstruction(null)
-                                  setEditValue("")
+                                  const newInstructions = [...instructions];
+                                  newInstructions[index] = editValue.trim();
+                                  setInstructions(newInstructions);
+                                  setEditingInstruction(null);
+                                  setEditValue('');
                                 }
                               }}
                               className="bg-primary hover:bg-primary/90 text-black"
@@ -566,8 +628,8 @@ export default function MyTwinDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                setEditingInstruction(null)
-                                setEditValue("")
+                                setEditingInstruction(null);
+                                setEditValue('');
                               }}
                               className="border-[hsl(0_0%_18%)]"
                             >
@@ -581,9 +643,13 @@ export default function MyTwinDashboard() {
                           <div className="flex-1">
                             <div className="flex items-start gap-3">
                               <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5 shrink-0">
-                                <span className="text-xs font-medium text-primary">{index + 1}</span>
+                                <span className="text-xs font-medium text-primary">
+                                  {index + 1}
+                                </span>
                               </div>
-                              <p className="text-sm text-white leading-relaxed">{instruction}</p>
+                              <p className="text-sm text-white leading-relaxed">
+                                {instruction}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -591,8 +657,8 @@ export default function MyTwinDashboard() {
                               size="sm"
                               variant="ghost"
                               onClick={() => {
-                                setEditingInstruction(index)
-                                setEditValue(instruction)
+                                setEditingInstruction(index);
+                                setEditValue(instruction);
                               }}
                               className="h-8 w-8 p-0 hover:bg-[hsl(0_0%_18%)]"
                             >
@@ -602,8 +668,10 @@ export default function MyTwinDashboard() {
                               size="sm"
                               variant="ghost"
                               onClick={() => {
-                                const newInstructions = instructions.filter((_, i) => i !== index)
-                                setInstructions(newInstructions)
+                                const newInstructions = instructions.filter(
+                                  (_, i) => i !== index
+                                );
+                                setInstructions(newInstructions);
                               }}
                               className="h-8 w-8 p-0 hover:bg-red-500/20 text-red-400"
                             >
@@ -614,16 +682,17 @@ export default function MyTwinDashboard() {
                       )}
                     </div>
                   ))}
-                  
+
                   <div className="border-t border-[hsl(0_0%_18%)] pt-4 mt-6">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {instructions.length} instruction{instructions.length !== 1 ? 's' : ''} active
+                        {instructions.length} instruction
+                        {instructions.length !== 1 ? 's' : ''} active
                       </span>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => router.push("/explore/train")}
+                        onClick={() => router.push('/explore/train')}
                         className="border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
                       >
                         <Plus className="h-3 w-3 mr-2" />
@@ -639,30 +708,43 @@ export default function MyTwinDashboard() {
           {/* Conversations Tab */}
           <TabsContent value="conversations">
             <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">All Conversations</h3>
-              <p className="text-muted-foreground">Conversation history coming soon...</p>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                All Conversations
+              </h3>
+              <p className="text-muted-foreground">
+                Conversation history coming soon...
+              </p>
             </div>
           </TabsContent>
 
           {/* Analytics Tab */}
           <TabsContent value="analytics">
             <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Analytics Dashboard</h3>
-              <p className="text-muted-foreground">Detailed analytics coming soon...</p>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Analytics Dashboard
+              </h3>
+              <p className="text-muted-foreground">
+                Detailed analytics coming soon...
+              </p>
             </div>
           </TabsContent>
 
           {/* Settings Tab */}
           <TabsContent value="settings">
             <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-6">Twin Settings</h3>
-              
+              <h3 className="text-lg font-semibold text-white mb-6">
+                Twin Settings
+              </h3>
+
               <div className="space-y-6">
                 {/* Danger Zone */}
                 <div className="border border-red-500/20 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-400 mb-2">Danger Zone</h4>
+                  <h4 className="text-sm font-medium text-red-400 mb-2">
+                    Danger Zone
+                  </h4>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Once you delete your AI Twin, there is no going back. Please be certain.
+                    Once you delete your AI Twin, there is no going back. Please
+                    be certain.
                   </p>
                   <Button
                     variant="destructive"
@@ -683,9 +765,12 @@ export default function MyTwinDashboard() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-white mb-2">Delete AI Twin?</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">
+              Delete AI Twin?
+            </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              This action cannot be undone. All your training data and conversations will be permanently deleted.
+              This action cannot be undone. All your training data and
+              conversations will be permanently deleted.
             </p>
             <div className="flex gap-3">
               <Button
@@ -693,7 +778,7 @@ export default function MyTwinDashboard() {
                 className="flex-1"
                 onClick={() => {
                   // Handle deletion
-                  router.push("/explore")
+                  router.push('/explore');
                 }}
               >
                 Delete
@@ -710,5 +795,5 @@ export default function MyTwinDashboard() {
         </div>
       )}
     </div>
-  )
+  );
 }

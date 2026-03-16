@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/database'
+import { prisma } from '@/lib/database';
 
 export class DashboardService {
   /**
@@ -11,7 +11,7 @@ export class DashboardService {
       totalStudents,
       totalApplications,
       recentApplications,
-      recentUniversities
+      recentUniversities,
     ] = await Promise.all([
       prisma.university.count(),
       prisma.program.count(),
@@ -22,12 +22,12 @@ export class DashboardService {
         orderBy: { createdAt: 'desc' },
         include: {
           user: {
-            select: { firstName: true, lastName: true, email: true }
+            select: { firstName: true, lastName: true, email: true },
           },
           program: {
-            select: { name: true, university: { select: { name: true } } }
-          }
-        }
+            select: { name: true, university: { select: { name: true } } },
+          },
+        },
       }),
       prisma.university.findMany({
         take: 5,
@@ -39,20 +39,20 @@ export class DashboardService {
           state: true,
           logo: true,
           logoColor: true,
-          createdAt: true
-        } as any
-      })
-    ])
+          createdAt: true,
+        } as any,
+      }),
+    ]);
 
     return {
       counts: {
         universities: totalUniversities,
         programs: totalPrograms,
         students: totalStudents,
-        applications: totalApplications
+        applications: totalApplications,
       },
       recentApplications,
-      recentUniversities
-    }
+      recentUniversities,
+    };
   }
 }

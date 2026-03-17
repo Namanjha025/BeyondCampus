@@ -9,6 +9,7 @@ import {
   GraduationCap,
   Calendar,
   CircleDollarSign,
+  Link2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ export default function ProgramFormModal({
     degreeType: 'MS',
     durationMonths: '',
     tuitionPerYear: '',
+    applyUrl: '',
   });
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export default function ProgramFormModal({
         degreeType: program.degreeType || 'MS',
         durationMonths: program.durationMonths?.toString() || '',
         tuitionPerYear: program.tuitionPerYear?.toString() || '',
+        applyUrl: program.applyUrl || '',
       });
     } else {
       setFormData({
@@ -54,6 +57,7 @@ export default function ProgramFormModal({
         degreeType: 'MS',
         durationMonths: '',
         tuitionPerYear: '',
+        applyUrl: '',
       });
     }
   }, [program, isOpen]);
@@ -209,6 +213,20 @@ export default function ProgramFormModal({
                 onChange={handleChange}
                 className={cn(inputStyle, 'pl-10')}
                 placeholder="e.g. 55000"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelStyle}>Application URL (Direct Link)</label>
+            <div className="relative">
+              <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                name="applyUrl"
+                value={formData.applyUrl}
+                onChange={handleChange}
+                className={cn(inputStyle, 'pl-10')}
+                placeholder="e.g. https://university.edu/apply/cs"
               />
             </div>
           </div>

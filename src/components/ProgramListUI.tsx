@@ -11,6 +11,7 @@ export interface Program {
   degreeType: string;
   durationMonths: number | null;
   tuitionPerYear: number | null;
+  applyUrl: string | null;
 }
 
 export function ProgramListUI({ programs }: { programs: Program[] }) {
@@ -66,15 +67,25 @@ export function ProgramListUI({ programs }: { programs: Program[] }) {
                   )}
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap align-middle">
-                   <Button 
-                    size="sm" 
-                    className="h-8 bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20 transition-all gap-1.5 font-semibold text-xs"
-                    onClick={() => {
-                        window.open(`https://university.edu/apply?program=${encodeURIComponent(program.id)}`, '_blank');
-                    }}
-                   >
-                     Apply <ExternalLink className="h-3 w-3" />
-                   </Button>
+                   {program.applyUrl ? (
+                     <Button 
+                      size="sm" 
+                      className="h-8 bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20 transition-all gap-1.5 font-semibold text-xs"
+                      onClick={() => {
+                          window.open(program.applyUrl!, '_blank');
+                      }}
+                     >
+                       Apply <ExternalLink className="h-3 w-3" />
+                     </Button>
+                   ) : (
+                     <Button 
+                      size="sm" 
+                      disabled
+                      className="h-8 bg-secondary/50 text-muted-foreground border border-border/50 cursor-not-allowed opacity-50 font-semibold text-xs gap-1.5"
+                     >
+                       N/A <ExternalLink className="h-3 w-3 opacity-30" />
+                     </Button>
+                   )}
                 </td>
               </tr>
             ))}

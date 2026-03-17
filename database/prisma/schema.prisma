@@ -280,6 +280,7 @@ model Program {
   degreeType     ProgramDegreeType
   durationMonths Int?
   tuitionPerYear Float?
+  applyUrl       String?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 

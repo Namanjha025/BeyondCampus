@@ -58,7 +58,8 @@ export const list_programs = new DynamicStructuredTool({
           degreeType: true,
           durationMonths: true,
           tuitionPerYear: true,
-        },
+          applyUrl: true,
+        } as any,
       });
 
       if (programs.length === 0) {
@@ -90,7 +91,8 @@ export const get_program_details = new DynamicStructuredTool({
           university: {
             select: {
               id: true,
-              name: true
+              name: true,
+              website: true
             }
           }
         }

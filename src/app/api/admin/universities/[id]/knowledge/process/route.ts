@@ -17,6 +17,7 @@ const ProgramSchema = z.object({
   degreeType: z.enum(['BS', 'MS', 'MBA', 'PHD', 'ASSOCIATE', 'CERTIFICATE']).describe('Degree type (must be one of the enums)'),
   durationMonths: z.number().nullable().describe('Duration of the program in months'),
   tuitionPerYear: z.number().nullable().describe('Tuition cost per year in USD'),
+  applyUrl: z.string().nullable().describe('Direct URL to the application page for this program'),
   deadlines: z.array(DeadlineSchema).describe('List of application deadlines for this program'),
 });
 
@@ -84,7 +85,7 @@ export async function POST(
     const prompt = `
       You are an elite institutional data analyst. Analyze the provided knowledge base documents for this university and extract the following:
       
-      1. **Programs**: Detailed list of academic programs, their departments, tuition, and all specific deadlines.
+      1. **Programs**: Detailed list of academic programs, their departments, tuition, and all specific deadlines. Also extract the **Direct Application URL** (Apply Link) for each program if available in the text.
       2. **Scholarships**: All available financial aid, grants, and scholarships mentioned.
       3. **Identity**: A polished, descriptive summary of the campus life and administrative strengths.
       
@@ -125,7 +126,8 @@ export async function POST(
             degreeType: prog.degreeType,
             durationMonths: prog.durationMonths,
             tuitionPerYear: prog.tuitionPerYear,
-          },
+            applyUrl: prog.applyUrl,
+          } as any,
         });
 
         if (prog.deadlines && prog.deadlines.length > 0) {

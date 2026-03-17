@@ -92,13 +92,27 @@ export async function searchKnowledge(
   topK: number = 5
 ) {
   const collectionName = `university_${universityId}`;
-  const queryVector = await embeddings.embedQuery(query);
+  
+  try {
+    const exists = await qdrantClient.collectionExists(collectionName);
+    if (!exists.exists) {
+      return [];
+    }
 
-  const searchResults = await qdrantClient.search(collectionName, {
-    vector: queryVector,
-    limit: topK,
-    with_payload: true,
-  });
+    const queryVector = await embeddings.embedQuery(query);
 
-  return searchResults;
+    const searchResults = await qdrantClient.search(collectionName, {
+      vector: queryVector,
+      limit: topK,
+      with_payload: true,
+    });
+
+    return searchResults;
+  } catch (error: any) {
+    if (error?.status === 404) {
+      return [];
+    }
+    console.error(`Error searching knowledge in ${collectionName}:`, error);
+    throw error;
+  }
 }

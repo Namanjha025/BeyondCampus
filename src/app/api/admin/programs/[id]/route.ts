@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ProgramService } from '@/services/programService';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { deleteProgramVector } from '@/lib/qdrant';
 
 export async function PATCH(
   request: NextRequest,
@@ -16,8 +17,16 @@ export async function PATCH(
     const { id } = await params;
     const data = await request.json();
 
+    // 1. Update in DB
     const program = await ProgramService.updateProgram(id, data);
-    return NextResponse.json(program);
+
+    // 2. Re-vectorize with updated data + re-stamp embeddedAt (non-fatal)
+    await ProgramService.embedSingleProgram(program);
+
+    // 3. Re-fetch so embeddedAt is current in the response
+    const freshProgram = await ProgramService.getProgramById(program.id);
+
+    return NextResponse.json(freshProgram);
   } catch (error) {
     console.error('Error updating program:', error);
     return NextResponse.json(
@@ -38,7 +47,17 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    // 1. Fetch universityId before deletion (needed for Qdrant cleanup)
+    const program = await ProgramService.getProgramById(id);
+
+    // 2. Delete from PostgreSQL
     await ProgramService.deleteProgram(id);
+
+    // 3. Delete vector from Qdrant (non-fatal — logged internally)
+    if (program) {
+      await deleteProgramVector(program.universityId, id);
+    }
 
     return NextResponse.json({ message: 'Program deleted successfully' });
   } catch (error) {

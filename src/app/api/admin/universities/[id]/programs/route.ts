@@ -15,9 +15,17 @@ export async function POST(
 
     const { id } = await params;
     const data = await request.json();
+
+    // 1. Save to DB
     const program = await ProgramService.createProgram(id, data);
 
-    return NextResponse.json(program, { status: 201 });
+    // 2. Embed into Qdrant + stamp embeddedAt (non-fatal)
+    await ProgramService.embedSingleProgram(program);
+
+    // 3. Re-fetch so embeddedAt is included in the response
+    const freshProgram = await ProgramService.getProgramById(program.id);
+
+    return NextResponse.json(freshProgram, { status: 201 });
   } catch (error) {
     console.error('Error creating program:', error);
     return NextResponse.json(

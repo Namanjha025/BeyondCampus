@@ -1,4 +1,5 @@
 import { PrismaClient, Program } from '@prisma/client';
+import { embedPrograms } from '@/lib/qdrant';
 
 const prisma = new PrismaClient();
 
@@ -51,5 +52,36 @@ export class ProgramService {
     return await prisma.program.findUnique({
       where: { id },
     });
+  }
+
+  /**
+   * Embed a single program into Qdrant and stamp embeddedAt.
+   * Non-fatal: errors are logged but never thrown so CRUD responses are never blocked.
+   */
+  static async embedSingleProgram(program: Program) {
+    try {
+      await embedPrograms(program.universityId, [
+        {
+          id: program.id,
+          name: program.name,
+          department: program.department ?? null,
+          degreeType: program.degreeType,
+          durationMonths: program.durationMonths ?? null,
+          tuitionPerYear: program.tuitionPerYear ?? null,
+          applyUrl: (program as any).applyUrl ?? null,
+          universityId: program.universityId,
+        },
+      ]);
+
+      // Stamp embeddedAt so the UI shows "Vectorized" immediately
+      await prisma.program.update({
+        where: { id: program.id },
+        data: { embeddedAt: new Date() } as any,
+      });
+
+      console.log(`[ProgramService] Embedded program: ${program.name} (${program.id})`);
+    } catch (err) {
+      console.error(`[ProgramService] embedSingleProgram failed for ${program.id} (non-fatal):`, err);
+    }
   }
 }

@@ -95,6 +95,37 @@ export async function embedAndStore(
 }
 
 /**
+ * Deletes all Qdrant vectors for a specific program (by payload filter).
+ * Called when a program is deleted from the DB so no stale vectors remain.
+ */
+export async function deleteProgramVector(
+  universityId: string,
+  programId: string
+) {
+  const collectionName = `university_${universityId}`;
+
+  try {
+    const exists = await qdrantClient.collectionExists(collectionName);
+    if (!exists.exists) return; // nothing to delete
+
+    await qdrantClient.delete(collectionName, {
+      wait: true,
+      filter: {
+        must: [
+          { key: 'type', match: { value: 'program' } },
+          { key: 'programId', match: { value: programId } },
+        ],
+      },
+    });
+
+    console.log(`[Qdrant] Deleted vectors for program ${programId} from ${collectionName}`);
+  } catch (err) {
+    console.error(`[Qdrant] Failed to delete vectors for program ${programId} (non-fatal):`, err);
+  }
+}
+
+
+/**
  * Embeds all programs for a university into Qdrant.
  * Each program is stored as a rich text summary with type='program' in the payload.
  * This allows semantic searches like "programs for AI career" or "low tuition MS programs".

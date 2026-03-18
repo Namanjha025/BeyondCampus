@@ -205,7 +205,7 @@ export default function KnowledgeIngestionPage() {
       if (res.ok) {
         setProcessResult({ 
           success: true, 
-          message: `Intelligence Hub Synced: ${data.stats.programs} programs, ${data.stats.scholarships} scholarships extracted.` 
+          message: `Intelligence Hub Synced: ${data.stats.programs} programs extracted, ${data.stats.programsEmbedded ?? data.stats.programs} vectorized, ${data.stats.scholarships} scholarships found.` 
         });
         await fetchDocs();
       } else {

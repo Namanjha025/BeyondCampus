@@ -1,7 +1,7 @@
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { searchKnowledge } from '@/lib/qdrant';
+import { searchKnowledge, searchPrograms } from '@/lib/qdrant';
 import { ProgramDegreeType } from '@prisma/client';
 
 /**
@@ -34,17 +34,79 @@ export const search_knowledge = new DynamicStructuredTool({
 
 /**
  * Tool to list programs offered by a university.
+ * Supports both structured DB queries and semantic search via Qdrant.
  */
 export const list_programs = new DynamicStructuredTool({
   name: 'list_programs',
-  description: 'List programs offered by a university, optionally filtered by degree level or department.',
+  description:
+    'List or discover programs offered by a university. ' +
+    'Use useSemanticSearch=true for vague, open-ended queries (e.g. "programs related to AI", "low tuition options", "best programs for data science career"). ' +
+    'Use useSemanticSearch=false (default) for exact lookups filtered by degreeType or department.',
   schema: z.object({
     universityId: z.string().describe('The unique ID of the university.'),
-    degreeType: z.nativeEnum(ProgramDegreeType).optional().describe('Filter by degree level (e.g., BS, MS, MBA, PHD).'),
-    department: z.string().optional().describe('Filter by department name (e.g., Computer Science).'),
+    degreeType: z
+      .nativeEnum(ProgramDegreeType)
+      .optional()
+      .describe('Filter by degree level (e.g., BS, MS, MBA, PHD). Only used when useSemanticSearch is false.'),
+    department: z
+      .string()
+      .optional()
+      .describe('Filter by department name (e.g., Computer Science). Only used when useSemanticSearch is false.'),
+    query: z
+      .string()
+      .optional()
+      .describe('A semantic search query to find relevant programs. Required when useSemanticSearch is true.'),
+    useSemanticSearch: z
+      .boolean()
+      .optional()
+      .default(false)
+      .describe(
+        'Set to true to use semantic/vector search to find programs by meaning. ' +
+        'Set to false (default) to use exact structured DB filters (degreeType, department).'
+      ),
   }),
-  func: async ({ universityId, degreeType, department }: { universityId: string; degreeType?: ProgramDegreeType; department?: string }) => {
+  func: async ({
+    universityId,
+    degreeType,
+    department,
+    query,
+    useSemanticSearch,
+  }: {
+    universityId: string;
+    degreeType?: ProgramDegreeType;
+    department?: string;
+    query?: string;
+    useSemanticSearch?: boolean;
+  }) => {
     try {
+      // ── Semantic Mode ─────────────────────────────────────────────────
+      if (useSemanticSearch) {
+        if (!query) {
+          return 'A query string is required for semantic search. Please provide what kind of programs the student is looking for.';
+        }
+
+        const results = await searchPrograms(universityId, query, 10);
+
+        if (!results || results.length === 0) {
+          return 'No programs found via semantic search. Try using structured search instead.';
+        }
+
+        // Return the same shape as the structured results for UI consistency
+        const programs = results.map((r) => ({
+          id: r.payload?.programId,
+          name: r.payload?.name,
+          department: r.payload?.department,
+          degreeType: r.payload?.degreeType,
+          durationMonths: r.payload?.durationMonths,
+          tuitionPerYear: r.payload?.tuitionPerYear,
+          applyUrl: r.payload?.applyUrl,
+          _relevanceScore: Math.round((r.score ?? 0) * 100) / 100,
+        }));
+
+        return JSON.stringify(programs, null, 2);
+      }
+
+      // ── Structured Mode ───────────────────────────────────────────────
       const programs = await prisma.program.findMany({
         where: {
           universityId,

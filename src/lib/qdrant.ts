@@ -3,6 +3,17 @@ import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { v4 as uuidv4 } from 'uuid';
 
+export interface ProgramVector {
+  id: string;
+  name: string;
+  department: string | null;
+  degreeType: string;
+  durationMonths: number | null;
+  tuitionPerYear: number | null;
+  applyUrl: string | null;
+  universityId: string;
+}
+
 const qdrantUrl = process.env.QDRANT_URL || 'http://localhost:6333';
 
 export const qdrantClient = new QdrantClient({
@@ -80,6 +91,95 @@ export async function embedAndStore(
       points,
     });
     console.log(`Upserted ${points.length} vectors to ${collectionName}`);
+  }
+}
+
+/**
+ * Embeds all programs for a university into Qdrant.
+ * Each program is stored as a rich text summary with type='program' in the payload.
+ * This allows semantic searches like "programs for AI career" or "low tuition MS programs".
+ */
+export async function embedPrograms(
+  universityId: string,
+  programs: ProgramVector[]
+) {
+  if (!programs || programs.length === 0) return;
+
+  const collectionName = `university_${universityId}`;
+  await ensureCollection(universityId);
+
+  const points = [];
+
+  for (const program of programs) {
+    // Build a rich text summary so semantic search can find it
+    const summary = [
+      `Program: ${program.name}`,
+      program.department ? `Department: ${program.department}` : null,
+      `Degree: ${program.degreeType}`,
+      program.durationMonths ? `Duration: ${program.durationMonths} months` : null,
+      program.tuitionPerYear ? `Tuition: $${program.tuitionPerYear.toLocaleString()} per year` : null,
+      program.applyUrl ? `Apply URL: ${program.applyUrl}` : null,
+    ]
+      .filter(Boolean)
+      .join('. ');
+
+    const vector = await embeddings.embedQuery(summary);
+
+    points.push({
+      id: uuidv4(),
+      vector,
+      payload: {
+        type: 'program',
+        programId: program.id,
+        universityId,
+        name: program.name,
+        department: program.department,
+        degreeType: program.degreeType,
+        durationMonths: program.durationMonths,
+        tuitionPerYear: program.tuitionPerYear,
+        applyUrl: program.applyUrl,
+        content: summary,
+      },
+    });
+  }
+
+  if (points.length > 0) {
+    await qdrantClient.upsert(collectionName, { wait: true, points });
+    console.log(`Upserted ${points.length} program vectors to ${collectionName}`);
+  }
+}
+
+/**
+ * Searches Qdrant for programs semantically matching the query.
+ * Scoped to program vectors only (type: 'program' filter).
+ */
+export async function searchPrograms(
+  universityId: string,
+  query: string,
+  topK: number = 8
+) {
+  const collectionName = `university_${universityId}`;
+
+  try {
+    const exists = await qdrantClient.collectionExists(collectionName);
+    if (!exists.exists) return [];
+
+    const queryVector = await embeddings.embedQuery(query);
+
+    const searchResults = await qdrantClient.search(collectionName, {
+      vector: queryVector,
+      limit: topK,
+      with_payload: true,
+      filter: {
+        must: [{ key: 'type', match: { value: 'program' } }],
+      },
+    });
+
+    return searchResults;
+  } catch (error: any) {
+    if (error?.status === 404) return [];
+    console.error(`Error searching programs in ${collectionName}:`, error);
+    throw error;
   }
 }
 

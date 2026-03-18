@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { ChatOpenAI } from '@langchain/openai';
+import { embedPrograms } from '@/lib/qdrant';
 import { z } from 'zod';
 
 // ─── Extraction Schemas ───────────────────────────────────────────
@@ -163,10 +164,45 @@ export async function POST(
       });
     });
 
+    // 5. Embed programs into Qdrant for semantic search + stamp embeddedAt
+    let programsEmbedded = 0;
+    if (result.programs.length > 0) {
+      // Re-fetch programs with their new DB IDs
+      const savedPrograms = await prisma.program.findMany({
+        where: { universityId },
+        select: {
+          id: true,
+          name: true,
+          department: true,
+          degreeType: true,
+          durationMonths: true,
+          tuitionPerYear: true,
+          applyUrl: true,
+          universityId: true,
+        },
+      });
+
+      try {
+        await embedPrograms(universityId, savedPrograms as any);
+        programsEmbedded = savedPrograms.length;
+
+        // Stamp embeddedAt on every program that was just vectorized
+        await prisma.program.updateMany({
+          where: { universityId },
+          data: { embeddedAt: new Date() } as any,
+        });
+
+        console.log(`Embedded & stamped ${programsEmbedded} programs for university ${universityId}`);
+      } catch (embedError) {
+        console.error('Failed to embed programs into Qdrant (non-fatal):', embedError);
+      }
+    }
+
     return NextResponse.json({
       message: 'Processing complete',
       stats: {
         programs: result.programs.length,
+        programsEmbedded,
         scholarships: result.scholarships.length,
       },
     });

@@ -40,7 +40,10 @@ export async function POST(
               messages: mappedMessages,
               universityId: universityId,
             },
-            { version: 'v2' }
+            { 
+              version: 'v2',
+              configurable: { universityId: universityId }
+            }
           );
 
           for await (const event of eventStream) {
@@ -60,7 +63,9 @@ export async function POST(
             }
             // -----------------------
 
-            if (eventType === 'on_tool_end' && event.name === 'list_programs') {
+            const isProgramTool = event.name === 'list_programs' || event.name === 'search_programs';
+
+            if (eventType === 'on_tool_end' && isProgramTool) {
               // Try to correctly parse the tool result whether it is inside content or kwargs
               const output = event.data?.output;
               let toolOutputData = output?.kwargs?.content || output?.content || output;

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { searchKnowledge, searchPrograms } from '@/lib/qdrant';
 import { ProgramDegreeType } from '@prisma/client';
+import { RunnableConfig } from '@langchain/core/runnables';
 
 /**
  * Tool to search the university knowledge base using semantic search.
@@ -11,10 +12,12 @@ export const search_knowledge = new DynamicStructuredTool({
   name: 'search_knowledge',
   description: 'Search the university knowledge base for specific information using semantic search. Use this for general questions about admissions, campus life, scholarships, or specific course details not found in structured data.',
   schema: z.object({
-    universityId: z.string().describe('The unique ID of the university.'),
     query: z.string().describe('The search query or question to search for.'),
   }),
-  func: async ({ universityId, query }: { universityId: string; query: string }) => {
+  func: async ({ query }: { query: string }, _runManager, config?: RunnableConfig) => {
+    const universityId = config?.configurable?.universityId;
+    if (!universityId) return 'Error: University context is missing.';
+
     try {
       const results = await searchKnowledge(universityId, query);
       if (!results || results.length === 0) {
@@ -33,80 +36,34 @@ export const search_knowledge = new DynamicStructuredTool({
 });
 
 /**
- * Tool to list programs offered by a university.
- * Supports both structured DB queries and semantic search via Qdrant.
+ * Tool to list programs offered by a university using structured filters.
  */
 export const list_programs = new DynamicStructuredTool({
   name: 'list_programs',
   description:
-    'List or discover programs offered by a university. ' +
-    'Use useSemanticSearch=true for vague, open-ended queries (e.g. "programs related to AI", "low tuition options", "best programs for data science career"). ' +
-    'Use useSemanticSearch=false (default) for exact lookups filtered by degreeType or department.',
+    'List programs offered by a university using exact filters. ' +
+    'Use this for structured lookups by degree level (BS, MS, etc.) or department.',
   schema: z.object({
-    universityId: z.string().describe('The unique ID of the university.'),
     degreeType: z
       .nativeEnum(ProgramDegreeType)
       .optional()
-      .describe('Filter by degree level (e.g., BS, MS, MBA, PHD). Only used when useSemanticSearch is false.'),
+      .describe('Filter by degree level (e.g., BS, MS, MBA, PHD).'),
     department: z
       .string()
       .optional()
-      .describe('Filter by department name (e.g., Computer Science). Only used when useSemanticSearch is false.'),
-    query: z
-      .string()
-      .optional()
-      .describe('A semantic search query to find relevant programs. Required when useSemanticSearch is true.'),
-    useSemanticSearch: z
-      .boolean()
-      .optional()
-      .default(false)
-      .describe(
-        'Set to true to use semantic/vector search to find programs by meaning. ' +
-        'Set to false (default) to use exact structured DB filters (degreeType, department).'
-      ),
+      .describe('Filter by department name (e.g., Computer Science).'),
   }),
   func: async ({
-    universityId,
     degreeType,
     department,
-    query,
-    useSemanticSearch,
   }: {
-    universityId: string;
     degreeType?: ProgramDegreeType;
     department?: string;
-    query?: string;
-    useSemanticSearch?: boolean;
-  }) => {
+  }, _runManager, config?: RunnableConfig) => {
+    const universityId = config?.configurable?.universityId;
+    if (!universityId) return 'Error: University context is missing.';
+
     try {
-      // ── Semantic Mode ─────────────────────────────────────────────────
-      if (useSemanticSearch) {
-        if (!query) {
-          return 'A query string is required for semantic search. Please provide what kind of programs the student is looking for.';
-        }
-
-        const results = await searchPrograms(query, universityId, 10);
-
-        if (!results || results.length === 0) {
-          return '[]';
-        }
-
-        // Return the same shape as the structured results for UI consistency
-        const programs = results.map((r) => ({
-          id: r.payload?.programId,
-          name: r.payload?.name,
-          department: r.payload?.department,
-          degreeType: r.payload?.degreeType,
-          durationMonths: r.payload?.durationMonths,
-          tuitionPerYear: r.payload?.tuitionPerYear,
-          applyUrl: r.payload?.applyUrl,
-          _relevanceScore: Math.round((r.score ?? 0) * 100) / 100,
-        }));
-
-        return JSON.stringify(programs, null, 2);
-      }
-
-      // ── Structured Mode ───────────────────────────────────────────────
       const programs = await prisma.program.findMany({
         where: {
           universityId,
@@ -137,6 +94,57 @@ export const list_programs = new DynamicStructuredTool({
 });
 
 /**
+ * Tool to search for programs using semantic/AI search.
+ */
+export const search_programs = new DynamicStructuredTool({
+  name: 'search_programs',
+  description:
+    'Search for programs using AI/semantic search. ' +
+    'Use this for vague or open-ended queries like "programs related to AI", "low tuition options", or "career in data science".',
+  schema: z.object({
+    query: z.string().describe('The semantic search query describing what the student is looking for.'),
+    limit: z.number().optional().default(10).describe('Max number of results to return.'),
+  }),
+  func: async ({
+    query,
+    limit,
+  }: {
+    query: string;
+    limit?: number;
+  }, _runManager, config?: RunnableConfig) => {
+    const universityId = config?.configurable?.universityId;
+    // Note: We intentionally allow universityId to be null here if we want global search,
+    // but the system prompt instructs the agent it is scoped to the current universityId
+    // unless global discovery is requested.
+
+    try {
+      const results = await searchPrograms(query, universityId, limit || 10);
+
+      if (!results || results.length === 0) {
+        return '[]';
+      }
+
+      // Return consistent shape for UI
+      const programs = results.map((r) => ({
+        id: r.payload?.programId,
+        name: r.payload?.name,
+        department: r.payload?.department,
+        degreeType: r.payload?.degreeType,
+        durationMonths: r.payload?.durationMonths,
+        tuitionPerYear: r.payload?.tuitionPerYear,
+        applyUrl: r.payload?.applyUrl,
+        _relevanceScore: Math.round((r.score ?? 0) * 100) / 100,
+      }));
+
+      return JSON.stringify(programs, null, 2);
+    } catch (error) {
+      console.error('Error in search_programs tool:', error);
+      return 'An error occurred while searching programs.';
+    }
+  },
+});
+
+/**
  * Tool to get detailed information about a specific program.
  */
 export const get_program_details = new DynamicStructuredTool({
@@ -145,7 +153,10 @@ export const get_program_details = new DynamicStructuredTool({
   schema: z.object({
     programId: z.string().describe('The unique ID of the program.'),
   }),
-  func: async ({ programId }: { programId: string }) => {
+  func: async ({ programId }: { programId: string }, _runManager, config?: RunnableConfig) => {
+    const universityId = config?.configurable?.universityId;
+    if (!universityId) return 'Error: University context is missing.';
+
     try {
       const program = await prisma.program.findUnique({
         where: { id: programId },
@@ -160,8 +171,8 @@ export const get_program_details = new DynamicStructuredTool({
         }
       });
 
-      if (!program) {
-        return 'Program not found.';
+      if (!program || program.universityId !== universityId) {
+        return 'Program not found in this university.';
       }
 
       // Supplement with admissions requirements from Qdrant if possible
@@ -195,10 +206,16 @@ export const get_deadlines = new DynamicStructuredTool({
   schema: z.object({
     programId: z.string().describe('The unique ID of the program.'),
   }),
-  func: async ({ programId }: { programId: string }) => {
+  func: async ({ programId }: { programId: string }, _runManager, config?: RunnableConfig) => {
+    const universityId = config?.configurable?.universityId;
+    if (!universityId) return 'Error: University context is missing.';
+
     try {
       const deadlines = await prisma.deadline.findMany({
-        where: { programId },
+        where: { 
+          programId,
+          program: { universityId } // Security: Ensure it belongs to the current university
+        },
         orderBy: { applicationDeadline: 'asc' },
       });
 
@@ -214,4 +231,4 @@ export const get_deadlines = new DynamicStructuredTool({
   },
 });
 
-export const toolbox = [search_knowledge, list_programs, get_program_details, get_deadlines];
+export const toolbox = [search_knowledge, list_programs, search_programs, get_program_details, get_deadlines];

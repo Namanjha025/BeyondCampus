@@ -200,7 +200,7 @@ export default function UniversityChatInterface({
                           : m
                       )
                     );
-                  } else if (parsed.type === 'tool' && parsed.tool === 'list_programs') {
+                  } else if (parsed.type === 'tool' && (parsed.tool === 'list_programs' || parsed.tool === 'search_programs')) {
                     // Inject tool UI state
                     setMessages((prev) =>
                       prev.map((m) =>
@@ -460,7 +460,7 @@ export default function UniversityChatInterface({
                           ) : (
                              <div className="text-[15px] leading-relaxed prose prose-invert max-w-none w-full">
                               {/* Render Generative UI Tool result if present */}
-                              {message.toolData && message.toolData.tool === 'list_programs' && (
+                              {message.toolData && (message.toolData.tool === 'list_programs' || message.toolData.tool === 'search_programs') && (
                                  <div className="mb-4">
                                    <ProgramListUI programs={message.toolData.data as Program[]} />
                                  </div>

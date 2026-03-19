@@ -14,6 +14,8 @@ export interface ProgramVector {
   universityId: string;
 }
 
+export const PROGRAMS_COLLECTION = 'programs';
+
 const qdrantUrl = process.env.QDRANT_URL || 'http://localhost:6333';
 
 export const qdrantClient = new QdrantClient({
@@ -44,6 +46,28 @@ export async function ensureCollection(universityId: string) {
     }
   } catch (error) {
     console.error(`Error ensuring collection ${collectionName} exists:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Checks if the shared 'programs' collection exists.
+ * If not, creates it (size: 3072, distance: 'Cosine').
+ */
+export async function ensureProgramsCollection() {
+  try {
+    const exists = await qdrantClient.collectionExists(PROGRAMS_COLLECTION);
+    if (!exists.exists) {
+      await qdrantClient.createCollection(PROGRAMS_COLLECTION, {
+        vectors: {
+          size: 3072,
+          distance: 'Cosine',
+        },
+      });
+      console.log(`Created shared Qdrant collection: ${PROGRAMS_COLLECTION}`);
+    }
+  } catch (error) {
+    console.error(`Error ensuring shared collection ${PROGRAMS_COLLECTION} exists:`, error);
     throw error;
   }
 }
@@ -98,17 +122,12 @@ export async function embedAndStore(
  * Deletes all Qdrant vectors for a specific program (by payload filter).
  * Called when a program is deleted from the DB so no stale vectors remain.
  */
-export async function deleteProgramVector(
-  universityId: string,
-  programId: string
-) {
-  const collectionName = `university_${universityId}`;
-
+export async function deleteProgramVector(programId: string) {
   try {
-    const exists = await qdrantClient.collectionExists(collectionName);
+    const exists = await qdrantClient.collectionExists(PROGRAMS_COLLECTION);
     if (!exists.exists) return; // nothing to delete
 
-    await qdrantClient.delete(collectionName, {
+    await qdrantClient.delete(PROGRAMS_COLLECTION, {
       wait: true,
       filter: {
         must: [
@@ -118,7 +137,7 @@ export async function deleteProgramVector(
       },
     });
 
-    console.log(`[Qdrant] Deleted vectors for program ${programId} from ${collectionName}`);
+    console.log(`[Qdrant] Deleted vectors for program ${programId} from ${PROGRAMS_COLLECTION}`);
   } catch (err) {
     console.error(`[Qdrant] Failed to delete vectors for program ${programId} (non-fatal):`, err);
   }
@@ -136,8 +155,7 @@ export async function embedPrograms(
 ) {
   if (!programs || programs.length === 0) return;
 
-  const collectionName = `university_${universityId}`;
-  await ensureCollection(universityId);
+  await ensureProgramsCollection();
 
   const points = [];
 
@@ -175,8 +193,8 @@ export async function embedPrograms(
   }
 
   if (points.length > 0) {
-    await qdrantClient.upsert(collectionName, { wait: true, points });
-    console.log(`Upserted ${points.length} program vectors to ${collectionName}`);
+    await qdrantClient.upsert(PROGRAMS_COLLECTION, { wait: true, points });
+    console.log(`Upserted ${points.length} program vectors to ${PROGRAMS_COLLECTION}`);
   }
 }
 
@@ -185,31 +203,35 @@ export async function embedPrograms(
  * Scoped to program vectors only (type: 'program' filter).
  */
 export async function searchPrograms(
-  universityId: string,
   query: string,
+  universityId?: string,
   topK: number = 8
 ) {
-  const collectionName = `university_${universityId}`;
-
   try {
-    const exists = await qdrantClient.collectionExists(collectionName);
+    const exists = await qdrantClient.collectionExists(PROGRAMS_COLLECTION);
     if (!exists.exists) return [];
 
     const queryVector = await embeddings.embedQuery(query);
 
-    const searchResults = await qdrantClient.search(collectionName, {
+    const filter: any = {
+      must: [{ key: 'type', match: { value: 'program' } }],
+    };
+
+    if (universityId) {
+      filter.must.push({ key: 'universityId', match: { value: universityId } });
+    }
+
+    const searchResults = await qdrantClient.search(PROGRAMS_COLLECTION, {
       vector: queryVector,
       limit: topK,
       with_payload: true,
-      filter: {
-        must: [{ key: 'type', match: { value: 'program' } }],
-      },
+      filter,
     });
 
     return searchResults;
   } catch (error: any) {
     if (error?.status === 404) return [];
-    console.error(`Error searching programs in ${collectionName}:`, error);
+    console.error(`Error searching programs in ${PROGRAMS_COLLECTION}:`, error);
     throw error;
   }
 }

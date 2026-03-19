@@ -56,7 +56,7 @@ export async function DELETE(
 
     // 3. Delete vector from Qdrant (non-fatal — logged internally)
     if (program) {
-      await deleteProgramVector(program.universityId, id);
+      await deleteProgramVector(id);
     }
 
     return NextResponse.json({ message: 'Program deleted successfully' });

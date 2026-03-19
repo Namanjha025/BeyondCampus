@@ -85,10 +85,10 @@ export const list_programs = new DynamicStructuredTool({
           return 'A query string is required for semantic search. Please provide what kind of programs the student is looking for.';
         }
 
-        const results = await searchPrograms(universityId, query, 10);
+        const results = await searchPrograms(query, universityId, 10);
 
         if (!results || results.length === 0) {
-          return 'No programs found via semantic search. Try using structured search instead.';
+          return '[]';
         }
 
         // Return the same shape as the structured results for UI consistency
@@ -125,7 +125,7 @@ export const list_programs = new DynamicStructuredTool({
       });
 
       if (programs.length === 0) {
-        return 'No programs found matching the criteria.';
+        return '[]';
       }
 
       return JSON.stringify(programs, null, 2);

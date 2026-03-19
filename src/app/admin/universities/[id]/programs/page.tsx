@@ -18,6 +18,7 @@ import {
   Database,
   Brain,
   ExternalLink,
+  RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,8 @@ export default function ProgramManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState<any>(null);
+  const [vectorizingId, setVectorizingId] = useState<string | null>(null);
+
 
   useEffect(() => {
     fetchData();
@@ -64,6 +67,27 @@ export default function ProgramManagementPage() {
       }
     } catch (error) {
       console.error('Error deleting program:', error);
+    }
+  };
+  
+  const handleVectorize = async (id: string) => {
+    setVectorizingId(id);
+    try {
+      // Calling PATCH with empty data triggers re-vectorization on the backend
+      const response = await fetch(`/api/admin/programs/${id}`, { 
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      
+      if (response.ok) {
+        const updatedProgram = await response.json();
+        setPrograms((prev) => prev.map((p) => p.id === id ? updatedProgram : p));
+      }
+    } catch (error) {
+      console.error('Error vectorizing program:', error);
+    } finally {
+      setVectorizingId(null);
     }
   };
 
@@ -257,27 +281,44 @@ export default function ProgramManagementPage() {
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1.5">
                         {/* Always in DB if shown */}
-                        <div className="flex items-center gap-1.5">
-                          <CheckCircle2 className="h-3 w-3 text-primary shrink-0" />
-                          <span className="text-[10px] font-bold text-primary uppercase tracking-wider">Extracted</span>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 text-amber-500 shrink-0" />
+                          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Extracted</span>
                         </div>
 
                         {/* Vectorized or not */}
-                        {p.embeddedAt ? (
-                          <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
+                          {vectorizingId === p.id ? (
+                            <div className="w-3 h-3 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                          ) : p.embeddedAt ? (
                             <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] shrink-0" />
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Vectorized</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <AlertCircle className="h-3 w-3 text-amber-500 shrink-0" />
-                            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Not Vectorized</span>
-                          </div>
-                        )}
+                          ) : (
+                            <AlertCircle className="h-3 w-3 text-gray-600 shrink-0" />
+                          )}
+                          <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-wider",
+                            p.embeddedAt ? "text-emerald-500" : "text-gray-600"
+                          )}>
+                            {vectorizingId === p.id ? 'Processing...' : 'Vectorized'}
+                          </span>
+                          
+                          {/* Individual Vectorize Action */}
+                          <button
+                            onClick={() => handleVectorize(p.id)}
+                            disabled={!!vectorizingId}
+                            className={cn(
+                              "p-1 rounded-md hover:bg-white/10 transition-colors ml-auto",
+                              vectorizingId ? "opacity-30 cursor-not-allowed" : "opacity-50 hover:opacity-100"
+                            )}
+                            title="Re-vectorize this program"
+                          >
+                            <RotateCcw className={cn("h-2.5 w-2.5 text-gray-400", vectorizingId === p.id && "animate-spin")} />
+                          </button>
+                        </div>
 
                         {/* Apply link status */}
                         {p.applyUrl && (
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             <ExternalLink className="h-3 w-3 text-sky-400 shrink-0" />
                             <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Apply Link ✓</span>
                           </div>

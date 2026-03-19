@@ -15,7 +15,7 @@ export interface Program {
 }
 
 export function ProgramListUI({ programs }: { programs: Program[] }) {
-  if (!programs || programs.length === 0) return null;
+  if (!programs || !Array.isArray(programs) || programs.length === 0) return null;
 
   return (
     <div className="my-4 rounded-xl border border-border/50 bg-secondary/30 overflow-hidden text-sm shadow-sm">

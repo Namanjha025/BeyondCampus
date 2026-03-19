@@ -72,12 +72,15 @@ export async function POST(
               }
 
               try {
-                const payload = JSON.stringify({
-                  type: 'tool',
-                  tool: event.name,
-                  data: toolOutputData,
-                }) + '\n';
-                controller.enqueue(encoder.encode(payload));
+                // Only send if it's an array (to avoid crashing the UI)
+                if (Array.isArray(toolOutputData)) {
+                  const payload = JSON.stringify({
+                    type: 'tool',
+                    tool: event.name,
+                    data: toolOutputData,
+                  }) + '\n';
+                  controller.enqueue(encoder.encode(payload));
+                }
               } catch (e) {
                 // ignore
               }

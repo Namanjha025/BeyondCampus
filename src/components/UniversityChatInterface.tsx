@@ -50,11 +50,11 @@ interface University {
 }
 
 interface UniversityChatInterfaceProps {
-  universityId: string;
+  universitySlug: string;
 }
 
 export default function UniversityChatInterface({
-  universityId,
+  universitySlug,
 }: UniversityChatInterfaceProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -70,7 +70,7 @@ export default function UniversityChatInterface({
   useEffect(() => {
     const fetchUniversity = async () => {
       try {
-        const response = await fetch(`/api/universities/${universityId}`);
+        const response = await fetch(`/api/universities/${universitySlug}`);
         if (response.ok) {
           const u = await response.json();
           setUniversity({
@@ -96,10 +96,10 @@ export default function UniversityChatInterface({
       }
     };
 
-    if (universityId) {
+    if (universitySlug) {
       fetchUniversity();
     }
-  }, [universityId]);
+  }, [universitySlug]);
 
   // Welcome message typing effect
   useEffect(() => {

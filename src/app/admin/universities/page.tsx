@@ -235,7 +235,7 @@ export default function UniversitiesListing() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <Link href={`/admin/universities/${u.id}/edit`}>
+                        <Link href={`/admin/universities/${u.slug}/edit`}>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -258,13 +258,13 @@ export default function UniversitiesListing() {
                             align="end"
                             className="bg-[#0f0f0f] border-gray-800 text-white"
                           >
-                            <Link href={`/admin/universities/${u.id}/programs`}>
+                            <Link href={`/admin/universities/${u.slug}/programs`}>
                               <DropdownMenuItem className="gap-2 cursor-pointer">
                                 <GraduationCap className="h-4 w-4" /> Manage
                                 Programs
                               </DropdownMenuItem>
                             </Link>
-                            <Link href={`/admin/universities/${u.id}/knowledge`}>
+                            <Link href={`/admin/universities/${u.slug}/knowledge`}>
                               <DropdownMenuItem className="gap-2 cursor-pointer text-primary focus:text-primary">
                                 <Library className="h-4 w-4" /> Manage Knowledge
                               </DropdownMenuItem>

@@ -165,29 +165,41 @@ const universities = [
   },
 ];
 
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/[^\w-]+/g, '')    // Remove all non-word chars
+    .replace(/--+/g, '-')       // Replace multiple - with single -
+    .replace(/^-+/, '')         // Trim - from start of text
+    .replace(/-+$/, '');        // Trim - from end of text
+}
+
 async function main() {
   console.log('Seeding universities...');
 
   for (const uniData of universities) {
     const { admissionRate, studentCount, location, ...rest } = uniData;
-
-    // We map admissionRate and studentCount to string fields for display
-    // but we can also store the numeric values we have in the schema
+    const slug = slugify(uniData.name);
 
     await (prisma as any).university.upsert({
       where: { name: uniData.name }, // This assumes uniqueness on name for seeding
       update: {
         ...rest,
+        slug,
         acceptanceRate: parseFloat(admissionRate.replace('%', '')),
         enrollmentSize: parseInt(studentCount.replace(/[^0-9]/g, '')),
       },
       create: {
         ...rest,
+        slug,
         acceptanceRate: parseFloat(admissionRate.replace('%', '')),
         enrollmentSize: parseInt(studentCount.replace(/[^0-9]/g, '')),
       },
     });
-    console.log(`- ${uniData.name}`);
+    console.log(`- ${uniData.name} (${slug})`);
   }
 
   console.log('Seed completed.');

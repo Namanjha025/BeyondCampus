@@ -68,7 +68,8 @@ const matchCategory = (fileName: string): KnowledgeDocCategory | null => {
 export default function KnowledgeIngestionPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const slug = params.slug as string;
+  const [universityId, setUniversityId] = useState<string | null>(null);
 
   const [isLoadingDocs, setIsLoadingDocs] = useState(true);
   const [docs, setDocs] = useState<DocStatus[]>([]);
@@ -81,13 +82,30 @@ export default function KnowledgeIngestionPage() {
   const bulkInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetchDocs();
-  }, [id]);
+    const resolveAndFetch = async () => {
+      try {
+        const res = await fetch(`/api/universities/${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setUniversityId(data.id);
+        }
+      } catch (error) {
+        console.error('Failed to resolve university slug:', error);
+      }
+    };
+    resolveAndFetch();
+  }, [slug]);
+
+  useEffect(() => {
+    if (universityId) {
+      fetchDocs();
+    }
+  }, [universityId]);
 
   const fetchDocs = async () => {
     try {
       setIsLoadingDocs(true);
-      const res = await fetch(`/api/admin/universities/${id}/knowledge`);
+      const res = await fetch(`/api/admin/universities/${universityId}/knowledge`);
       if (res.ok) {
         const data = await res.json();
         setDocs(data);
@@ -111,7 +129,7 @@ export default function KnowledgeIngestionPage() {
       fileName: file.name,
     };
 
-    const res = await fetch(`/api/admin/universities/${id}/knowledge`, {
+    const res = await fetch(`/api/admin/universities/${universityId}/knowledge`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -196,7 +214,7 @@ export default function KnowledgeIngestionPage() {
 
     try {
       const res = await fetch(
-        `/api/admin/universities/${id}/knowledge/process`,
+        `/api/admin/universities/${universityId}/knowledge/process`,
         { method: 'POST' }
       );
       

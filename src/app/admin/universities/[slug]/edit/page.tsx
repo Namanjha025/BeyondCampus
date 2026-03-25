@@ -9,14 +9,14 @@ import { Button } from '@/components/ui/button';
 export default function EditUniversityPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const slug = params.slug as string;
   const [university, setUniversity] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUniversity = async () => {
       try {
-        const response = await fetch(`/api/universities/${id}`);
+        const response = await fetch(`/api/universities/${slug}`);
         if (response.ok) {
           const data = await response.json();
           setUniversity(data);
@@ -28,10 +28,10 @@ export default function EditUniversityPage() {
       }
     };
 
-    if (id) {
+    if (slug) {
       fetchUniversity();
     }
-  }, [id]);
+  }, [slug]);
 
   if (isLoading) {
     return (

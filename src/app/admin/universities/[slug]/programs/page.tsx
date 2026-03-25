@@ -28,7 +28,9 @@ import ProgramFormModal from '../../../../../components/admin/ProgramFormModal';
 
 export default function ProgramManagementPage() {
   const params = useParams();
-  const universityId = params.id as string;
+  const universitySlug = params.slug as string;
+
+  const [universityId, setUniversityId] = useState<string | null>(null);
 
   const [university, setUniversity] = useState<any>(null);
   const [programs, setPrograms] = useState<any[]>([]);
@@ -41,14 +43,15 @@ export default function ProgramManagementPage() {
 
   useEffect(() => {
     fetchData();
-  }, [universityId]);
+  }, [universitySlug]);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`/api/universities/${universityId}`);
+      const response = await fetch(`/api/universities/${universitySlug}`);
       if (response.ok) {
         const data = await response.json();
         setUniversity(data);
+        setUniversityId(data.id);
         setPrograms(data.programs || []);
       }
     } catch (error) {
@@ -377,7 +380,7 @@ export default function ProgramManagementPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchData}
-        universityId={universityId}
+        universityId={universityId || ''}
         program={editingProgram}
       />
     </div>

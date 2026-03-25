@@ -19,12 +19,21 @@ export class UniversityService {
     });
   }
 
-  /**
-   * Get a detailed university profile with all programs
-   */
   static async getUniversityById(id: string) {
     return await prisma.university.findUnique({
       where: { id },
+      include: {
+        programs: true,
+      },
+    });
+  }
+
+  /**
+   * Get a detailed university profile by slug
+   */
+  static async getUniversityBySlug(slug: string) {
+    return await prisma.university.findUnique({
+      where: { slug },
       include: {
         programs: true,
       },

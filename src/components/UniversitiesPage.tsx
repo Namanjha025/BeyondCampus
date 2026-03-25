@@ -10,6 +10,7 @@ import { UniversitySkeleton } from './UniversitySkeleton';
 
 interface University {
   id: string;
+  slug: string;
   name: string;
   location: string;
   specialty: string;
@@ -37,6 +38,7 @@ export default function UniversitiesPage() {
           // Map DB fields to UI interface if needed
           const mappedData = data.map((u: any) => ({
             id: u.id,
+            slug: u.slug,
             name: u.name,
             location: `${u.city}, ${u.state}`,
             specialty: u.specialties?.[0] || 'General',
@@ -97,7 +99,7 @@ export default function UniversitiesPage() {
   }, []);
 
   const handleUniversityClick = (university: University) => {
-    router.push(`/university/${university.id}`);
+    router.push(`/university/${university.slug}`);
   };
 
   const UniversityCard = ({ university }: { university: University }) => (

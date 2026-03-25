@@ -4,8 +4,8 @@ import { use } from 'react';
 export default function UniversityChat({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = use(params);
-  return <UniversityChatInterface universityId={id} />;
+  const { slug } = use(params);
+  return <UniversityChatInterface universitySlug={slug} />;
 }

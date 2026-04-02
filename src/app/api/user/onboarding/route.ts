@@ -1,24 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { ExamType } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/database';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { ExamType } from '@prisma/client';
 
 interface TestScoreInput {
-  examType: ExamType
-  overallScore: number
-  subScores?: Record<string, number>
-  dateTaken?: string
+  examType: ExamType;
+  overallScore: number;
+  subScores?: Record<string, number>;
+  dateTaken?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({
-        message: 'Unauthorized',
-      }, { status: 401 })
+      return NextResponse.json(
+        {
+          message: 'Unauthorized',
+        },
+        { status: 401 }
+      );
     }
 
     const {
@@ -32,9 +35,9 @@ export async function POST(request: NextRequest) {
       budgetRange,
       hasGivenTests,
       testScores,
-    } = await request.json()
+    } = await request.json();
 
-    const userId = session.user.id
+    const userId = session.user.id;
 
     const updatedUser = await prisma.$transaction(async (tx) => {
       const user = await tx.user.update({
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
           hasGivenTests: hasGivenTests ?? null,
           onboardingCompleted: true,
         },
-      })
+      });
 
       if (hasGivenTests && Array.isArray(testScores) && testScores.length > 0) {
         await tx.testScore.createMany({
@@ -62,11 +65,11 @@ export async function POST(request: NextRequest) {
             subScores: ts.subScores ?? undefined,
             dateTaken: ts.dateTaken ? new Date(ts.dateTaken) : null,
           })),
-        })
+        });
       }
 
-      return user
-    })
+      return user;
+    });
 
     return NextResponse.json({
       message: 'Onboarding data saved successfully',
@@ -75,12 +78,18 @@ export async function POST(request: NextRequest) {
         email: updatedUser.email,
         onboardingCompleted: updatedUser.onboardingCompleted,
       },
-    })
+    });
   } catch (error) {
-    console.error('Onboarding error:', error)
-    return NextResponse.json({
-      message: 'Failed to save onboarding data',
-      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
-    }, { status: 500 })
+    console.error('Onboarding error:', error);
+    return NextResponse.json(
+      {
+        message: 'Failed to save onboarding data',
+        error:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 500 }
+    );
   }
 }

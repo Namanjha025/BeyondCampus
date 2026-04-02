@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { motion } from 'framer-motion';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   ArrowLeft,
   Edit2,
@@ -23,48 +23,48 @@ import {
   Trash2,
   Calendar,
   FileText,
-} from 'lucide-react'
+} from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────
 
 interface TestScore {
-  id: string
-  examType: string
-  overallScore: number
-  subScores: Record<string, number> | null
-  dateTaken: string | null
+  id: string;
+  examType: string;
+  overallScore: number;
+  subScores: Record<string, number> | null;
+  dateTaken: string | null;
 }
 
 interface ProfileField {
-  id: string
-  title: string
-  value: string
-  category: string
-  extractedBy: string
-  sourceDocumentId: string | null
+  id: string;
+  title: string;
+  value: string;
+  category: string;
+  extractedBy: string;
+  sourceDocumentId: string | null;
 }
 
 interface UserProfile {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  onboardingCompleted: boolean
-  degreeLevel: string | null
-  fieldOfStudy: string | null
-  currentEducation: string | null
-  targetCountry: string | null
-  intakeSeason: string | null
-  intakeYear: number | null
-  budgetRange: string | null
-  hasGivenTests: boolean | null
-  testScores: TestScore[]
-  profileFields: ProfileField[]
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  onboardingCompleted: boolean;
+  degreeLevel: string | null;
+  fieldOfStudy: string | null;
+  currentEducation: string | null;
+  targetCountry: string | null;
+  intakeSeason: string | null;
+  intakeYear: number | null;
+  budgetRange: string | null;
+  hasGivenTests: boolean | null;
+  testScores: TestScore[];
+  profileFields: ProfileField[];
 }
 
 interface EditableTestScore {
-  examType: string
-  overallScore: string
+  examType: string;
+  overallScore: string;
 }
 
 // ── Option Maps ──────────────────────────────────────────
@@ -74,30 +74,44 @@ const DEGREE_LABELS: Record<string, string> = {
   PG: 'Postgraduate',
   MBA: 'MBA',
   PHD: 'PhD',
-}
+};
 
 const SEASON_LABELS: Record<string, string> = {
   FALL: 'Fall',
   SPRING: 'Spring',
   SUMMER: 'Summer',
-}
+};
 
 const BUDGET_LABELS: Record<string, string> = {
   UNDER_20K: 'Under $20K/year',
   USD_20K_40K: '$20K – $40K/year',
   USD_40K_60K: '$40K – $60K/year',
   USD_60K_PLUS: '$60K+/year',
-}
+};
 
-const DEGREE_OPTIONS = ['UG', 'PG', 'MBA', 'PHD']
-const SEASON_OPTIONS = ['FALL', 'SPRING', 'SUMMER']
-const BUDGET_OPTIONS = ['UNDER_20K', 'USD_20K_40K', 'USD_40K_60K', 'USD_60K_PLUS']
-const COUNTRY_OPTIONS = ['US', 'UK', 'Canada', 'Australia', 'Germany']
-const EXAM_OPTIONS = ['GRE', 'GMAT', 'IELTS', 'TOEFL', 'SAT', 'ACT']
-const FIELD_OPTIONS = ['Computer Science', 'Engineering', 'Business & Finance', 'Data Science & AI', 'Medicine & Health', 'Arts & Design', 'Law', 'Other']
+const DEGREE_OPTIONS = ['UG', 'PG', 'MBA', 'PHD'];
+const SEASON_OPTIONS = ['FALL', 'SPRING', 'SUMMER'];
+const BUDGET_OPTIONS = [
+  'UNDER_20K',
+  'USD_20K_40K',
+  'USD_40K_60K',
+  'USD_60K_PLUS',
+];
+const COUNTRY_OPTIONS = ['US', 'UK', 'Canada', 'Australia', 'Germany'];
+const EXAM_OPTIONS = ['GRE', 'GMAT', 'IELTS', 'TOEFL', 'SAT', 'ACT'];
+const FIELD_OPTIONS = [
+  'Computer Science',
+  'Engineering',
+  'Business & Finance',
+  'Data Science & AI',
+  'Medicine & Health',
+  'Arts & Design',
+  'Law',
+  'Other',
+];
 
-const currentYear = new Date().getFullYear()
-const YEAR_OPTIONS = Array.from({ length: 4 }, (_, i) => currentYear + i)
+const currentYear = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: 4 }, (_, i) => currentYear + i);
 
 const CATEGORY_LABELS: Record<string, string> = {
   ACADEMIC: 'Academic',
@@ -105,7 +119,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   PERSONAL: 'Personal',
   IMMIGRATION: 'Immigration',
   FINANCIAL: 'Financial',
-}
+};
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -122,8 +136,8 @@ function computeCompleteness(p: UserProfile): number {
     !!p.budgetRange,
     p.hasGivenTests !== null,
     p.hasGivenTests ? p.testScores.length > 0 : true,
-  ]
-  return Math.round((checks.filter(Boolean).length / checks.length) * 100)
+  ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
 // ── Select Component ─────────────────────────────────────
@@ -137,22 +151,22 @@ function SelectField({
   onChange,
   placeholder,
 }: {
-  label: string
-  value: string | null
-  options: string[]
-  labelMap?: Record<string, string>
-  isEditing: boolean
-  onChange: (v: string) => void
-  placeholder?: string
+  label: string;
+  value: string | null;
+  options: string[];
+  labelMap?: Record<string, string>;
+  isEditing: boolean;
+  onChange: (v: string) => void;
+  placeholder?: string;
 }) {
-  const display = value ? (labelMap?.[value] ?? value) : 'Not set'
+  const display = value ? (labelMap?.[value] ?? value) : 'Not set';
   if (!isEditing) {
     return (
       <div>
         <Label className="text-gray-400 text-sm">{label}</Label>
         <p className="mt-1 text-white">{display}</p>
       </div>
-    )
+    );
   }
   return (
     <div>
@@ -162,7 +176,9 @@ function SelectField({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full px-3 py-2 bg-background border border-gray-800 rounded-md text-white focus:outline-none focus:border-orange-500"
       >
-        <option value="">{placeholder || `Select ${label.toLowerCase()}`}</option>
+        <option value="">
+          {placeholder || `Select ${label.toLowerCase()}`}
+        </option>
         {options.map((opt) => (
           <option key={opt} value={opt}>
             {labelMap?.[opt] ?? opt}
@@ -170,43 +186,38 @@ function SelectField({
         ))}
       </select>
     </div>
-  )
+  );
 }
 
 // ── Main Component ───────────────────────────────────────
 
 export default function ProfilePage() {
-  const router = useRouter()
-  const { data: session, status } = useSession()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Editable copies
-  const [editFields, setEditFields] = useState<Partial<UserProfile>>({})
-  const [editScores, setEditScores] = useState<EditableTestScore[]>([])
+  const [editFields, setEditFields] = useState<Partial<UserProfile>>({});
+  const [editScores, setEditScores] = useState<EditableTestScore[]>([]);
 
   useEffect(() => {
-    if (status === 'loading') return
-    if (!session) router.push('/auth/signin')
-  }, [session, status, router])
-
-  useEffect(() => {
-    fetchProfile()
-  }, [])
+    fetchProfile();
+  }, []);
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch('/api/user/profile')
+      const res = await fetch('/api/user/profile');
       if (res.ok) {
-        const data = await res.json()
-        setProfile(data)
-        resetEdits(data)
+        const data = await res.json();
+        setProfile(data);
+        resetEdits(data);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('Error fetching profile:', error);
     }
-  }
+  };
 
   const resetEdits = (p: UserProfile) => {
     setEditFields({
@@ -220,101 +231,115 @@ export default function ProfilePage() {
       intakeYear: p.intakeYear,
       budgetRange: p.budgetRange,
       hasGivenTests: p.hasGivenTests,
-    })
+    });
     setEditScores(
       p.testScores.map((ts) => ({
         examType: ts.examType,
         overallScore: String(ts.overallScore),
       }))
-    )
-  }
+    );
+  };
 
   const startEditing = () => {
-    if (profile) resetEdits(profile)
-    setIsEditing(true)
-  }
+    if (profile) resetEdits(profile);
+    setIsEditing(true);
+  };
 
   const cancelEditing = () => {
-    if (profile) resetEdits(profile)
-    setIsEditing(false)
-  }
+    if (profile) resetEdits(profile);
+    setIsEditing(false);
+  };
 
   const handleSave = async () => {
-    if (!profile) return
-    setIsSaving(true)
+    if (!profile) return;
+    setIsSaving(true);
     try {
-      const payload: Record<string, any> = { ...editFields }
+      const payload: Record<string, any> = { ...editFields };
       payload.testScores = editScores
         .filter((ts) => ts.examType && ts.overallScore)
-        .map((ts) => ({ examType: ts.examType, overallScore: parseFloat(ts.overallScore) }))
+        .map((ts) => ({
+          examType: ts.examType,
+          overallScore: parseFloat(ts.overallScore),
+        }));
 
       const res = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (res.ok) {
-        const { user } = await res.json()
-        setProfile(user)
-        resetEdits(user)
-        setIsEditing(false)
+        const { user } = await res.json();
+        setProfile(user);
+        resetEdits(user);
+        setIsEditing(false);
       }
     } catch (error) {
-      console.error('Error saving profile:', error)
+      console.error('Error saving profile:', error);
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const updateField = (key: string, value: any) => {
-    setEditFields((prev) => ({ ...prev, [key]: value || null }))
-  }
+    setEditFields((prev) => ({ ...prev, [key]: value || null }));
+  };
 
-  const addScore = () => setEditScores((prev) => [...prev, { examType: '', overallScore: '' }])
-  const removeScore = (i: number) => setEditScores((prev) => prev.filter((_, idx) => idx !== i))
-  const updateScore = (i: number, field: keyof EditableTestScore, value: string) => {
+  const addScore = () =>
+    setEditScores((prev) => [...prev, { examType: '', overallScore: '' }]);
+  const removeScore = (i: number) =>
+    setEditScores((prev) => prev.filter((_, idx) => idx !== i));
+  const updateScore = (
+    i: number,
+    field: keyof EditableTestScore,
+    value: string
+  ) => {
     setEditScores((prev) => {
-      const copy = [...prev]
-      copy[i] = { ...copy[i], [field]: value }
-      return copy
-    })
-  }
+      const copy = [...prev];
+      copy[i] = { ...copy[i], [field]: value };
+      return copy;
+    });
+  };
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading...</div>
       </div>
-    )
+    );
   }
 
-  const completeness = computeCompleteness(profile)
+  const completeness = computeCompleteness(profile);
 
   return (
-    <div className="min-h-screen bg-background text-white">
+    <div className="flex-1 overflow-y-auto text-white">
       {/* Header */}
-      <div className="border-b border-gray-800 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-border/30 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <h1 className="text-xl font-semibold text-white">My Profile</h1>
-            </div>
+            <h1 className="text-xl font-semibold text-white">My Profile</h1>
             {!isEditing ? (
-              <Button onClick={startEditing} className="flex items-center gap-2">
+              <Button
+                onClick={startEditing}
+                className="flex items-center gap-2"
+              >
                 <Edit2 className="h-4 w-4" />
                 Edit Profile
               </Button>
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" onClick={cancelEditing} disabled={isSaving}>
+                <Button
+                  variant="ghost"
+                  onClick={cancelEditing}
+                  disabled={isSaving}
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2">
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="flex items-center gap-2"
+                >
                   {isSaving ? (
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   ) : (
@@ -389,7 +414,11 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <SelectField
                   label="Degree Level"
-                  value={isEditing ? (editFields.degreeLevel ?? null) : profile.degreeLevel}
+                  value={
+                    isEditing
+                      ? (editFields.degreeLevel ?? null)
+                      : profile.degreeLevel
+                  }
                   options={DEGREE_OPTIONS}
                   labelMap={DEGREE_LABELS}
                   isEditing={isEditing}
@@ -397,22 +426,32 @@ export default function ProfilePage() {
                 />
                 <SelectField
                   label="Field of Study"
-                  value={isEditing ? (editFields.fieldOfStudy ?? null) : profile.fieldOfStudy}
+                  value={
+                    isEditing
+                      ? (editFields.fieldOfStudy ?? null)
+                      : profile.fieldOfStudy
+                  }
                   options={FIELD_OPTIONS}
                   isEditing={isEditing}
                   onChange={(v) => updateField('fieldOfStudy', v)}
                 />
                 <div className="sm:col-span-2">
-                  <Label className="text-gray-400 text-sm">Current Education</Label>
+                  <Label className="text-gray-400 text-sm">
+                    Current Education
+                  </Label>
                   {isEditing ? (
                     <Input
                       value={editFields.currentEducation || ''}
-                      onChange={(e) => updateField('currentEducation', e.target.value)}
+                      onChange={(e) =>
+                        updateField('currentEducation', e.target.value)
+                      }
                       placeholder="e.g., B.Tech in CS from IIT Delhi"
                       className="mt-1 bg-background border-gray-800 text-white"
                     />
                   ) : (
-                    <p className="mt-1 text-white">{profile.currentEducation || 'Not set'}</p>
+                    <p className="mt-1 text-white">
+                      {profile.currentEducation || 'Not set'}
+                    </p>
                   )}
                 </div>
               </div>
@@ -432,14 +471,22 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <SelectField
                   label="Target Country"
-                  value={isEditing ? (editFields.targetCountry ?? null) : profile.targetCountry}
+                  value={
+                    isEditing
+                      ? (editFields.targetCountry ?? null)
+                      : profile.targetCountry
+                  }
                   options={COUNTRY_OPTIONS}
                   isEditing={isEditing}
                   onChange={(v) => updateField('targetCountry', v)}
                 />
                 <SelectField
                   label="Intake Season"
-                  value={isEditing ? (editFields.intakeSeason ?? null) : profile.intakeSeason}
+                  value={
+                    isEditing
+                      ? (editFields.intakeSeason ?? null)
+                      : profile.intakeSeason
+                  }
                   options={SEASON_OPTIONS}
                   labelMap={SEASON_LABELS}
                   isEditing={isEditing}
@@ -447,14 +494,26 @@ export default function ProfilePage() {
                 />
                 <SelectField
                   label="Intake Year"
-                  value={isEditing ? String(editFields.intakeYear ?? '') : (profile.intakeYear ? String(profile.intakeYear) : null)}
+                  value={
+                    isEditing
+                      ? String(editFields.intakeYear ?? '')
+                      : profile.intakeYear
+                        ? String(profile.intakeYear)
+                        : null
+                  }
                   options={YEAR_OPTIONS.map(String)}
                   isEditing={isEditing}
-                  onChange={(v) => updateField('intakeYear', v ? parseInt(v) : null)}
+                  onChange={(v) =>
+                    updateField('intakeYear', v ? parseInt(v) : null)
+                  }
                 />
                 <SelectField
                   label="Budget Range"
-                  value={isEditing ? (editFields.budgetRange ?? null) : profile.budgetRange}
+                  value={
+                    isEditing
+                      ? (editFields.budgetRange ?? null)
+                      : profile.budgetRange
+                  }
                   options={BUDGET_OPTIONS}
                   labelMap={BUDGET_LABELS}
                   isEditing={isEditing}
@@ -481,27 +540,41 @@ export default function ProfilePage() {
                     <div key={i} className="flex items-center gap-3">
                       <select
                         value={ts.examType}
-                        onChange={(e) => updateScore(i, 'examType', e.target.value)}
+                        onChange={(e) =>
+                          updateScore(i, 'examType', e.target.value)
+                        }
                         className="flex-1 px-3 py-2 bg-background border border-gray-800 rounded-md text-white focus:outline-none focus:border-orange-500"
                       >
                         <option value="">Select Exam</option>
                         {EXAM_OPTIONS.map((exam) => (
-                          <option key={exam} value={exam}>{exam}</option>
+                          <option key={exam} value={exam}>
+                            {exam}
+                          </option>
                         ))}
                       </select>
                       <Input
                         type="number"
                         placeholder="Score"
                         value={ts.overallScore}
-                        onChange={(e) => updateScore(i, 'overallScore', e.target.value)}
+                        onChange={(e) =>
+                          updateScore(i, 'overallScore', e.target.value)
+                        }
                         className="w-28 bg-background border-gray-800 text-white"
                       />
-                      <button onClick={() => removeScore(i)} className="p-2 text-gray-400 hover:text-red-400 transition-colors">
+                      <button
+                        onClick={() => removeScore(i)}
+                        className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
-                  <Button variant="outline" size="sm" onClick={addScore} className="flex items-center gap-2 border-dashed border-gray-700">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={addScore}
+                    className="flex items-center gap-2 border-dashed border-gray-700"
+                  >
                     <Plus className="h-4 w-4" />
                     Add Exam
                   </Button>
@@ -509,17 +582,27 @@ export default function ProfilePage() {
               ) : profile.testScores.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {profile.testScores.map((ts) => (
-                    <div key={ts.id} className="flex items-center gap-4 p-4 bg-background rounded-lg border border-gray-800">
+                    <div
+                      key={ts.id}
+                      className="flex items-center gap-4 p-4 bg-background rounded-lg border border-gray-800"
+                    >
                       <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
                         <ClipboardList className="h-5 w-5 text-orange-500" />
                       </div>
                       <div>
                         <p className="text-white font-medium">{ts.examType}</p>
                         <p className="text-sm text-gray-400">
-                          Score: <span className="text-orange-400 font-semibold">{ts.overallScore}</span>
+                          Score:{' '}
+                          <span className="text-orange-400 font-semibold">
+                            {ts.overallScore}
+                          </span>
                           {ts.dateTaken && (
                             <span className="ml-2">
-                              &middot; {new Date(ts.dateTaken).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                              &middot;{' '}
+                              {new Date(ts.dateTaken).toLocaleDateString(
+                                'en-US',
+                                { month: 'short', year: 'numeric' }
+                              )}
                             </span>
                           )}
                         </p>
@@ -528,7 +611,9 @@ export default function ProfilePage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-sm">No test scores added yet.</p>
+                <p className="text-gray-500 text-sm">
+                  No test scores added yet.
+                </p>
               )}
             </motion.div>
 
@@ -546,11 +631,13 @@ export default function ProfilePage() {
                 </h2>
                 <div className="space-y-3">
                   {Object.entries(
-                    profile.profileFields.reduce<Record<string, ProfileField[]>>((acc, pf) => {
-                      const cat = pf.category
-                      if (!acc[cat]) acc[cat] = []
-                      acc[cat].push(pf)
-                      return acc
+                    profile.profileFields.reduce<
+                      Record<string, ProfileField[]>
+                    >((acc, pf) => {
+                      const cat = pf.category;
+                      if (!acc[cat]) acc[cat] = [];
+                      acc[cat].push(pf);
+                      return acc;
                     }, {})
                   ).map(([category, fields]) => (
                     <div key={category}>
@@ -559,9 +646,14 @@ export default function ProfilePage() {
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {fields.map((pf) => (
-                          <div key={pf.id} className="flex items-center justify-between p-3 bg-background rounded-lg border border-gray-800">
+                          <div
+                            key={pf.id}
+                            className="flex items-center justify-between p-3 bg-background rounded-lg border border-gray-800"
+                          >
                             <div>
-                              <p className="text-sm text-gray-400">{pf.title}</p>
+                              <p className="text-sm text-gray-400">
+                                {pf.title}
+                              </p>
                               <p className="text-white">{pf.value}</p>
                             </div>
                             {pf.extractedBy === 'AGENT' && (
@@ -589,7 +681,8 @@ export default function ProfilePage() {
             >
               <Avatar className="h-24 w-24 mx-auto mb-4">
                 <AvatarFallback className="text-2xl bg-orange-500/20 text-orange-500">
-                  {profile.firstName?.charAt(0)}{profile.lastName?.charAt(0)}
+                  {profile.firstName?.charAt(0)}
+                  {profile.lastName?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <h3 className="text-xl font-semibold text-white">
@@ -600,14 +693,16 @@ export default function ProfilePage() {
               {profile.degreeLevel && (
                 <div className="mt-3 flex items-center justify-center gap-2 text-sm text-gray-300">
                   <GraduationCap className="h-4 w-4 text-orange-500" />
-                  {DEGREE_LABELS[profile.degreeLevel]} &middot; {profile.fieldOfStudy || 'Undecided'}
+                  {DEGREE_LABELS[profile.degreeLevel]} &middot;{' '}
+                  {profile.fieldOfStudy || 'Undecided'}
                 </div>
               )}
 
               {(profile.intakeSeason || profile.targetCountry) && (
                 <div className="mt-1 flex items-center justify-center gap-2 text-sm text-gray-400">
                   <Calendar className="h-3.5 w-3.5" />
-                  {profile.intakeSeason && SEASON_LABELS[profile.intakeSeason]}{' '}
+                  {profile.intakeSeason &&
+                    SEASON_LABELS[profile.intakeSeason]}{' '}
                   {profile.intakeYear} &middot; {profile.targetCountry}
                 </div>
               )}
@@ -615,7 +710,9 @@ export default function ProfilePage() {
               <div className="mt-6 space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-400">Profile Completion</span>
-                  <span className="text-orange-500 font-medium">{completeness}%</span>
+                  <span className="text-orange-500 font-medium">
+                    {completeness}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
                   <div
@@ -633,20 +730,28 @@ export default function ProfilePage() {
               transition={{ delay: 0.1 }}
               className="bg-gray-900/90 backdrop-blur-sm rounded-xl p-6 border border-gray-800"
             >
-              <h2 className="text-lg font-semibold text-white mb-4">Quick Stats</h2>
+              <h2 className="text-lg font-semibold text-white mb-4">
+                Quick Stats
+              </h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 text-sm">Test Scores</span>
-                  <span className="text-white font-medium">{profile.testScores.length}</span>
+                  <span className="text-white font-medium">
+                    {profile.testScores.length}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 text-sm">Profile Fields</span>
-                  <span className="text-white font-medium">{profile.profileFields.length}</span>
+                  <span className="text-white font-medium">
+                    {profile.profileFields.length}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 text-sm">Budget</span>
                   <span className="text-white font-medium">
-                    {profile.budgetRange ? BUDGET_LABELS[profile.budgetRange] : '—'}
+                    {profile.budgetRange
+                      ? BUDGET_LABELS[profile.budgetRange]
+                      : '—'}
                   </span>
                 </div>
               </div>
@@ -662,10 +767,13 @@ export default function ProfilePage() {
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-medium text-white mb-1">Your Privacy Matters</h3>
+                  <h3 className="font-medium text-white mb-1">
+                    Your Privacy Matters
+                  </h3>
                   <p className="text-sm text-gray-300">
-                    Your profile helps Maya and university counselors provide personalized guidance.
-                    We never share your data with third parties.
+                    Your profile helps Maya and university counselors provide
+                    personalized guidance. We never share your data with third
+                    parties.
                   </p>
                 </div>
               </div>
@@ -674,5 +782,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

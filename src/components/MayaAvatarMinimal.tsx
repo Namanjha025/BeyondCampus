@@ -1,19 +1,22 @@
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion';
 
 interface MayaAvatarProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  animated?: boolean
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  animated?: boolean;
 }
 
-export default function MayaAvatarMinimal({ size = 'md', animated = false }: MayaAvatarProps) {
+export default function MayaAvatarMinimal({
+  size = 'md',
+  animated = false,
+}: MayaAvatarProps) {
   const sizes = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
     lg: 'w-16 h-16',
-    xl: 'w-32 h-32'
-  }
+    xl: 'w-32 h-32',
+  };
 
-  const Avatar = animated ? motion.div : 'div'
+  const Avatar = animated ? motion.div : 'div';
 
   return (
     <Avatar
@@ -25,25 +28,30 @@ export default function MayaAvatarMinimal({ size = 'md', animated = false }: May
         transition: {
           duration: 2,
           repeat: Infinity,
-          ease: "easeInOut"
-        }
+          ease: 'easeInOut',
+        },
       })}
     >
       {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl shadow-lg" />
-      
+
       {/* Letter M for Maya */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className={`font-bold text-white ${
-          size === 'xl' ? 'text-5xl' : 
-          size === 'lg' ? 'text-2xl' : 
-          size === 'md' ? 'text-lg' : 
-          'text-sm'
-        }`}>
+        <span
+          className={`font-bold text-white ${
+            size === 'xl'
+              ? 'text-5xl'
+              : size === 'lg'
+                ? 'text-2xl'
+                : size === 'md'
+                  ? 'text-lg'
+                  : 'text-sm'
+          }`}
+        >
           M
         </span>
       </div>
-      
+
       {/* Subtle AI indicator dots */}
       {(size === 'lg' || size === 'xl') && (
         <>
@@ -53,5 +61,5 @@ export default function MayaAvatarMinimal({ size = 'md', animated = false }: May
         </>
       )}
     </Avatar>
-  )
+  );
 }

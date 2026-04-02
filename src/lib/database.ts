@@ -1,14 +1,14 @@
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export { prisma }
+export { prisma };
 
 export const database = {
   async createUser(userData: Prisma.UserUncheckedCreateInput) {
     return prisma.user.create({
       data: userData,
-    })
+    });
   },
 
   async getUser(userId: string) {
@@ -18,13 +18,13 @@ export const database = {
         testScores: { orderBy: { createdAt: 'desc' } },
         profileFields: { orderBy: { createdAt: 'desc' } },
       },
-    })
+    });
   },
 
   async updateUser(userId: string, updates: Prisma.UserUncheckedUpdateInput) {
     return prisma.user.update({
       where: { id: userId },
       data: updates,
-    })
+    });
   },
-}
+};

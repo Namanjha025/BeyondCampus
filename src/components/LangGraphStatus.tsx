@@ -1,8 +1,9 @@
 // Component to display LangGraph service status
-import { useLangGraphHealth } from '@/lib/langgraph-health'
+import { useLangGraphHealth } from '@/lib/langgraph-health';
 
 export function LangGraphStatus() {
-  const { health, isLoading, checkHealth, isHealthy, status } = useLangGraphHealth()
+  const { health, isLoading, checkHealth, isHealthy, status } =
+    useLangGraphHealth();
 
   if (isLoading && !health) {
     return (
@@ -10,7 +11,7 @@ export function LangGraphStatus() {
         <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
         Checking AI services...
       </div>
-    )
+    );
   }
 
   if (!health) {
@@ -19,34 +20,42 @@ export function LangGraphStatus() {
         <div className="w-2 h-2 bg-red-500 rounded-full" />
         AI services unavailable
       </div>
-    )
+    );
   }
 
   const getStatusColor = () => {
     switch (status) {
-      case 'healthy': return 'text-green-600'
-      case 'degraded': return 'text-yellow-600' 
-      case 'unhealthy': return 'text-red-600'
-      default: return 'text-gray-600'
+      case 'healthy':
+        return 'text-green-600';
+      case 'degraded':
+        return 'text-yellow-600';
+      case 'unhealthy':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
-  }
+  };
 
   const getDotColor = () => {
     switch (status) {
-      case 'healthy': return 'bg-green-500'
-      case 'degraded': return 'bg-yellow-500'
-      case 'unhealthy': return 'bg-red-500'
-      default: return 'bg-gray-500'
+      case 'healthy':
+        return 'bg-green-500';
+      case 'degraded':
+        return 'bg-yellow-500';
+      case 'unhealthy':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
-  }
+  };
 
   const getStatusText = () => {
-    const { trainer, chat } = health
-    if (trainer && chat) return 'AI services online'
-    if (trainer) return 'Training available'
-    if (chat) return 'Chat available'
-    return 'AI services offline'
-  }
+    const { trainer, chat } = health;
+    if (trainer && chat) return 'AI services online';
+    if (trainer) return 'Training available';
+    if (chat) return 'Chat available';
+    return 'AI services offline';
+  };
 
   return (
     <div className={`flex items-center gap-2 text-sm ${getStatusColor()}`}>
@@ -65,14 +74,14 @@ export function LangGraphStatus() {
         {isLoading ? '...' : '↻'}
       </button>
     </div>
-  )
+  );
 }
 
 export function LangGraphStatusBadge() {
-  const { status, isHealthy } = useLangGraphHealth()
-  
-  if (isHealthy) return null // Don't show badge when everything is working
-  
+  const { status, isHealthy } = useLangGraphHealth();
+
+  if (isHealthy) return null; // Don't show badge when everything is working
+
   return (
     <div className="fixed top-4 right-4 z-50">
       <div className="bg-yellow-100 border border-yellow-300 rounded-lg px-3 py-2 text-sm">
@@ -82,5 +91,5 @@ export function LangGraphStatusBadge() {
         </div>
       </div>
     </div>
-  )
+  );
 }

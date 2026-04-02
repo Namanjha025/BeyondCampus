@@ -1,59 +1,72 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X, Mic, MicOff, Send } from 'lucide-react'
-import MayaAvatar from './MayaAvatar'
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Mic, MicOff, Send } from 'lucide-react';
+import MayaAvatar from './MayaAvatar';
 
 interface MayaFloatingAssistantProps {
-  context?: 'universities' | 'profile' | 'applications' | 'general'
-  pageData?: any
-  onAction?: (action: any) => void
+  context?: 'universities' | 'profile' | 'applications' | 'general';
+  pageData?: any;
+  onAction?: (action: any) => void;
 }
 
-export default function MayaFloatingAssistant({ 
-  context = 'general', 
-  pageData, 
-  onAction 
+export default function MayaFloatingAssistant({
+  context = 'general',
+  pageData,
+  onAction,
 }: MayaFloatingAssistantProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [message, setMessage] = useState('')
-  const [isListening, setIsListening] = useState(false)
-  const [messages, setMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([])
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [messages, setMessages] = useState<
+    Array<{ role: 'user' | 'assistant'; content: string }>
+  >([]);
 
   // Initial greeting based on context
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const greetings = {
-        universities: "Hi! I'm Maya. I can help you find the perfect universities, explain rankings, or answer any questions about programs. What would you like to know?",
-        profile: "Hello! I can help you complete your profile or explain what information would strengthen your applications.",
-        applications: "I'm here to help with your applications. I can track deadlines, review documents, or guide you through requirements.",
-        general: "Hi! I'm Maya, your AI counselor. How can I assist you today?"
-      }
-      
-      setMessages([{
-        role: 'assistant',
-        content: greetings[context]
-      }])
+        universities:
+          "Hi! I'm Maya. I can help you find the perfect universities, explain rankings, or answer any questions about programs. What would you like to know?",
+        profile:
+          'Hello! I can help you complete your profile or explain what information would strengthen your applications.',
+        applications:
+          "I'm here to help with your applications. I can track deadlines, review documents, or guide you through requirements.",
+        general: "Hi! I'm Maya, your AI counselor. How can I assist you today?",
+      };
+
+      setMessages([
+        {
+          role: 'assistant',
+          content: greetings[context],
+        },
+      ]);
     }
-  }, [isOpen, context])
+  }, [isOpen, context]);
 
   const handleSendMessage = () => {
-    if (!message.trim()) return
-    
+    if (!message.trim()) return;
+
     // Add user message
-    setMessages(prev => [...prev, { role: 'user', content: message }])
-    
+    setMessages((prev) => [...prev, { role: 'user', content: message }]);
+
     // Simulate AI response (replace with actual API call)
     setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: "I understand you're asking about " + message + ". Let me help you with that..." 
-      }])
-    }, 1000)
-    
-    setMessage('')
-  }
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content:
+            "I understand you're asking about " +
+            message +
+            '. Let me help you with that...',
+        },
+      ]);
+    }, 1000);
+
+    setMessage('');
+  };
 
   return (
     <>
@@ -71,18 +84,18 @@ export default function MayaFloatingAssistant({
           >
             <div className="relative w-full h-full flex items-center justify-center">
               <MayaAvatar size="sm" />
-              
+
               {/* Pulse animation */}
               <motion.div
                 className="absolute inset-0 rounded-full bg-orange-500 opacity-20"
                 animate={{
                   scale: [1, 1.2, 1],
-                  opacity: [0.2, 0, 0.2]
+                  opacity: [0.2, 0, 0.2],
                 }}
                 transition={{
                   duration: 2,
                   repeat: Infinity,
-                  ease: "easeInOut"
+                  ease: 'easeInOut',
                 }}
               />
             </div>
@@ -97,7 +110,7 @@ export default function MayaFloatingAssistant({
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
-            transition={{ type: "spring", damping: 20 }}
+            transition={{ type: 'spring', damping: 20 }}
             className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-[#0a0a0a] rounded-2xl shadow-2xl border border-gray-800 flex flex-col"
           >
             {/* Header */}
@@ -148,7 +161,7 @@ export default function MayaFloatingAssistant({
                   placeholder="Ask me anything..."
                   className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
-                
+
                 <button
                   onClick={() => setIsListening(!isListening)}
                   className={`p-2 rounded-full transition-colors ${
@@ -157,9 +170,13 @@ export default function MayaFloatingAssistant({
                       : 'bg-gray-800 text-gray-400 hover:text-white'
                   }`}
                 >
-                  {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                  {isListening ? (
+                    <MicOff className="w-5 h-5" />
+                  ) : (
+                    <Mic className="w-5 h-5" />
+                  )}
                 </button>
-                
+
                 <button
                   onClick={handleSendMessage}
                   disabled={!message.trim()}
@@ -173,5 +190,5 @@ export default function MayaFloatingAssistant({
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }

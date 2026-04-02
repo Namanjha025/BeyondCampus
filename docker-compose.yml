@@ -8,14 +8,25 @@ services:
       POSTGRES_USER: beyondcampus
       POSTGRES_PASSWORD: beyondcampus
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U beyondcampus -d beyondcampus"]
+      test: ['CMD-SHELL', 'pg_isready -U beyondcampus -d beyondcampus']
       interval: 10s
       timeout: 5s
       retries: 5
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: beyondcampus-qdrant
+    restart: unless-stopped
+    ports:
+      - '6333:6333'
+      - '6334:6334'
+    volumes:
+      - qdrant_data:/qdrant/storage
+
 volumes:
   postgres_data:
+  qdrant_data:

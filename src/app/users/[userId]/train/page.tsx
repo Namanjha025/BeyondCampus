@@ -1,15 +1,15 @@
-"use client"
+'use client';
 
-import { useState, useRef, useEffect, Suspense } from "react"
-import { useRouter, useSearchParams, useParams } from "next/navigation"
-import { useSession } from "next-auth/react"
-import { cuidToUuid } from '@/lib/uuid-utils'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { 
-  BookOpen, 
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { cuidToUuid } from '@/lib/uuid-utils';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  BookOpen,
   ArrowLeft,
   Send,
   Pause,
@@ -34,86 +34,95 @@ import {
   GripVertical,
   ExternalLink,
   Maximize2,
-  User
-} from "lucide-react"
-import { cn } from '@/lib/utils'
-import AddMemoryDropdown from '@/components/AddMemoryDropdown'
+  User,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import AddMemoryDropdown from '@/components/AddMemoryDropdown';
 
 // Training session management
 interface TrainingSession {
-  notebookId: string
-  chapterId: string
-  threadId: string
-  topic: string
+  notebookId: string;
+  chapterId: string;
+  threadId: string;
+  topic: string;
 }
 
-
 interface Message {
-  id: string
-  role: "trainer" | "user"
-  content: string
-  timestamp: Date
+  id: string;
+  role: 'trainer' | 'user';
+  content: string;
+  timestamp: Date;
 }
 
 interface Chapter {
-  id: string
-  title: string
-  icon: any
-  status: "locked" | "current" | "completed"
-  description: string
+  id: string;
+  title: string;
+  icon: any;
+  status: 'locked' | 'current' | 'completed';
+  description: string;
 }
 
 export default function TrainAITwinPage() {
   return (
-    <Suspense fallback={<div className="flex h-screen items-center justify-center bg-background"><div className="text-muted-foreground">Loading...</div></div>}>
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center bg-background">
+          <div className="text-muted-foreground">Loading...</div>
+        </div>
+      }
+    >
       <TrainAITwin />
     </Suspense>
-  )
+  );
 }
 
 function TrainAITwin() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const params = useParams()
-  const [messages, setMessages] = useState<Message[]>([])
-  const [inputMessage, setInputMessage] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const [sessionStarted, setSessionStarted] = useState(false)
-  const [currentChapter, setCurrentChapter] = useState(0)
-  const [showAddChapter, setShowAddChapter] = useState(false)
-  const [newChapterTitle, setNewChapterTitle] = useState("")
-  const [newChapterDescription, setNewChapterDescription] = useState("")
-  const [viewingChapter, setViewingChapter] = useState<string | null>(null)
-  const [showInstructionModal, setShowInstructionModal] = useState(false)
-  const [newInstruction, setNewInstruction] = useState("")
-  const [instructions, setInstructions] = useState<string[]>([])
-  const [showUserMenu, setShowUserMenu] = useState(false)
-  const [showReflectionModal, setShowReflectionModal] = useState(false)
-  const [reflection, setReflection] = useState("")
-  const [isGeneratingReflection, setIsGeneratingReflection] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [previewOpen, setPreviewOpen] = useState(false)
-  const [previewWidth, setPreviewWidth] = useState(384)
-  const [isResizing, setIsResizing] = useState(false)
-  const [interviewMode, setInterviewMode] = useState(true)
-  const [isLoading, setIsLoading] = useState(false)
-  const [currentUser, setCurrentUser] = useState<{id: string, name: string} | null>(null)
-  const [twinId, setTwinId] = useState<string | null>(null)
-  const [twinData, setTwinData] = useState<any>(null)
-  const [trainingSession, setTrainingSession] = useState<TrainingSession | null>(null)
-  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [currentChapter, setCurrentChapter] = useState(0);
+  const [showAddChapter, setShowAddChapter] = useState(false);
+  const [newChapterTitle, setNewChapterTitle] = useState('');
+  const [newChapterDescription, setNewChapterDescription] = useState('');
+  const [viewingChapter, setViewingChapter] = useState<string | null>(null);
+  const [showInstructionModal, setShowInstructionModal] = useState(false);
+  const [newInstruction, setNewInstruction] = useState('');
+  const [instructions, setInstructions] = useState<string[]>([]);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showReflectionModal, setShowReflectionModal] = useState(false);
+  const [reflection, setReflection] = useState('');
+  const [isGeneratingReflection, setIsGeneratingReflection] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewWidth, setPreviewWidth] = useState(384);
+  const [isResizing, setIsResizing] = useState(false);
+  const [interviewMode, setInterviewMode] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [twinId, setTwinId] = useState<string | null>(null);
+  const [twinData, setTwinData] = useState<any>(null);
+  const [trainingSession, setTrainingSession] =
+    useState<TrainingSession | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   // Create or restore training session
   const createOrRestoreTrainingSession = async () => {
-    if (!twinId || !currentUser || !accessToken) return null
+    if (!twinId || !currentUser || !accessToken) return null;
 
-    const storageKey = `training_session_${twinId}_${currentUser.id}`
-    const savedSession = localStorage.getItem(storageKey)
+    const storageKey = `training_session_${twinId}_${currentUser.id}`;
+    const savedSession = localStorage.getItem(storageKey);
 
     if (savedSession) {
-      const session = JSON.parse(savedSession) as TrainingSession
-      console.log('Restored training session:', session)
-      return session
+      const session = JSON.parse(savedSession) as TrainingSession;
+      console.log('Restored training session:', session);
+      return session;
     }
 
     // Create new training session IDs
@@ -121,140 +130,155 @@ function TrainAITwin() {
       notebookId: crypto.randomUUID(),
       chapterId: crypto.randomUUID(),
       threadId: crypto.randomUUID(),
-      topic: interviewMode ? 'Interview Mode Training' : 'Custom Mode Training'
-    }
+      topic: interviewMode ? 'Interview Mode Training' : 'Custom Mode Training',
+    };
 
     // Save to localStorage
-    localStorage.setItem(storageKey, JSON.stringify(session))
-    console.log('Created new training session:', session)
-    return session
-  }
+    localStorage.setItem(storageKey, JSON.stringify(session));
+    console.log('Created new training session:', session);
+    return session;
+  };
 
   const handleModeSwitch = () => {
-    const newMode = !interviewMode
-    setInterviewMode(newMode)
-    
+    const newMode = !interviewMode;
+    setInterviewMode(newMode);
+
     // Clear saved session for this mode switch
     if (twinId && currentUser) {
-      const storageKey = `training_session_${twinId}_${currentUser.id}`
-      localStorage.removeItem(storageKey)
+      const storageKey = `training_session_${twinId}_${currentUser.id}`;
+      localStorage.removeItem(storageKey);
     }
-    
+
     // Reset session to show appropriate greeting for new mode
-    setSessionStarted(false)
-    setMessages([])
-    setTrainingSession(null)
-    
+    setSessionStarted(false);
+    setMessages([]);
+    setTrainingSession(null);
+
     // Don't reset currentUser - we want to keep the user data
-  }
-  const [activePanel, setActivePanel] = useState<string | null>(null)
-  const [panelWidth, setPanelWidth] = useState(400)
-  const [isPanelResizing, setIsPanelResizing] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const userMenuRef = useRef<HTMLDivElement>(null)
+  };
+  const [activePanel, setActivePanel] = useState<string | null>(null);
+  const [panelWidth, setPanelWidth] = useState(400);
+  const [isPanelResizing, setIsPanelResizing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // User-created chapters
-  const [customChapters, setCustomChapters] = useState<Chapter[]>([])
-  
+  const [customChapters, setCustomChapters] = useState<Chapter[]>([]);
+
   // Get current chapters
-  const chapters = customChapters
+  const chapters = customChapters;
 
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-  }, [inputMessage])
+  }, [inputMessage]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   // Close user menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setShowUserMenu(false)
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowUserMenu(false);
       }
     }
 
     if (showUserMenu) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showUserMenu])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   // Use NextAuth session
-  const { data: session, status } = useSession()
-  
+  const { data: session, status } = useSession();
+
   // Load twin data and user info from URL parameters + get auth token
   useEffect(() => {
     const initializeSession = async () => {
-      const twinIdParam = searchParams?.get('twinId')
-      const userIdParam = params?.userId as string
-      
+      const twinIdParam = searchParams?.get('twinId');
+      const userIdParam = params?.userId as string;
+
       if (twinIdParam && userIdParam && session) {
-        setTwinId(twinIdParam)
-        
+        setTwinId(twinIdParam);
+
         // For NextAuth, we don't need to send a token - the cookies handle auth
         if (session.user) {
           // Convert NextAuth CUID to UUID format (same as twin creation does)
-          const userUuid = cuidToUuid(userIdParam)
-          
+          const userUuid = cuidToUuid(userIdParam);
+
           // Set a flag to indicate we have auth, but no token needed for NextAuth
-          setAccessToken("nextauth-session")
+          setAccessToken('nextauth-session');
           setCurrentUser({
             id: userUuid, // Use UUID format, not CUID
-            name: session.user.name || session.user.email || `User_${userIdParam.slice(-4)}`
-          })
-          console.log('Training twin with ID:', twinIdParam, 'for user UUID:', userUuid, 'from CUID:', userIdParam)
+            name:
+              session.user.name ||
+              session.user.email ||
+              `User_${userIdParam.slice(-4)}`,
+          });
+          console.log(
+            'Training twin with ID:',
+            twinIdParam,
+            'for user UUID:',
+            userUuid,
+            'from CUID:',
+            userIdParam
+          );
         }
       } else if (status === 'unauthenticated') {
-        console.error('No valid session found for training')
+        console.error('No valid session found for training');
         // Redirect to sign in
-        router.push('/auth/signin')
+        router.push('/auth/signin');
       }
-    }
-    
+    };
+
     if (status !== 'loading') {
-      initializeSession()
+      initializeSession();
     }
-  }, [searchParams, params, session, status, router])
+  }, [searchParams, params, session, status, router]);
 
   const checkTwinExists = async (twinId: string, userId: string) => {
     try {
       const response = await fetch('/api/twins/create', {
-        method: 'GET'
-      })
-      
+        method: 'GET',
+      });
+
       if (response.ok) {
-        const data = await response.json()
-        console.log('All twins in database:', data.twins)
-        
+        const data = await response.json();
+        console.log('All twins in database:', data.twins);
+
         // Check if our twin exists
-        const twinExists = data.twins.some((t: any) => t.id === twinId && t.userId === userId)
+        const twinExists = data.twins.some(
+          (t: any) => t.id === twinId && t.userId === userId
+        );
         if (!twinExists) {
-          console.warn('Twin not found in database:', twinId)
+          console.warn('Twin not found in database:', twinId);
           // For now, let's create a fallback twin
-          await createFallbackTwin(twinId, userId)
+          await createFallbackTwin(twinId, userId);
         }
       }
     } catch (error) {
-      console.error('Error checking twin existence:', error)
+      console.error('Error checking twin existence:', error);
     }
-  }
+  };
 
   const createFallbackTwin = async (twinId: string, userId: string) => {
     try {
-      console.log('Creating fallback twin with expected ID:', twinId)
+      console.log('Creating fallback twin with expected ID:', twinId);
       const response = await fetch('/api/twins/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -266,512 +290,623 @@ function TrainAITwin() {
           personality: 'Helpful and friendly',
           tone: 'Professional',
           links: [],
-          customId: twinId  // Use the expected twinId
-        })
-      })
-      
+          customId: twinId, // Use the expected twinId
+        }),
+      });
+
       if (response.ok) {
-        const result = await response.json()
-        console.log('Created fallback twin:', result.twin)
-        console.log('Expected twinId:', twinId, 'Actual twinId:', result.twin.id)
+        const result = await response.json();
+        console.log('Created fallback twin:', result.twin);
+        console.log(
+          'Expected twinId:',
+          twinId,
+          'Actual twinId:',
+          result.twin.id
+        );
       } else {
-        const errorText = await response.text()
-        console.error('Failed to create fallback twin:', errorText)
+        const errorText = await response.text();
+        console.error('Failed to create fallback twin:', errorText);
       }
     } catch (error) {
-      console.error('Error creating fallback twin:', error)
+      console.error('Error creating fallback twin:', error);
     }
-  }
+  };
 
   // Start training session with dynamic AI greeting (wait for user data)
   useEffect(() => {
     if (!sessionStarted && currentUser?.id && accessToken && twinId) {
-      setSessionStarted(true)
+      setSessionStarted(true);
       // Initialize training session and get greeting
-      initializeTrainingSession()
+      initializeTrainingSession();
     }
-  }, [sessionStarted, currentUser, accessToken, twinId])
+  }, [sessionStarted, currentUser, accessToken, twinId]);
 
   const initializeTrainingSession = async () => {
-    if (!currentUser || !accessToken || !twinId) return
+    if (!currentUser || !accessToken || !twinId) return;
 
     try {
       // Create or restore training session
-      const session = await createOrRestoreTrainingSession()
-      if (!session) return
-      
-      setTrainingSession(session)
-      
+      const session = await createOrRestoreTrainingSession();
+      if (!session) return;
+
+      setTrainingSession(session);
+
       // Try to restore existing messages
-      const messageStorageKey = `training_messages_${twinId}_${currentUser.id}`
-      const savedMessages = localStorage.getItem(messageStorageKey)
-      
+      const messageStorageKey = `training_messages_${twinId}_${currentUser.id}`;
+      const savedMessages = localStorage.getItem(messageStorageKey);
+
       if (savedMessages) {
         const restoredMessages = JSON.parse(savedMessages).map((msg: any) => ({
           ...msg,
-          timestamp: new Date(msg.timestamp)
-        }))
-        setMessages(restoredMessages)
-        console.log('Restored', restoredMessages.length, 'messages')
-        return
+          timestamp: new Date(msg.timestamp),
+        }));
+        setMessages(restoredMessages);
+        console.log('Restored', restoredMessages.length, 'messages');
+        return;
       }
-      
+
       // No saved messages, get initial greeting from trainer
-      await getInitialTrainingGreeting(session)
-      
+      await getInitialTrainingGreeting(session);
     } catch (error) {
-      console.error('Error initializing training session:', error)
+      console.error('Error initializing training session:', error);
       // Fallback to static greeting
       const fallbackGreeting: Message = {
         id: Date.now().toString(),
-        role: "trainer",
-        content: interviewMode 
+        role: 'trainer',
+        content: interviewMode
           ? "✨ Welcome to Interview Mode! I'll guide you through structured questions to build your AI twin. Let's start - tell me about your professional background."
           : "✨ Welcome to Custom Mode! Share whatever you'd like me to learn about you. What aspect of your story would you like to explore today?",
-        timestamp: new Date()
-      }
-      setMessages([fallbackGreeting])
-      setIsTyping(false)
+        timestamp: new Date(),
+      };
+      setMessages([fallbackGreeting]);
+      setIsTyping(false);
     }
-  }
+  };
 
   // Save messages when they change
   useEffect(() => {
     if (trainingSession && currentUser && twinId && messages.length > 0) {
-      const messageStorageKey = `training_messages_${twinId}_${currentUser.id}`
-      localStorage.setItem(messageStorageKey, JSON.stringify(messages))
+      const messageStorageKey = `training_messages_${twinId}_${currentUser.id}`;
+      localStorage.setItem(messageStorageKey, JSON.stringify(messages));
     }
-  }, [messages, trainingSession, currentUser, twinId])
+  }, [messages, trainingSession, currentUser, twinId]);
 
   // Get initial greeting from trainer service via BFF
   const getInitialTrainingGreeting = async (session: TrainingSession) => {
-    if (!accessToken || !twinId) return
+    if (!accessToken || !twinId) return;
 
     // We'll show a placeholder trainer bubble instead of a separate typing indicator
-    
+
     try {
       // Create a placeholder trainer message to stream into
-      const trainerMessageId = Date.now().toString()
+      const trainerMessageId = Date.now().toString();
       const placeholder: Message = {
         id: trainerMessageId,
-        role: "trainer",
-        content: "",
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, placeholder])
+        role: 'trainer',
+        content: '',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, placeholder]);
       // Hide separate typing indicator when placeholder bubble is present
-      setIsTyping(false)
+      setIsTyping(false);
 
       const response = await fetch(`/api/twins/${twinId}/trainer/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'text/event-stream',
+          Accept: 'text/event-stream',
           // Authorization header not required (NextAuth session via cookies)
         },
         body: JSON.stringify({
           notebook_id: session.notebookId,
           chapter_id: session.chapterId,
           thread_id: session.threadId,
-          text: "start" // Initial greeting message
-        })
-      })
+          text: 'start', // Initial greeting message
+        }),
+      });
 
       if (!response.ok) {
-        const errText = await response.text()
-        throw new Error(`Training API error: ${response.status} - ${errText}`)
+        const errText = await response.text();
+        throw new Error(`Training API error: ${response.status} - ${errText}`);
       }
 
-      const { streamLangGraphResponse } = await import('@/lib/sse-parser')
-      let full = ''
+      const { streamLangGraphResponse } = await import('@/lib/sse-parser');
+      let full = '';
       for await (const msg of streamLangGraphResponse(response)) {
         if (msg.content && msg.content !== full) {
-          setMessages(prev => prev.map(m => m.id === trainerMessageId ? { ...m, content: msg.content } : m))
-          full = msg.content
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === trainerMessageId ? { ...m, content: msg.content } : m
+            )
+          );
+          full = msg.content;
         }
       }
-      setIsTyping(false)
+      setIsTyping(false);
     } catch (error) {
-      console.error('Error getting initial greeting:', error)
-      setIsTyping(false)
+      console.error('Error getting initial greeting:', error);
+      setIsTyping(false);
       // Fallback greeting
       const fallbackGreeting: Message = {
         id: Date.now().toString(),
-        role: "trainer", 
-        content: interviewMode 
+        role: 'trainer',
+        content: interviewMode
           ? "✨ Welcome! I'm here to help you train your AI twin through guided questions. Let's start with your background - what's your professional story?"
           : "✨ Welcome! I'm ready to learn about you. Share whatever aspect of your story feels important today.",
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, fallbackGreeting])
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, fallbackGreeting]);
     }
-  }
+  };
 
   const handlePublishTwin = async () => {
     if (!twinId || !currentUser?.id) {
-      alert('Twin ID or user not found')
-      return
+      alert('Twin ID or user not found');
+      return;
     }
-    
+
     try {
-      console.log('Publishing twin:', { twinId, userId: currentUser.id })
-      console.log('Current user:', currentUser)
-      
+      console.log('Publishing twin:', { twinId, userId: currentUser.id });
+      console.log('Current user:', currentUser);
+
       const response = await fetch('/api/twins/publish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           twinId,
-          userId: currentUser.id
-        })
-      })
-      
-      const result = await response.json()
-      
+          userId: currentUser.id,
+        }),
+      });
+
+      const result = await response.json();
+
       if (result.success) {
-        console.log('Twin published successfully:', result.twin)
-        alert(`Twin published successfully! Available at: ${window.location.origin}${result.publicUrl}`)
+        console.log('Twin published successfully:', result.twin);
+        alert(
+          `Twin published successfully! Available at: ${window.location.origin}${result.publicUrl}`
+        );
         // Optionally redirect to the published twin or success page
-        router.push(result.publicUrl)
+        router.push(result.publicUrl);
       } else {
-        console.error('Failed to publish twin:', result.error)
-        console.log('Publish request details:', { twinId, userId: currentUser.id })
-        
+        console.error('Failed to publish twin:', result.error);
+        console.log('Publish request details:', {
+          twinId,
+          userId: currentUser.id,
+        });
+
         // Let's check what twins are in the database right now
         try {
-          const debugResponse = await fetch('/api/twins/create', { method: 'GET' })
+          const debugResponse = await fetch('/api/twins/create', {
+            method: 'GET',
+          });
           if (debugResponse.ok) {
-            const debugData = await debugResponse.json()
-            console.log('Twins in database during publish error:', debugData.twins)
+            const debugData = await debugResponse.json();
+            console.log(
+              'Twins in database during publish error:',
+              debugData.twins
+            );
           }
         } catch (e) {
-          console.log('Could not fetch twins for debugging')
+          console.log('Could not fetch twins for debugging');
         }
-        
-        alert('Failed to publish twin: ' + result.error)
+
+        alert('Failed to publish twin: ' + result.error);
       }
     } catch (error) {
-      console.error('Error publishing twin:', error)
-      alert('Error publishing twin')
+      console.error('Error publishing twin:', error);
+      alert('Error publishing twin');
     }
-  }
-
+  };
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading || !trainingSession || !accessToken || !twinId) return
+    if (
+      !inputMessage.trim() ||
+      isLoading ||
+      !trainingSession ||
+      !accessToken ||
+      !twinId
+    )
+      return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: "user",
+      role: 'user',
       content: inputMessage.trim(),
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    };
 
-    setMessages(prev => [...prev, userMessage])
-    setInputMessage("")
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInputMessage('');
+    setIsLoading(true);
     // We'll render a placeholder trainer bubble instead of a separate typing indicator
 
     // Create a placeholder message for trainer response
-    const trainerMessageId = (Date.now() + 1).toString()
+    const trainerMessageId = (Date.now() + 1).toString();
     const trainerMessage: Message = {
       id: trainerMessageId,
-      role: "trainer",
-      content: "",
-      timestamp: new Date()
-    }
-    
-    setMessages(prev => [...prev, trainerMessage])
+      role: 'trainer',
+      content: '',
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, trainerMessage]);
     // Hide separate typing indicator when placeholder bubble is present
-    setIsTyping(false)
+    setIsTyping(false);
 
     try {
       console.log('Sending message to trainer via BFF:', {
         twinId,
         sessionIds: trainingSession,
-        messageLength: userMessage.content.length
-      })
+        messageLength: userMessage.content.length,
+      });
 
       const response = await fetch(`/api/twins/${twinId}/trainer/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'text/event-stream',
+          Accept: 'text/event-stream',
           // No Authorization header needed - NextAuth uses cookies
         },
         body: JSON.stringify({
           notebook_id: trainingSession.notebookId,
           chapter_id: trainingSession.chapterId,
           thread_id: trainingSession.threadId,
-          text: userMessage.content
-        })
-      })
+          text: userMessage.content,
+        }),
+      });
 
       if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`Training API error: ${response.status} - ${errorText}`)
+        const errorText = await response.text();
+        throw new Error(
+          `Training API error: ${response.status} - ${errorText}`
+        );
       }
 
       // Handle streaming response using SSE parser
-      const { streamLangGraphResponse } = await import('@/lib/sse-parser')
-      let fullResponse = ''
+      const { streamLangGraphResponse } = await import('@/lib/sse-parser');
+      let fullResponse = '';
 
       for await (const streamingMessage of streamLangGraphResponse(response)) {
-        if (streamingMessage.content && streamingMessage.content !== fullResponse) {
-          setMessages(prev => prev.map(msg =>
-            msg.id === trainerMessageId
-              ? { ...msg, content: streamingMessage.content }
-              : msg
-          ))
-          fullResponse = streamingMessage.content
+        if (
+          streamingMessage.content &&
+          streamingMessage.content !== fullResponse
+        ) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === trainerMessageId
+                ? { ...msg, content: streamingMessage.content }
+                : msg
+            )
+          );
+          fullResponse = streamingMessage.content;
         }
       }
 
       console.log('Training message complete:', {
         responseLength: fullResponse.length,
-        streaming: true
-      })
-
+        streaming: true,
+      });
     } catch (error) {
-      console.error('Error in handleSendMessage:', error)
-      
+      console.error('Error in handleSendMessage:', error);
+
       // Update the placeholder message with error fallback
-      setMessages(prev => prev.map(msg => 
-        msg.id === trainerMessageId 
-          ? { 
-              ...msg, 
-              content: "I apologize, but I'm having trouble connecting to the training system right now. Please try again in a moment. Your message is important to me!" 
-            }
-          : msg
-      ))
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === trainerMessageId
+            ? {
+                ...msg,
+                content:
+                  "I apologize, but I'm having trouble connecting to the training system right now. Please try again in a moment. Your message is important to me!",
+              }
+            : msg
+        )
+      );
     } finally {
-      setIsTyping(false)
-      setIsLoading(false)
+      setIsTyping(false);
+      setIsLoading(false);
     }
-  }
+  };
 
   // Check if user input contains instruction keywords
   const detectInstruction = (input: string): boolean => {
     const instructionKeywords = [
-      "add instruction", "make sure", "always mention", "never say", "remember to",
-      "instruction:", "rule:", "guideline:", "when responding", "make sure my twin"
-    ]
-    return instructionKeywords.some(keyword => input.toLowerCase().includes(keyword.toLowerCase()))
-  }
+      'add instruction',
+      'make sure',
+      'always mention',
+      'never say',
+      'remember to',
+      'instruction:',
+      'rule:',
+      'guideline:',
+      'when responding',
+      'make sure my twin',
+    ];
+    return instructionKeywords.some((keyword) =>
+      input.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
 
   // Check if user input contains profile information
-  const detectProfileInfo = (input: string): { type: string; detected: boolean } => {
+  const detectProfileInfo = (
+    input: string
+  ): { type: string; detected: boolean } => {
     const profilePatterns = {
       achievement: [
-        "I won", "I received", "I got awarded", "I achieved", "I earned", "I was recognized",
-        "I completed certification", "I graduated", "I finished", "award", "certificate"
+        'I won',
+        'I received',
+        'I got awarded',
+        'I achieved',
+        'I earned',
+        'I was recognized',
+        'I completed certification',
+        'I graduated',
+        'I finished',
+        'award',
+        'certificate',
       ],
       link: [
-        "my website", "my portfolio", "my github", "my linkedin", "check out my",
-        "here's my", "you can find me at", "http", "www.", ".com", ".dev", ".io"
+        'my website',
+        'my portfolio',
+        'my github',
+        'my linkedin',
+        'check out my',
+        "here's my",
+        'you can find me at',
+        'http',
+        'www.',
+        '.com',
+        '.dev',
+        '.io',
       ],
       skill: [
-        "I'm good at", "I know", "I can", "I'm experienced in", "I work with",
-        "I specialize in", "my skills include", "I'm proficient in"
+        "I'm good at",
+        'I know',
+        'I can',
+        "I'm experienced in",
+        'I work with',
+        'I specialize in',
+        'my skills include',
+        "I'm proficient in",
       ],
       experience: [
-        "I work at", "I worked at", "my job", "my role", "I'm a", "I was a",
-        "my company", "my position", "currently working"
+        'I work at',
+        'I worked at',
+        'my job',
+        'my role',
+        "I'm a",
+        'I was a',
+        'my company',
+        'my position',
+        'currently working',
       ],
       education: [
-        "I studied", "I went to", "I have a degree", "my university", "my college",
-        "I majored in", "graduated from"
-      ]
-    }
+        'I studied',
+        'I went to',
+        'I have a degree',
+        'my university',
+        'my college',
+        'I majored in',
+        'graduated from',
+      ],
+    };
 
     for (const [type, patterns] of Object.entries(profilePatterns)) {
-      if (patterns.some(pattern => input.toLowerCase().includes(pattern.toLowerCase()))) {
-        return { type, detected: true }
+      if (
+        patterns.some((pattern) =>
+          input.toLowerCase().includes(pattern.toLowerCase())
+        )
+      ) {
+        return { type, detected: true };
       }
     }
-    
-    return { type: '', detected: false }
-  }
+
+    return { type: '', detected: false };
+  };
 
   // Generate contextual responses based on conversation
-  const getTrainerResponse = (userInput: string, history: Message[]): string => {
-    const messageCount = history.filter(m => m.role === "user").length
+  const getTrainerResponse = (
+    userInput: string,
+    history: Message[]
+  ): string => {
+    const messageCount = history.filter((m) => m.role === 'user').length;
 
     // Check if this looks like an instruction
     if (detectInstruction(userInput)) {
-      return "💡 I notice this sounds like an instruction for your AI Twin! Would you like me to add this as a permanent guideline? I can help you refine it to make sure your twin follows it consistently. Should I add this instruction for you?"
+      return '💡 I notice this sounds like an instruction for your AI Twin! Would you like me to add this as a permanent guideline? I can help you refine it to make sure your twin follows it consistently. Should I add this instruction for you?';
     }
 
     // Check if this contains profile information
-    const profileDetection = detectProfileInfo(userInput)
+    const profileDetection = detectProfileInfo(userInput);
     if (profileDetection.detected) {
       const profileResponses = {
-        achievement: "🏆 That's an impressive achievement! This sounds like something important for your portfolio. Would you like me to add this to your achievements section? I can help capture the details and make sure it's properly documented.",
-        link: "🔗 I noticed you mentioned a link or website! This would be great to add to your portfolio. Should I help you save this link so people can easily find your work?",
-        skill: "🎯 Great! It sounds like you have valuable skills to showcase. Would you like me to add these to your skills section in your portfolio? I can help organize them by proficiency level too.",
-        experience: "💼 Your work experience is valuable information! This would be perfect for your portfolio. Should I help you add this experience with proper details like dates and responsibilities?",
-        education: "🎓 Your educational background is important! Would you like me to add this to your education section in your portfolio? I can help organize all the details properly."
-      }
-      
-      return profileResponses[profileDetection.type as keyof typeof profileResponses] || 
-        "📝 This sounds like valuable information for your profile! Would you like me to help you save this to your portfolio?"
+        achievement:
+          "🏆 That's an impressive achievement! This sounds like something important for your portfolio. Would you like me to add this to your achievements section? I can help capture the details and make sure it's properly documented.",
+        link: '🔗 I noticed you mentioned a link or website! This would be great to add to your portfolio. Should I help you save this link so people can easily find your work?',
+        skill:
+          '🎯 Great! It sounds like you have valuable skills to showcase. Would you like me to add these to your skills section in your portfolio? I can help organize them by proficiency level too.',
+        experience:
+          '💼 Your work experience is valuable information! This would be perfect for your portfolio. Should I help you add this experience with proper details like dates and responsibilities?',
+        education:
+          '🎓 Your educational background is important! Would you like me to add this to your education section in your portfolio? I can help organize all the details properly.',
+      };
+
+      return (
+        profileResponses[
+          profileDetection.type as keyof typeof profileResponses
+        ] ||
+        '📝 This sounds like valuable information for your profile! Would you like me to help you save this to your portfolio?'
+      );
     }
 
     if (interviewMode) {
       // Structured interview questions for mentors
       const mentorInterviewQuestions = [
         "🎯 Great! Now let's dive deeper. What type of mentees do you typically work with, and what draws you to mentoring?",
-        "🌟 Excellent! What are the most common challenges your mentees bring to you? What patterns do you see?",
+        '🌟 Excellent! What are the most common challenges your mentees bring to you? What patterns do you see?',
         "💪 Let's talk about your mentoring approach. Do you have a specific philosophy or framework you follow?",
-        "🎨 Can you share a mentoring success story? Tell me about a time when you really made a difference for someone.",
-        "💬 How would you describe your mentoring style? Are you more of a coach, advisor, or something else?",
+        '🎨 Can you share a mentoring success story? Tell me about a time when you really made a difference for someone.',
+        '💬 How would you describe your mentoring style? Are you more of a coach, advisor, or something else?',
         "🚀 What's your expertise area that makes you valuable as a mentor? What unique insights do you offer?",
-        "💡 What advice do you find yourself giving repeatedly? What are your go-to wisdom nuggets?",
-        "🔧 How do you typically structure your mentoring relationships? What boundaries do you set?",
+        '💡 What advice do you find yourself giving repeatedly? What are your go-to wisdom nuggets?',
+        '🔧 How do you typically structure your mentoring relationships? What boundaries do you set?',
         "🎓 What's been your own learning journey that prepared you to mentor others?",
-        "🤔 What would you want potential mentees to know about working with you?"
-      ]
+        '🤔 What would you want potential mentees to know about working with you?',
+      ];
 
       if (messageCount <= mentorInterviewQuestions.length) {
-        return mentorInterviewQuestions[messageCount - 1] || "🌟 This is really insightful! Tell me more about what makes this approach effective."
+        return (
+          mentorInterviewQuestions[messageCount - 1] ||
+          '🌟 This is really insightful! Tell me more about what makes this approach effective.'
+        );
       }
-      
+
       // Interview follow-ups
       const interviewFollowUps = [
         "🤔 That's a great example! Can you give me more specific details about how that situation unfolded?",
-        "✨ I love that approach! How did you develop this mentoring style over time?",
+        '✨ I love that approach! How did you develop this mentoring style over time?',
         "💭 That's valuable insight! What would you say to other mentors who struggle with this?",
-        "🔍 Tell me more about that - what made that particular mentoring relationship successful?",
-        "🌟 That's exactly the kind of wisdom your twin should share! Any other similar experiences?"
-      ]
-      
-      return interviewFollowUps[Math.floor(Math.random() * interviewFollowUps.length)]
+        '🔍 Tell me more about that - what made that particular mentoring relationship successful?',
+        "🌟 That's exactly the kind of wisdom your twin should share! Any other similar experiences?",
+      ];
+
+      return interviewFollowUps[
+        Math.floor(Math.random() * interviewFollowUps.length)
+      ];
     } else {
       // Custom mode - more open-ended responses
       const customModeResponses = [
         "🤔 That's fascinating! Can you tell me more about what made that experience so impactful?",
-        "✨ I love that perspective! How has this shaped the way you approach mentoring?",
+        '✨ I love that perspective! How has this shaped the way you approach mentoring?',
         "💭 That's a great insight! What would you want your mentees to learn from this?",
-        "🔍 Interesting! What other details about this would help someone understand your approach?",
+        '🔍 Interesting! What other details about this would help someone understand your approach?',
         "🌟 That's valuable information! Is there anything else about this topic that's important to your mentoring?",
-        "🎯 Perfect! What other aspects of your mentoring experience should I know about?"
-      ]
-      
-      return customModeResponses[Math.floor(Math.random() * customModeResponses.length)]
+        '🎯 Perfect! What other aspects of your mentoring experience should I know about?',
+      ];
+
+      return customModeResponses[
+        Math.floor(Math.random() * customModeResponses.length)
+      ];
     }
-  }
+  };
 
   const generateReflection = () => {
-    setShowReflectionModal(true)
-    setIsGeneratingReflection(true)
-    
+    setShowReflectionModal(true);
+    setIsGeneratingReflection(true);
+
     // Simulate AI reflection generation based on conversation history
     setTimeout(() => {
-      const messageCount = messages.filter(m => m.role === "user").length
-      const conversationDepth = messages.length
-      
-      let reflectionText = ""
-      
+      const messageCount = messages.filter((m) => m.role === 'user').length;
+      const conversationDepth = messages.length;
+
+      let reflectionText = '';
+
       if (messageCount === 0) {
-        reflectionText = "I'm excited to get to know you! While we haven't started our conversation yet, I can sense you're ready to share your story. I'm here to help you explore and articulate the experiences that have shaped who you are today."
+        reflectionText =
+          "I'm excited to get to know you! While we haven't started our conversation yet, I can sense you're ready to share your story. I'm here to help you explore and articulate the experiences that have shaped who you are today.";
       } else if (messageCount < 3) {
-        reflectionText = `Based on our brief conversation so far, I can see you're thoughtful about sharing your experiences. You've given me ${messageCount} glimpse${messageCount > 1 ? 's' : ''} into your world, and I'm already starting to understand your communication style. There's clearly much more depth to your story that I'm eager to explore with you.`
+        reflectionText = `Based on our brief conversation so far, I can see you're thoughtful about sharing your experiences. You've given me ${messageCount} glimpse${messageCount > 1 ? 's' : ''} into your world, and I'm already starting to understand your communication style. There's clearly much more depth to your story that I'm eager to explore with you.`;
       } else if (messageCount < 6) {
-        reflectionText = `Through our ${conversationDepth} exchanges, I'm beginning to see patterns in how you think and express yourself. You seem to be someone who values authenticity and takes time to reflect before sharing. Your experiences suggest a journey of growth and learning. I can sense there are pivotal moments in your story that have really shaped your perspective.`
+        reflectionText = `Through our ${conversationDepth} exchanges, I'm beginning to see patterns in how you think and express yourself. You seem to be someone who values authenticity and takes time to reflect before sharing. Your experiences suggest a journey of growth and learning. I can sense there are pivotal moments in your story that have really shaped your perspective.`;
       } else {
-        reflectionText = `After our rich conversation with ${conversationDepth} exchanges, I'm developing a clearer picture of who you are. You demonstrate thoughtfulness in how you approach challenges, and there's a clear thread of resilience running through your experiences. Your communication style shows both vulnerability and strength - you're willing to share meaningful experiences while maintaining perspective on your growth. I can see how your past experiences are informing your current worldview and future aspirations.`
+        reflectionText = `After our rich conversation with ${conversationDepth} exchanges, I'm developing a clearer picture of who you are. You demonstrate thoughtfulness in how you approach challenges, and there's a clear thread of resilience running through your experiences. Your communication style shows both vulnerability and strength - you're willing to share meaningful experiences while maintaining perspective on your growth. I can see how your past experiences are informing your current worldview and future aspirations.`;
       }
-      
-      reflectionText += " Through our structured training conversation, I'm learning about different facets of your personality - from your professional background to personal values to the experiences that have shaped who you are today."
-      
-      setReflection(reflectionText)
-      setIsGeneratingReflection(false)
-    }, 2000) // Simulate processing time
-  }
+
+      reflectionText +=
+        " Through our structured training conversation, I'm learning about different facets of your personality - from your professional background to personal values to the experiences that have shaped who you are today.";
+
+      setReflection(reflectionText);
+      setIsGeneratingReflection(false);
+    }, 2000); // Simulate processing time
+  };
 
   const handlePauseTraining = () => {
     // Save progress and navigate to dashboard
-    router.push("/explore/my-twin")
-  }
+    router.push('/explore/my-twin');
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsResizing(true)
-    e.preventDefault()
-  }
+    setIsResizing(true);
+    e.preventDefault();
+  };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isResizing) return
-    
-    const newWidth = window.innerWidth - e.clientX
-    const minWidth = 300
-    const maxWidth = 600
-    
+    if (!isResizing) return;
+
+    const newWidth = window.innerWidth - e.clientX;
+    const minWidth = 300;
+    const maxWidth = 600;
+
     if (newWidth >= minWidth && newWidth <= maxWidth) {
-      setPreviewWidth(newWidth)
+      setPreviewWidth(newWidth);
     }
-  }
+  };
 
   const handleMouseUp = () => {
-    setIsResizing(false)
-  }
+    setIsResizing(false);
+  };
 
   useEffect(() => {
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = 'col-resize'
-      document.body.style.userSelect = 'none'
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [isResizing])
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
 
   const handlePanelMouseDown = (e: React.MouseEvent) => {
-    setIsPanelResizing(true)
-    e.preventDefault()
-  }
+    setIsPanelResizing(true);
+    e.preventDefault();
+  };
 
   const handlePanelMouseMove = (e: MouseEvent) => {
-    if (!isPanelResizing) return
-    
-    const newWidth = window.innerWidth - e.clientX
-    const minWidth = 300
-    const maxWidth = 800
-    
+    if (!isPanelResizing) return;
+
+    const newWidth = window.innerWidth - e.clientX;
+    const minWidth = 300;
+    const maxWidth = 800;
+
     if (newWidth >= minWidth && newWidth <= maxWidth) {
-      setPanelWidth(newWidth)
+      setPanelWidth(newWidth);
     }
-  }
+  };
 
   const handlePanelMouseUp = () => {
-    setIsPanelResizing(false)
-  }
+    setIsPanelResizing(false);
+  };
 
   useEffect(() => {
     if (isPanelResizing) {
-      document.addEventListener('mousemove', handlePanelMouseMove)
-      document.addEventListener('mouseup', handlePanelMouseUp)
-      document.body.style.cursor = 'col-resize'
-      document.body.style.userSelect = 'none'
+      document.addEventListener('mousemove', handlePanelMouseMove);
+      document.addEventListener('mouseup', handlePanelMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
     }
 
     return () => {
-      document.removeEventListener('mousemove', handlePanelMouseMove)
-      document.removeEventListener('mouseup', handlePanelMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [isPanelResizing])
+      document.removeEventListener('mousemove', handlePanelMouseMove);
+      document.removeEventListener('mouseup', handlePanelMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isPanelResizing]);
 
   return (
     <div className="flex h-screen bg-[#0d1117]">
       {/* Main Chat Area */}
-      <div className={cn("flex flex-col transition-all duration-300", previewOpen ? "flex-1" : "flex-1")}>
+      <div
+        className={cn(
+          'flex flex-col transition-all duration-300',
+          previewOpen ? 'flex-1' : 'flex-1'
+        )}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[hsl(0_0%_18%)]">
           <div className="flex items-center gap-4">
@@ -783,13 +918,15 @@ function TrainAITwin() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            
+
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-white">Training Your Twin</h1>
+                <h1 className="text-lg font-semibold text-white">
+                  Training Your Twin
+                </h1>
                 <p className="text-sm text-muted-foreground">
                   Training your AI Twin with essential questions
                 </p>
@@ -801,38 +938,45 @@ function TrainAITwin() {
             <div className="flex items-center gap-2 bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg px-3 py-2">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-white">Twin Development</span>
+                <span className="text-sm font-medium text-white">
+                  Twin Development
+                </span>
               </div>
               <div className="flex items-center gap-2 ml-4">
                 <div className="w-20 bg-[hsl(0_0%_18%)] rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: "35%" }}></div>
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-500"
+                    style={{ width: '35%' }}
+                  ></div>
                 </div>
                 <span className="text-xs text-primary font-semibold">35%</span>
               </div>
             </div>
-            
+
             {/* Interview Mode Toggle */}
             <div className="flex items-center gap-2 bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg px-3 py-2">
               <div className="flex items-center gap-2">
                 <MessageCircle className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-white">Interview Mode</span>
+                <span className="text-sm font-medium text-white">
+                  Interview Mode
+                </span>
               </div>
               <button
                 onClick={handleModeSwitch}
                 className={cn(
-                  "relative inline-flex h-5 w-9 items-center rounded-full transition-colors ml-2",
-                  interviewMode ? "bg-primary" : "bg-[hsl(0_0%_24%)]"
+                  'relative inline-flex h-5 w-9 items-center rounded-full transition-colors ml-2',
+                  interviewMode ? 'bg-primary' : 'bg-[hsl(0_0%_24%)]'
                 )}
               >
                 <span
                   className={cn(
-                    "inline-block h-3 w-3 transform rounded-full bg-white transition-transform",
-                    interviewMode ? "translate-x-5" : "translate-x-1"
+                    'inline-block h-3 w-3 transform rounded-full bg-white transition-transform',
+                    interviewMode ? 'translate-x-5' : 'translate-x-1'
                   )}
                 />
               </button>
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -842,7 +986,7 @@ function TrainAITwin() {
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
-            
+
             {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
               <Button
@@ -853,7 +997,10 @@ function TrainAITwin() {
               >
                 <Avatar className="h-7 w-7">
                   <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                    {session?.user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                    {session?.user?.name
+                      ?.split(' ')
+                      .map((n) => n[0])
+                      .join('') || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <ChevronDown className="h-3 w-3 ml-1" />
@@ -862,14 +1009,18 @@ function TrainAITwin() {
               {showUserMenu && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg shadow-lg z-50">
                   <div className="p-3 border-b border-[hsl(0_0%_18%)]">
-                    <p className="text-sm font-medium text-white">{session?.user?.name || "User"}</p>
-                    <p className="text-xs text-muted-foreground">{session?.user?.email || ""}</p>
+                    <p className="text-sm font-medium text-white">
+                      {session?.user?.name || 'User'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {session?.user?.email || ''}
+                    </p>
                   </div>
                   <div className="py-2">
                     <button
                       onClick={() => {
-                        handlePauseTraining()
-                        setShowUserMenu(false)
+                        handlePauseTraining();
+                        setShowUserMenu(false);
                       }}
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-[hsl(0_0%_12%)] transition-colors"
                     >
@@ -878,8 +1029,8 @@ function TrainAITwin() {
                     </button>
                     <button
                       onClick={() => {
-                        router.push("/portfolio")
-                        setShowUserMenu(false)
+                        router.push('/portfolio');
+                        setShowUserMenu(false);
                       }}
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-[hsl(0_0%_12%)] transition-colors"
                     >
@@ -888,8 +1039,8 @@ function TrainAITwin() {
                     </button>
                     <button
                       onClick={() => {
-                        router.push("/settings")
-                        setShowUserMenu(false)
+                        router.push('/settings');
+                        setShowUserMenu(false);
                       }}
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-[hsl(0_0%_12%)] transition-colors"
                     >
@@ -900,7 +1051,7 @@ function TrainAITwin() {
                       <button
                         onClick={() => {
                           // Handle logout
-                          setShowUserMenu(false)
+                          setShowUserMenu(false);
                         }}
                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                       >
@@ -922,44 +1073,50 @@ function TrainAITwin() {
               <div
                 key={message.id}
                 className={cn(
-                  "flex gap-3",
-                  message.role === "user" && "justify-end"
+                  'flex gap-3',
+                  message.role === 'user' && 'justify-end'
                 )}
               >
-                {message.role === "trainer" && (
+                {message.role === 'trainer' && (
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
                       <PenTool className="h-4 w-4" />
                     </AvatarFallback>
                   </Avatar>
                 )}
-                
-                <div className={cn(
-                  "max-w-[80%]",
-                  message.role === "user" && "flex flex-col items-end"
-                )}>
-                  {message.role === "trainer" && (
+
+                <div
+                  className={cn(
+                    'max-w-[80%]',
+                    message.role === 'user' && 'flex flex-col items-end'
+                  )}
+                >
+                  {message.role === 'trainer' && (
                     <p className="text-xs text-muted-foreground mb-1">
                       AI Trainer
                     </p>
                   )}
-                  <div className={cn(
-                    "rounded-lg px-4 py-3",
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)]"
-                  )}>
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                  <div
+                    className={cn(
+                      'rounded-lg px-4 py-3',
+                      message.role === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)]'
+                    )}
+                  >
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                      {message.content}
+                    </p>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">
                     {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit"
+                      hour: '2-digit',
+                      minute: '2-digit',
                     })}
                   </span>
                 </div>
 
-                {message.role === "user" && (
+                {message.role === 'user' && (
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="text-sm">You</AvatarFallback>
                   </Avatar>
@@ -977,11 +1134,22 @@ function TrainAITwin() {
                 <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      <div
+                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                        style={{ animationDelay: '0ms' }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                        style={{ animationDelay: '150ms' }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                        style={{ animationDelay: '300ms' }}
+                      ></div>
                     </div>
-                    <span className="text-sm text-muted-foreground">AI Trainer is thinking...</span>
+                    <span className="text-sm text-muted-foreground">
+                      AI Trainer is thinking...
+                    </span>
                   </div>
                 </div>
               </div>
@@ -999,8 +1167,8 @@ function TrainAITwin() {
                 variant="outline"
                 className="h-8 text-xs border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_8%)] hover:border-primary/30"
                 onClick={() => {
-                  setSidebarOpen(true)
-                  router.push("/explore/insights")
+                  setSidebarOpen(true);
+                  router.push('/explore/insights');
                 }}
               >
                 <BarChart3 className="h-3 w-3 mr-1.5" />
@@ -1015,9 +1183,9 @@ function TrainAITwin() {
                 <Sparkles className="h-3 w-3 mr-1.5" />
                 Reflect
               </Button>
-              <AddMemoryDropdown 
+              <AddMemoryDropdown
                 onAddContent={(content) => {
-                  setInputMessage(content)
+                  setInputMessage(content);
                 }}
               />
             </div>
@@ -1029,16 +1197,16 @@ function TrainAITwin() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSendMessage()
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
                   }
                 }}
                 placeholder="Share your story... Every detail helps paint a complete picture of who you are"
                 className="min-h-[80px] max-h-[200px] w-full resize-none bg-transparent border-0 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-0 p-4 pr-16"
                 rows={3}
               />
-              
+
               {/* Character count */}
               <div className="absolute bottom-2 left-4 text-xs text-muted-foreground">
                 {inputMessage.length > 0 && (
@@ -1064,13 +1232,16 @@ function TrainAITwin() {
             {/* Helper text */}
             <div className="flex items-center justify-between mt-3">
               <p className="text-xs text-muted-foreground">
-                {interviewMode 
+                {interviewMode
                   ? "🎯 Interview Mode: I'll guide you through structured mentoring questions"
-                  : "✨ Custom Mode: Share whatever mentoring experiences feel important to you"
-                }
+                  : '✨ Custom Mode: Share whatever mentoring experiences feel important to you'}
               </p>
               <p className="text-xs text-muted-foreground">
-                Press <kbd className="px-1.5 py-0.5 text-xs bg-[hsl(0_0%_18%)] rounded">Enter</kbd> to send
+                Press{' '}
+                <kbd className="px-1.5 py-0.5 text-xs bg-[hsl(0_0%_18%)] rounded">
+                  Enter
+                </kbd>{' '}
+                to send
               </p>
             </div>
           </div>
@@ -1079,7 +1250,7 @@ function TrainAITwin() {
 
       {/* Right Sidebar - Book Progress */}
       {sidebarOpen && (
-        <div 
+        <div
           className="border-l border-[hsl(0_0%_18%)] bg-[hsl(0_0%_6%)] p-4 overflow-y-auto flex flex-col relative"
           style={{ width: `${previewWidth}px` }}
         >
@@ -1145,266 +1316,356 @@ function TrainAITwin() {
           </div>
 
           <div className="space-y-3">
-
-          {/* Training Progress */}
-          <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-white">Training Progress</h3>
-              <div className={cn(
-                "px-2 py-1 rounded-full text-xs font-medium",
-                interviewMode 
-                  ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                  : "bg-green-500/10 text-green-400 border border-green-500/20"
-              )}>
-                {interviewMode ? "Interview" : "Custom"}
-              </div>
-            </div>
-            <div className="w-full bg-[hsl(0_0%_18%)] rounded-full h-2 mb-2">
-              <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: "35%" }}></div>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">7 of 20 questions answered</p>
-              <span className="text-xs text-primary font-semibold">35%</span>
-            </div>
-          </div>
-
-          {/* Publish Twin */}
-          <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
-            <h3 className="text-sm font-medium text-white mb-3">Publish Your Twin</h3>
-            <p className="text-xs text-muted-foreground mb-3">
-              Make your AI twin available for others to interact with
-            </p>
-            <Button
-              onClick={handlePublishTwin}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
-              disabled={!twinId || messages.filter(m => m.role === "user").length < 3}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Publish Twin
-            </Button>
-            {messages.filter(m => m.role === "user").length < 5 && (
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Complete more training to unlock publishing
-              </p>
-            )}
-          </div>
-
-          {/* Training Questions */}
-          <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
-            <h3 className="text-sm font-medium text-white mb-3">Essential Questions</h3>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {[
-                { id: 1, question: "What's your professional background?", completed: true },
-                { id: 2, question: "What are your core values?", completed: true },
-                { id: 3, question: "What are your key achievements?", completed: true },
-                { id: 4, question: "What challenges have you overcome?", completed: false },
-                { id: 5, question: "What are your hobbies and interests?", completed: false },
-                { id: 6, question: "What's your communication style?", completed: false },
-                { id: 7, question: "What are your future goals?", completed: false },
-                { id: 8, question: "What advice would you give to others?", completed: false },
-                { id: 9, question: "What are your technical skills?", completed: false },
-                { id: 10, question: "What's your educational background?", completed: false },
-              ].map((item) => (
-                <div key={item.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-[hsl(0_0%_10%)] transition-colors group">
-                  <div className={cn(
-                    "w-4 h-4 rounded-full border-2 flex items-center justify-center",
-                    item.completed 
-                      ? "bg-green-500 border-green-500" 
-                      : "border-[hsl(0_0%_24%)] group-hover:border-primary/50"
-                  )}>
-                    {item.completed && <CheckCircle2 className="w-2.5 h-2.5 text-white" />}
-                  </div>
-                  <span className={cn(
-                    "text-xs flex-1",
-                    item.completed ? "text-muted-foreground line-through" : "text-white"
-                  )}>
-                    {item.question}
-                  </span>
+            {/* Training Progress */}
+            <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-white">
+                  Training Progress
+                </h3>
+                <div
+                  className={cn(
+                    'px-2 py-1 rounded-full text-xs font-medium',
+                    interviewMode
+                      ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                      : 'bg-green-500/10 text-green-400 border border-green-500/20'
+                  )}
+                >
+                  {interviewMode ? 'Interview' : 'Custom'}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Custom Chapters */}
-          <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-white">
-                Add Content
-              </h3>
-              <div className="flex items-center gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
-                  onClick={() => router.push("/explore/chapters")}
-                >
-                  <BookOpen className="h-3 w-3" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
-                  onClick={() => setShowAddChapter(true)}
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
+              </div>
+              <div className="w-full bg-[hsl(0_0%_18%)] rounded-full h-2 mb-2">
+                <div
+                  className="bg-primary h-2 rounded-full transition-all duration-500"
+                  style={{ width: '35%' }}
+                ></div>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  7 of 20 questions answered
+                </p>
+                <span className="text-xs text-primary font-semibold">35%</span>
               </div>
             </div>
-            <div className="space-y-3">
-              {chapters.length > 0 ? chapters.map((chapter, index) => {
-                const Icon = chapter.icon
-                return (
-                  <div 
-                    key={chapter.id}
-                    className={cn(
-                      "flex items-start gap-3 p-2 rounded-lg transition-colors group",
-                      chapter.status === "current" && "bg-primary/10 border border-primary/30",
-                      chapter.status === "completed" && "hover:bg-[hsl(0_0%_18%)] cursor-pointer"
-                    )}
+
+            {/* Publish Twin */}
+            <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
+              <h3 className="text-sm font-medium text-white mb-3">
+                Publish Your Twin
+              </h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Make your AI twin available for others to interact with
+              </p>
+              <Button
+                onClick={handlePublishTwin}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                disabled={
+                  !twinId ||
+                  messages.filter((m) => m.role === 'user').length < 3
+                }
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Publish Twin
+              </Button>
+              {messages.filter((m) => m.role === 'user').length < 5 && (
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Complete more training to unlock publishing
+                </p>
+              )}
+            </div>
+
+            {/* Training Questions */}
+            <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
+              <h3 className="text-sm font-medium text-white mb-3">
+                Essential Questions
+              </h3>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {[
+                  {
+                    id: 1,
+                    question: "What's your professional background?",
+                    completed: true,
+                  },
+                  {
+                    id: 2,
+                    question: 'What are your core values?',
+                    completed: true,
+                  },
+                  {
+                    id: 3,
+                    question: 'What are your key achievements?',
+                    completed: true,
+                  },
+                  {
+                    id: 4,
+                    question: 'What challenges have you overcome?',
+                    completed: false,
+                  },
+                  {
+                    id: 5,
+                    question: 'What are your hobbies and interests?',
+                    completed: false,
+                  },
+                  {
+                    id: 6,
+                    question: "What's your communication style?",
+                    completed: false,
+                  },
+                  {
+                    id: 7,
+                    question: 'What are your future goals?',
+                    completed: false,
+                  },
+                  {
+                    id: 8,
+                    question: 'What advice would you give to others?',
+                    completed: false,
+                  },
+                  {
+                    id: 9,
+                    question: 'What are your technical skills?',
+                    completed: false,
+                  },
+                  {
+                    id: 10,
+                    question: "What's your educational background?",
+                    completed: false,
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-[hsl(0_0%_10%)] transition-colors group"
                   >
-                    <div className={cn(
-                      "mt-0.5",
-                      chapter.status === "completed" && "text-green-500",
-                      chapter.status === "current" && "text-primary",
-                      chapter.status === "locked" && "text-muted-foreground opacity-50"
-                    )}>
-                      {chapter.status === "completed" ? (
-                        <CheckCircle2 className="h-4 w-4" />
-                      ) : (
-                        <Icon className="h-4 w-4" />
+                    <div
+                      className={cn(
+                        'w-4 h-4 rounded-full border-2 flex items-center justify-center',
+                        item.completed
+                          ? 'bg-green-500 border-green-500'
+                          : 'border-[hsl(0_0%_24%)] group-hover:border-primary/50'
+                      )}
+                    >
+                      {item.completed && (
+                        <CheckCircle2 className="w-2.5 h-2.5 text-white" />
                       )}
                     </div>
-                    <div className="flex-1">
-                      <h4 className={cn(
-                        "text-sm font-medium",
-                        chapter.status === "current" && "text-white",
-                        chapter.status === "completed" && "text-muted-foreground group-hover:text-white",
-                        chapter.status === "locked" && "text-muted-foreground opacity-50"
-                      )}>
-                        {chapter.title}
-                      </h4>
-                      <p className={cn(
-                        "text-xs mt-0.5",
-                        chapter.status === "locked" ? "text-muted-foreground opacity-50" : "text-muted-foreground"
-                      )}>
-                        {chapter.description}
-                      </p>
-                    </div>
-                    {chapter.status === "completed" && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => setViewingChapter(chapter.id)}
-                      >
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                    )}
+                    <span
+                      className={cn(
+                        'text-xs flex-1',
+                        item.completed
+                          ? 'text-muted-foreground line-through'
+                          : 'text-white'
+                      )}
+                    >
+                      {item.question}
+                    </span>
                   </div>
-                )
-              }) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No chapters created yet</p>
-                  <p className="text-xs mt-1">Add your first custom chapter to get started</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Chapters */}
+            <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-white">Add Content</h3>
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
+                    onClick={() => router.push('/explore/chapters')}
+                  >
+                    <BookOpen className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
+                    onClick={() => setShowAddChapter(true)}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
                 </div>
-              )}
+              </div>
+              <div className="space-y-3">
+                {chapters.length > 0 ? (
+                  chapters.map((chapter, index) => {
+                    const Icon = chapter.icon;
+                    return (
+                      <div
+                        key={chapter.id}
+                        className={cn(
+                          'flex items-start gap-3 p-2 rounded-lg transition-colors group',
+                          chapter.status === 'current' &&
+                            'bg-primary/10 border border-primary/30',
+                          chapter.status === 'completed' &&
+                            'hover:bg-[hsl(0_0%_18%)] cursor-pointer'
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            'mt-0.5',
+                            chapter.status === 'completed' && 'text-green-500',
+                            chapter.status === 'current' && 'text-primary',
+                            chapter.status === 'locked' &&
+                              'text-muted-foreground opacity-50'
+                          )}
+                        >
+                          {chapter.status === 'completed' ? (
+                            <CheckCircle2 className="h-4 w-4" />
+                          ) : (
+                            <Icon className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4
+                            className={cn(
+                              'text-sm font-medium',
+                              chapter.status === 'current' && 'text-white',
+                              chapter.status === 'completed' &&
+                                'text-muted-foreground group-hover:text-white',
+                              chapter.status === 'locked' &&
+                                'text-muted-foreground opacity-50'
+                            )}
+                          >
+                            {chapter.title}
+                          </h4>
+                          <p
+                            className={cn(
+                              'text-xs mt-0.5',
+                              chapter.status === 'locked'
+                                ? 'text-muted-foreground opacity-50'
+                                : 'text-muted-foreground'
+                            )}
+                          >
+                            {chapter.description}
+                          </p>
+                        </div>
+                        {chapter.status === 'completed' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => setViewingChapter(chapter.id)}
+                          >
+                            <Eye className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No chapters created yet</p>
+                    <p className="text-xs mt-1">
+                      Add your first custom chapter to get started
+                    </p>
+                  </div>
+                )}
 
-              {/* Add Chapter Button - More Visible */}
-              <button
-                onClick={() => setShowAddChapter(true)}
-                className="w-full p-3 border border-dashed border-[hsl(0_0%_18%)] hover:border-primary/50 rounded-lg text-sm text-muted-foreground hover:text-white transition-all flex items-center justify-center gap-2 mt-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add Custom Chapter
-              </button>
-            </div>
-          </div>
-
-          {/* Instructions */}
-          <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-white">
-                Twin Instructions
-              </h3>
-              <div className="flex items-center gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
-                  onClick={() => router.push("/explore/my-twin")}
+                {/* Add Chapter Button - More Visible */}
+                <button
+                  onClick={() => setShowAddChapter(true)}
+                  className="w-full p-3 border border-dashed border-[hsl(0_0%_18%)] hover:border-primary/50 rounded-lg text-sm text-muted-foreground hover:text-white transition-all flex items-center justify-center gap-2 mt-2"
                 >
-                  <Settings className="h-3 w-3" />
-                </Button>
+                  <Plus className="h-4 w-4" />
+                  Add Custom Chapter
+                </button>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-white">
+                  Twin Instructions
+                </h3>
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
+                    onClick={() => router.push('/explore/my-twin')}
+                  >
+                    <Settings className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
+                    onClick={() => setShowInstructionModal(true)}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="text-center py-4">
+                <div className="text-2xl font-bold text-white">
+                  {instructions.length}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Active instructions
+                </p>
+              </div>
+
+              <div className="space-y-2 mt-4">
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="h-6 text-xs hover:bg-[hsl(0_0%_18%)] px-2"
+                  variant="outline"
+                  className="w-full h-8 text-xs border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
+                  onClick={() => router.push('/explore/my-twin')}
+                >
+                  <Settings className="h-3 w-3 mr-1.5" />
+                  View All Instructions
+                </Button>
+
+                <button
                   onClick={() => setShowInstructionModal(true)}
+                  className="w-full p-3 border border-dashed border-[hsl(0_0%_18%)] hover:border-primary/50 rounded-lg text-sm text-muted-foreground hover:text-white transition-all flex items-center justify-center gap-2"
                 >
-                  <Plus className="h-3 w-3" />
-                </Button>
+                  <Plus className="h-4 w-4" />
+                  Add Instruction
+                </button>
               </div>
             </div>
 
-            <div className="text-center py-4">
-              <div className="text-2xl font-bold text-white">{instructions.length}</div>
-              <p className="text-xs text-muted-foreground">Active instructions</p>
-            </div>
-
-            <div className="space-y-2 mt-4">
-              <Button
-                size="sm" 
-                variant="outline"
-                className="w-full h-8 text-xs border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
-                onClick={() => router.push("/explore/my-twin")}
-              >
-                <Settings className="h-3 w-3 mr-1.5" />
-                View All Instructions
-              </Button>
-              
-              <button
-                onClick={() => setShowInstructionModal(true)}
-                className="w-full p-3 border border-dashed border-[hsl(0_0%_18%)] hover:border-primary/50 rounded-lg text-sm text-muted-foreground hover:text-white transition-all flex items-center justify-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add Instruction
-              </button>
-            </div>
-          </div>
-
-          {/* Writing Tips */}
-          <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
-            <h3 className="text-sm font-medium text-white mb-2">Writing Tips</h3>
-            <div className="space-y-2 text-xs text-muted-foreground">
-              <p>• Be specific - names, dates, and details matter</p>
-              <p>• Share the "why" behind your decisions</p>
-              <p>• Include failures - they make success meaningful</p>
-            </div>
-          </div>
-
-          {/* Create New Conversation - Only show when sufficient progress */}
-          {(messages.filter(m => m.role === "user").length >= 7) && (
-            <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg p-4">
-              <div className="text-center">
-                <CheckCircle2 className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <h3 className="text-sm font-medium text-white mb-1">Basic Training Complete!</h3>
-                <p className="text-xs text-muted-foreground mb-4">
-                  You've answered enough essential questions to create a functional twin.
-                </p>
-                <Button
-                  onClick={() => router.push("/explore/playground")}
-                  className="w-full bg-primary hover:bg-primary/90 text-black font-medium"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Create New Conversation
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  You can always return here to add more details
-                </p>
+            {/* Writing Tips */}
+            <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-4">
+              <h3 className="text-sm font-medium text-white mb-2">
+                Writing Tips
+              </h3>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <p>• Be specific - names, dates, and details matter</p>
+                <p>• Share the "why" behind your decisions</p>
+                <p>• Include failures - they make success meaningful</p>
               </div>
             </div>
-          )}
+
+            {/* Create New Conversation - Only show when sufficient progress */}
+            {messages.filter((m) => m.role === 'user').length >= 7 && (
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg p-4">
+                <div className="text-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                  <h3 className="text-sm font-medium text-white mb-1">
+                    Basic Training Complete!
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    You've answered enough essential questions to create a
+                    functional twin.
+                  </p>
+                  <Button
+                    onClick={() => router.push('/explore/playground')}
+                    className="w-full bg-primary hover:bg-primary/90 text-black font-medium"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Create New Conversation
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    You can always return here to add more details
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1425,7 +1686,7 @@ function TrainAITwin() {
 
       {/* Preview Panel */}
       {previewOpen && (
-        <div 
+        <div
           className="border-l border-[hsl(0_0%_18%)] bg-[hsl(0_0%_6%)] flex flex-col relative"
           style={{ width: `${previewWidth}px` }}
         >
@@ -1498,8 +1759,12 @@ function TrainAITwin() {
                   SC
                 </AvatarFallback>
               </Avatar>
-              <h4 className="text-lg font-semibold text-white mb-1">Sarah Chen</h4>
-              <p className="text-sm text-muted-foreground mb-3">Turning coffee into code since 2019</p>
+              <h4 className="text-lg font-semibold text-white mb-1">
+                Sarah Chen
+              </h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Turning coffee into code since 2019
+              </p>
               <div className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 border border-green-500/30 rounded-full w-fit mx-auto">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 <span className="text-xs text-green-400">AI Twin Active</span>
@@ -1513,24 +1778,37 @@ function TrainAITwin() {
               {/* Sample conversation */}
               <div className="flex items-start gap-3">
                 <Avatar className="h-6 w-6">
-                  <AvatarFallback className="bg-secondary text-xs">V</AvatarFallback>
+                  <AvatarFallback className="bg-secondary text-xs">
+                    V
+                  </AvatarFallback>
                 </Avatar>
                 <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-3 max-w-[80%]">
-                  <p className="text-sm text-white">Hi! Can you tell me about your background?</p>
+                  <p className="text-sm text-white">
+                    Hi! Can you tell me about your background?
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Avatar className="h-6 w-6">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">SC</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                    SC
+                  </AvatarFallback>
                 </Avatar>
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 max-w-[80%]">
-                  <p className="text-sm text-white">Hello! I'm Sarah, a passionate software engineer who's been turning coffee into code since 2019. I love building innovative solutions and have experience in full-stack development.</p>
+                  <p className="text-sm text-white">
+                    Hello! I'm Sarah, a passionate software engineer who's been
+                    turning coffee into code since 2019. I love building
+                    innovative solutions and have experience in full-stack
+                    development.
+                  </p>
                 </div>
               </div>
 
               <div className="text-center py-4">
-                <p className="text-xs text-muted-foreground">This is how visitors will chat with your AI Twin</p>
+                <p className="text-xs text-muted-foreground">
+                  This is how visitors will chat with your AI Twin
+                </p>
               </div>
             </div>
           </div>
@@ -1551,32 +1829,48 @@ function TrainAITwin() {
         </div>
       )}
 
-
       {/* Add Chapter Modal */}
       {showAddChapter && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-[hsl(0_0%_8%)] border border-[hsl(0_0%_18%)] rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-white mb-4">Add Custom Chapter</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Add Custom Chapter
+            </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              What aspect of your story would you like to explore? Add a custom chapter about anything that matters to you.
+              What aspect of your story would you like to explore? Add a custom
+              chapter about anything that matters to you.
             </p>
-            
+
             {/* Suggested Topics */}
             <div className="mb-4">
-              <p className="text-xs text-muted-foreground mb-2">Suggested topics:</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                Suggested topics:
+              </p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { title: "Hobbies & Passions", desc: "What you love to do outside work" },
-                  { title: "Side Projects", desc: "Personal projects and initiatives" },
-                  { title: "Travel & Culture", desc: "Places and experiences that shaped you" },
-                  { title: "Personal Philosophy", desc: "Your beliefs and values" },
-                  { title: "Future Goals", desc: "Where you're headed next" }
+                  {
+                    title: 'Hobbies & Passions',
+                    desc: 'What you love to do outside work',
+                  },
+                  {
+                    title: 'Side Projects',
+                    desc: 'Personal projects and initiatives',
+                  },
+                  {
+                    title: 'Travel & Culture',
+                    desc: 'Places and experiences that shaped you',
+                  },
+                  {
+                    title: 'Personal Philosophy',
+                    desc: 'Your beliefs and values',
+                  },
+                  { title: 'Future Goals', desc: "Where you're headed next" },
                 ].map((topic) => (
                   <button
                     key={topic.title}
                     onClick={() => {
-                      setNewChapterTitle(topic.title)
-                      setNewChapterDescription(topic.desc)
+                      setNewChapterTitle(topic.title);
+                      setNewChapterDescription(topic.desc);
                     }}
                     className="px-3 py-1 text-xs bg-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_24%)] rounded-full text-muted-foreground hover:text-white transition-colors"
                   >
@@ -1588,7 +1882,9 @@ function TrainAITwin() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Chapter Title</label>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Chapter Title
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. My Creative Journey"
@@ -1600,7 +1896,9 @@ function TrainAITwin() {
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Brief Description</label>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Brief Description
+                </label>
                 <input
                   type="text"
                   placeholder="What this chapter covers..."
@@ -1619,26 +1917,30 @@ function TrainAITwin() {
                       id: `custom-${Date.now()}`,
                       title: newChapterTitle,
                       icon: FileText,
-                      status: "current",
-                      description: newChapterDescription
-                    }
-                    setCustomChapters([...customChapters, newChapter])
-                    setInputMessage(`I'd like to tell you about ${newChapterTitle}. ${newChapterDescription}. This is important to my story because...`)
-                    setNewChapterTitle("")
-                    setNewChapterDescription("")
-                    setShowAddChapter(false)
+                      status: 'current',
+                      description: newChapterDescription,
+                    };
+                    setCustomChapters([...customChapters, newChapter]);
+                    setInputMessage(
+                      `I'd like to tell you about ${newChapterTitle}. ${newChapterDescription}. This is important to my story because...`
+                    );
+                    setNewChapterTitle('');
+                    setNewChapterDescription('');
+                    setShowAddChapter(false);
                   }
                 }}
-                disabled={!newChapterTitle.trim() || !newChapterDescription.trim()}
+                disabled={
+                  !newChapterTitle.trim() || !newChapterDescription.trim()
+                }
                 className="flex-1 bg-primary hover:bg-primary/90 text-black disabled:opacity-50"
               >
                 Add Chapter
               </Button>
               <Button
                 onClick={() => {
-                  setShowAddChapter(false)
-                  setNewChapterTitle("")
-                  setNewChapterDescription("")
+                  setShowAddChapter(false);
+                  setNewChapterTitle('');
+                  setNewChapterDescription('');
                 }}
                 variant="outline"
                 className="flex-1 border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
@@ -1659,10 +1961,10 @@ function TrainAITwin() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-bold text-white">
-                    {chapters.find(c => c.id === viewingChapter)?.title}
+                    {chapters.find((c) => c.id === viewingChapter)?.title}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {chapters.find(c => c.id === viewingChapter)?.description}
+                    {chapters.find((c) => c.id === viewingChapter)?.description}
                   </p>
                 </div>
                 <Button
@@ -1679,35 +1981,44 @@ function TrainAITwin() {
             {/* Chapter Content */}
             <ScrollArea className="flex-1 p-6">
               <div className="prose prose-invert max-w-none">
-                {viewingChapter === "intro" ? (
+                {viewingChapter === 'intro' ? (
                   <div className="space-y-6">
                     <p className="text-lg leading-relaxed text-gray-300">
-                      <span className="text-3xl font-serif float-left mr-2 mt-1 text-primary">M</span>
-                      y journey began in a small town, where dreams seemed as distant as the stars. 
-                      I'm Sarah Chen, a product manager at Google, but my story is about much more than titles and companies.
+                      <span className="text-3xl font-serif float-left mr-2 mt-1 text-primary">
+                        M
+                      </span>
+                      y journey began in a small town, where dreams seemed as
+                      distant as the stars. I'm Sarah Chen, a product manager at
+                      Google, but my story is about much more than titles and
+                      companies.
                     </p>
-                    
+
                     <p className="text-gray-300 leading-relaxed">
-                      Growing up, I was fascinated by how technology could connect people and solve real problems. 
-                      This curiosity led me down a path I never expected - from a computer science student at Stanford 
-                      to leading product teams at one of the world's most innovative companies.
+                      Growing up, I was fascinated by how technology could
+                      connect people and solve real problems. This curiosity led
+                      me down a path I never expected - from a computer science
+                      student at Stanford to leading product teams at one of the
+                      world's most innovative companies.
                     </p>
 
                     <blockquote className="border-l-4 border-primary pl-4 my-6 italic text-gray-400">
-                      "The best way to predict the future is to invent it." - This quote has guided every step of my journey.
+                      "The best way to predict the future is to invent it." -
+                      This quote has guided every step of my journey.
                     </blockquote>
 
                     <p className="text-gray-300 leading-relaxed">
-                      Today, I'm passionate about helping others navigate their tech careers. Whether you're a student 
-                      wondering how to break into tech, or a professional looking to transition, I'm here to share 
-                      what I've learned along the way.
+                      Today, I'm passionate about helping others navigate their
+                      tech careers. Whether you're a student wondering how to
+                      break into tech, or a professional looking to transition,
+                      I'm here to share what I've learned along the way.
                     </p>
                   </div>
                 ) : (
                   <div className="text-center py-12">
                     <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">
-                      This chapter is still being written. Continue your conversation to add more to your story.
+                      This chapter is still being written. Continue your
+                      conversation to add more to your story.
                     </p>
                   </div>
                 )}
@@ -1739,7 +2050,6 @@ function TrainAITwin() {
         </div>
       )}
 
-
       {/* Add Instruction Modal */}
       {showInstructionModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -1749,12 +2059,15 @@ function TrainAITwin() {
               Add Instruction for Your Twin
             </h3>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Give your AI Twin specific guidance on how to respond. These instructions will help 
-              your twin maintain consistency across all conversations.
+              Give your AI Twin specific guidance on how to respond. These
+              instructions will help your twin maintain consistency across all
+              conversations.
             </p>
-            
+
             <div className="mb-4">
-              <label className="text-xs text-muted-foreground mb-2 block">Instruction</label>
+              <label className="text-xs text-muted-foreground mb-2 block">
+                Instruction
+              </label>
               <textarea
                 value={newInstruction}
                 onChange={(e) => setNewInstruction(e.target.value)}
@@ -1763,19 +2076,22 @@ function TrainAITwin() {
                 className="w-full px-3 py-2 bg-[#0d1117] border border-[hsl(0_0%_18%)] rounded-md text-white placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none resize-none"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Be specific and clear. Your twin will follow these guidelines in all conversations.
+                Be specific and clear. Your twin will follow these guidelines in
+                all conversations.
               </p>
             </div>
 
             {/* Example Instructions */}
             <div className="mb-6">
-              <p className="text-xs text-muted-foreground mb-2">Example instructions:</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                Example instructions:
+              </p>
               <div className="space-y-2">
                 {[
-                  "Always mention my 5+ years of mentoring experience",
-                  "Keep responses under 2 paragraphs for better readability", 
-                  "Emphasize my startup background when discussing entrepreneurship",
-                  "Never give financial advice, redirect to professionals"
+                  'Always mention my 5+ years of mentoring experience',
+                  'Keep responses under 2 paragraphs for better readability',
+                  'Emphasize my startup background when discussing entrepreneurship',
+                  'Never give financial advice, redirect to professionals',
                 ].map((example, index) => (
                   <button
                     key={index}
@@ -1792,9 +2108,9 @@ function TrainAITwin() {
               <Button
                 onClick={() => {
                   if (newInstruction.trim()) {
-                    setInstructions([...instructions, newInstruction.trim()])
-                    setNewInstruction("")
-                    setShowInstructionModal(false)
+                    setInstructions([...instructions, newInstruction.trim()]);
+                    setNewInstruction('');
+                    setShowInstructionModal(false);
                     // You could add a success message here
                   }
                 }}
@@ -1805,8 +2121,8 @@ function TrainAITwin() {
               </Button>
               <Button
                 onClick={() => {
-                  setShowInstructionModal(false)
-                  setNewInstruction("")
+                  setShowInstructionModal(false);
+                  setNewInstruction('');
                 }}
                 variant="outline"
                 className="flex-1 border-[hsl(0_0%_18%)] hover:bg-[#0d1117]"
@@ -1829,7 +2145,9 @@ function TrainAITwin() {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white">AI Reflection</h2>
+                  <h2 className="text-xl font-semibold text-white">
+                    AI Reflection
+                  </h2>
                   <p className="text-sm text-muted-foreground">
                     Based on our conversation so far
                   </p>
@@ -1853,7 +2171,9 @@ function TrainAITwin() {
                     <Sparkles className="h-8 w-8 text-primary animate-pulse" />
                     <div className="absolute inset-0 h-8 w-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
                   </div>
-                  <p className="text-white mt-4 font-medium">Generating reflection...</p>
+                  <p className="text-white mt-4 font-medium">
+                    Generating reflection...
+                  </p>
                   <p className="text-muted-foreground text-sm mt-1">
                     Analyzing our conversation and your shared experiences
                   </p>
@@ -1868,10 +2188,11 @@ function TrainAITwin() {
                       <p className="text-white leading-relaxed">{reflection}</p>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6 pt-4 border-t border-[hsl(0_0%_18%)]">
                     <p className="text-xs text-muted-foreground mb-3">
-                      This reflection helps your AI Twin understand you better. Continue conversations to get more personalized insights.
+                      This reflection helps your AI Twin understand you better.
+                      Continue conversations to get more personalized insights.
                     </p>
                     <div className="flex gap-2">
                       <Button
@@ -1887,8 +2208,10 @@ function TrainAITwin() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          setInputMessage("I'd like to hear more about your reflection on who I am. What other insights do you have?")
-                          setShowReflectionModal(false)
+                          setInputMessage(
+                            "I'd like to hear more about your reflection on who I am. What other insights do you have?"
+                          );
+                          setShowReflectionModal(false);
                         }}
                         className="border-[hsl(0_0%_18%)] hover:bg-[hsl(0_0%_10%)]"
                       >
@@ -1904,5 +2227,5 @@ function TrainAITwin() {
         </div>
       )}
     </div>
-  )
+  );
 }

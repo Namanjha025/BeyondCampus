@@ -99,6 +99,11 @@ enum ChecklistItemType {
   OTHER
 }
 
+enum UserRole {
+  ADMIN
+  STUDENT
+}
+
 enum ChecklistItemStatus {
   PENDING
   UPLOADED
@@ -106,37 +111,46 @@ enum ChecklistItemStatus {
   REJECTED
 }
 
+enum KnowledgeDocCategory {
+  ADMISSIONS
+  COURSES
+  CAMPUS_LIFE
+  SCHOLARSHIPS
+  STAFF
+}
+
 // ─── Auth & Student Identity ─────────────────────────────
 
 model User {
-  id                  String        @id @default(uuid())
-  email               String        @unique
+  id                  String   @id @default(uuid())
+  email               String   @unique
   password            String
   firstName           String
   lastName            String
-  onboardingCompleted Boolean       @default(false)
+  role                UserRole @default(STUDENT)
+  onboardingCompleted Boolean  @default(false)
 
   // Onboarding intent
-  location            String?
-  degreeLevel         DegreeLevel?
-  fieldOfStudy        String?
-  currentEducation    String?
-  targetCountry       String?       @default("US")
-  intakeSeason        IntakeSeason?
-  intakeYear          Int?
-  budgetRange         BudgetRange?
-  hasGivenTests       Boolean?
+  location         String?
+  degreeLevel      DegreeLevel?
+  fieldOfStudy     String?
+  currentEducation String?
+  targetCountry    String?       @default("US")
+  intakeSeason     IntakeSeason?
+  intakeYear       Int?
+  budgetRange      BudgetRange?
+  hasGivenTests    Boolean?
 
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  sessions            Session[]
-  testScores          TestScore[]
-  profileFields       ProfileField[]
-  documents           Document[]
-  shortlists          Shortlist[]
-  applications        Application[]
+  sessions      Session[]
+  testScores    TestScore[]
+  profileFields ProfileField[]
+  documents     Document[]
+  shortlists    Shortlist[]
+  applications  Application[]
 }
 
 model Session {
@@ -158,14 +172,14 @@ model VerificationToken {
 // ─── Student Profile (Dynamic) ───────────────────────────
 
 model TestScore {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
   examType     ExamType
   overallScore Float
   subScores    Json?
   dateTaken    DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -173,15 +187,15 @@ model TestScore {
 }
 
 model ProfileField {
-  id                String               @id @default(uuid())
-  userId            String
-  title             String
-  value             String
-  category          ProfileFieldCategory
-  extractedBy       ProfileFieldSource   @default(MANUAL)
-  sourceDocumentId  String?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  id               String               @id @default(uuid())
+  userId           String
+  title            String
+  value            String
+  category         ProfileFieldCategory
+  extractedBy      ProfileFieldSource   @default(MANUAL)
+  sourceDocumentId String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
 
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   sourceDocument Document? @relation(fields: [sourceDocumentId], references: [id], onDelete: SetNull)
@@ -211,9 +225,27 @@ model Document {
 
 // ─── University Knowledge Base ───────────────────────────
 
+model UniversityKnowledgeDoc {
+  id           String               @id @default(uuid())
+  universityId String
+  category     KnowledgeDocCategory
+  content      String // raw markdown
+  fileName     String
+  embeddedAt   DateTime? // when chunks were embedded in Qdrant
+  processedAt  DateTime? // when AI extracted structured data
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+
+  @@unique([universityId, category])
+  @@index([universityId])
+}
+
 model University {
   id             String         @id @default(uuid())
-  name           String
+  name           String         @unique
+  slug           String         @unique
   city           String
   state          String
   type           UniversityType
@@ -221,26 +253,38 @@ model University {
   acceptanceRate Float?
   enrollmentSize Int?
   website        String?
+  logo           String?
+  logoColor      String?
+  description    String?
+  specialties    String[]       @default([])
+  qsRanking      String?
+  counselorName  String?
+  counselorTitle String?
+  category       String? // tech, ivy, public, etc.
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  programs     Program[]
-  shortlists   Shortlist[]
-  applications Application[]
+  programs      Program[]
+  shortlists    Shortlist[]
+  applications  Application[]
+  knowledgeDocs UniversityKnowledgeDoc[]
+  scholarships  Scholarship[]
 
   @@index([state])
 }
 
 model Program {
-  id              String            @id @default(uuid())
-  universityId    String
-  name            String
-  department      String?
-  degreeType      ProgramDegreeType
-  durationMonths  Int?
-  tuitionPerYear  Float?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id             String            @id @default(uuid())
+  universityId   String
+  name           String
+  department     String?
+  degreeType     ProgramDegreeType
+  durationMonths Int?
+  tuitionPerYear Float?
+  applyUrl       String?
+  embeddedAt     DateTime? // when this program was vectorized into Qdrant
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   university   University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
   deadlines    Deadline[]
@@ -251,12 +295,12 @@ model Program {
 }
 
 model Deadline {
-  id                  String   @id @default(uuid())
+  id                  String    @id @default(uuid())
   programId           String
   roundName           String
   applicationDeadline DateTime
   decisionDate        DateTime?
-  createdAt           DateTime @default(now())
+  createdAt           DateTime  @default(now())
 
   program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
 
@@ -275,9 +319,9 @@ model Shortlist {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  university University  @relation(fields: [universityId], references: [id], onDelete: Cascade)
-  program    Program?    @relation(fields: [programId], references: [id], onDelete: SetNull)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  university University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  program    Program?   @relation(fields: [programId], references: [id], onDelete: SetNull)
 
   @@unique([userId, universityId, programId])
   @@index([userId])
@@ -319,3 +363,20 @@ model ChecklistItem {
 
   @@index([applicationId, status])
 }
+
+model Scholarship {
+  id           String   @id @default(uuid())
+  universityId String
+  name         String
+  amount       String?
+  description  String?
+  deadline     DateTime?
+  eligibility  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+
+  @@index([universityId])
+}
+

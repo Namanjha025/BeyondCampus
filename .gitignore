@@ -8,3 +8,5 @@ npm-debug.log*
 *.tsbuildinfo
 .vercel
 .cursor/
+.agents/
+.jules/
